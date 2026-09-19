@@ -5,6 +5,7 @@ import { UserCog } from 'lucide-react';
 import { Car } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { 
+  Settings,
   LayoutGrid, 
   List, 
   BookText, 
@@ -16,6 +17,7 @@ import {
 } from 'lucide-react';
 
 const navItems = [
+  { name: 'Configuración', path: '/configuracion', icon: Settings },
   { name: 'Resumen', path: '/', icon: LayoutGrid },
   { name: 'Catálogo', path: '/catalogo', icon: List },
   { name: 'Libro Diario', path: '/asientos', icon: BookText },

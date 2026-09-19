@@ -1,89 +1,105 @@
 "use client";
-
+import { useState } from "react";
 import { useAccountingStore } from "@/lib/store/accountingStore";
-
-export default function BalanceComprobacionPage() {
-  const { cuentas } = useAccountingStore();
-  
-  // Filtramos solo las cuentas que tienen algún saldo
-  const cuentasActivas = cuentas.filter(c => c.saldo !== 0);
-
-  // Cálculos de sumas iguales
-  const totalDeudor = cuentasActivas
-    .filter(c => c.naturaleza === 'Deudora')
-    .reduce((sum, c) => sum + c.saldo, 0);
-    
-  const totalAcreedor = cuentasActivas
-    .filter(c => c.naturaleza === 'Acreedora')
-    .reduce((sum, c) => sum + c.saldo, 0);
-
-  const cuadra = Number(totalDeudor.toFixed(2)) === Number(totalAcreedor.toFixed(2));
-
+import { ledger, trial, cents, money } from "@/lib/accounting/core";
+export default function Comprobacion() {
+  const { cuentas, asientos } = useAccountingStore();
+  const [hasta, setHasta] = useState("");
+  const rows = trial(
+    ledger(
+      cuentas,
+      asientos.filter((a) => !hasta || a.fecha <= hasta),
+    ),
+  ).filter((c) => c.debe || c.haber);
+  const totals = rows.reduce(
+    (t, c) => ({
+      debe: t.debe + cents(c.debe),
+      haber: t.haber + cents(c.haber),
+      deudor: t.deudor + cents(c.deudor),
+      acreedor: t.acreedor + cents(c.acreedor),
+    }),
+    { debe: 0, haber: 0, deudor: 0, acreedor: 0 },
+  );
   return (
-    <div className="max-w-5xl mx-auto space-y-8 font-sans text-zinc-900 pb-12">
-      <div className="border-b border-zinc-200 pb-4">
-        <h1 className="text-2xl font-semibold tracking-tight">Balanza de Comprobación</h1>
-        <p className="text-sm text-zinc-500 mt-1">Verificación de la partida doble en saldos de mayor.</p>
-      </div>
-
-      <div className="bg-white border border-zinc-200">
-        <table className="w-full text-sm text-left border-collapse">
+    <div className="accounting-original max-w-5xl mx-auto space-y-8 font-sans text-zinc-900 pb-12">
+      <header className="border-b border-zinc-200 pb-4">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Balanza de Comprobación
+        </h1>
+        <p className="text-sm text-zinc-500 mt-1">
+          Verificación de la partida doble en sumas y saldos de mayor.
+        </p>
+      </header>
+      <p className="text-sm text-zinc-600">
+        Sumas y saldos desde el inicio del libro. Incluye ajustes y reversiones;
+        cada movimiento se cuenta una sola vez.
+      </p>
+      <label className="block max-w-xs text-sm">
+        Hasta la fecha (opcional)
+        <input
+          className="field"
+          type="date"
+          value={hasta}
+          onChange={(e) => setHasta(e.target.value)}
+        />
+      </label>
+      <div className="overflow-auto bg-white border">
+        <table className="data-table">
           <thead>
             <tr>
-              <th colSpan={2} className="p-3 border-b border-zinc-200 bg-zinc-50"></th>
-              <th colSpan={2} className="p-3 border-b border-zinc-200 bg-zinc-100 text-center font-bold text-xs uppercase tracking-wider text-black">
-                Saldos Finales
+              <th colSpan={2}></th>
+              <th colSpan={2} className="text-center">
+                Sumas
+              </th>
+              <th colSpan={2} className="text-center">
+                Saldos finales
               </th>
             </tr>
-            <tr className="border-b-2 border-black text-xs uppercase text-zinc-500 tracking-wider">
-              <th className="p-3 font-medium">Código</th>
-              <th className="p-3 font-medium">Nombre de la Cuenta</th>
-              <th className="p-3 text-right font-medium bg-zinc-50/50">Deudor</th>
-              <th className="p-3 text-right font-medium bg-zinc-50/50">Acreedor</th>
+            <tr>
+              <th>Código</th>
+              <th>Cuenta</th>
+              <th>Debe</th>
+              <th>Haber</th>
+              <th>Saldo deudor</th>
+              <th>Saldo acreedor</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-100">
-            {cuentasActivas.sort((a, b) => a.codigo.localeCompare(b.codigo)).map(c => (
-              <tr key={c.id} className="hover:bg-zinc-50 transition-colors">
-                <td className="p-3 font-medium">{c.codigo}</td>
-                <td className="p-3">{c.nombre}</td>
-                <td className="p-3 text-right font-medium">
-                  {c.naturaleza === 'Deudora' ? `$${c.saldo.toFixed(2)}` : ''}
-                </td>
-                <td className="p-3 text-right font-medium">
-                  {c.naturaleza === 'Acreedora' ? `$${c.saldo.toFixed(2)}` : ''}
-                </td>
+          <tbody>
+            {rows.map((c) => (
+              <tr key={c.id}>
+                <td>{c.codigo}</td>
+                <td>{c.nombre}</td>
+                <td>{c.debe.toFixed(2)}</td>
+                <td>{c.haber.toFixed(2)}</td>
+                <td>{c.deudor.toFixed(2)}</td>
+                <td>{c.acreedor.toFixed(2)}</td>
               </tr>
             ))}
-            {cuentasActivas.length === 0 && (
-              <tr>
-                <td colSpan={4} className="p-8 text-center text-zinc-400 text-xs uppercase tracking-widest">
-                  No hay cuentas con saldo.
-                </td>
-              </tr>
-            )}
           </tbody>
           <tfoot>
-            <tr className="border-t-2 border-black font-bold">
-              <td colSpan={2} className="p-4 text-right text-xs uppercase tracking-wider text-zinc-500">
-                Sumas Iguales
-              </td>
-              <td className={`p-4 text-right ${cuadra ? 'text-black' : 'text-red-600'}`}>
-                ${totalDeudor.toFixed(2)}
-              </td>
-              <td className={`p-4 text-right ${cuadra ? 'text-black' : 'text-red-600'}`}>
-                ${totalAcreedor.toFixed(2)}
-              </td>
+            <tr className="font-semibold">
+              <td colSpan={2}>Totales</td>
+              <td>{money(totals.debe)}</td>
+              <td>{money(totals.haber)}</td>
+              <td>{money(totals.deudor)}</td>
+              <td>{money(totals.acreedor)}</td>
             </tr>
           </tfoot>
         </table>
-        
-        {!cuadra && (
-          <div className="p-3 bg-red-50 text-red-600 text-xs font-semibold uppercase tracking-wider text-center border-t border-red-200">
-            Advertencia: Los saldos no cuadran. Revise las naturalezas del catálogo.
-          </div>
-        )}
       </div>
+      <p
+        className={
+          totals.debe === totals.haber && totals.deudor === totals.acreedor
+            ? "text-green-800"
+            : "text-red-700"
+        }
+      >
+        {rows.length
+          ? totals.debe === totals.haber && totals.deudor === totals.acreedor
+            ? "Sumas y saldos cuadrados."
+            : "Hay una diferencia que debe revisarse."
+          : "No hay movimientos."}
+      </p>
     </div>
   );
 }
