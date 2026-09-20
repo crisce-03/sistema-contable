@@ -1,0 +1,136 @@
+{
+  "version": 1,
+  "asientos": [
+    {
+      "referencia": "EJ-001",
+      "fecha": "2026-01-01",
+      "concepto": "Ejemplo: aporte de capital",
+      "tipo": "normal",
+      "detalles": [
+        {
+          "codigoCuenta": "1101",
+          "debe": "10000.00",
+          "haber": "0.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "3101",
+          "debe": "0.00",
+          "haber": "10000.00",
+          "descripcion": ""
+        }
+      ]
+    },
+    {
+      "referencia": "EJ-002",
+      "fecha": "2026-01-02",
+      "concepto": "Ejemplo: compra de mercadería con pago mixto",
+      "tipo": "normal",
+      "detalles": [
+        {
+          "codigoCuenta": "4104",
+          "debe": "1000.00",
+          "haber": "0.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "1109",
+          "debe": "130.00",
+          "haber": "0.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "1101",
+          "debe": "0.00",
+          "haber": "565.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "2102",
+          "debe": "0.00",
+          "haber": "565.00",
+          "descripcion": ""
+        }
+      ]
+    },
+    {
+      "referencia": "EJ-003",
+      "fecha": "2026-01-03",
+      "concepto": "Ejemplo: venta al contado",
+      "tipo": "normal",
+      "detalles": [
+        {
+          "codigoCuenta": "1101",
+          "debe": "1695.00",
+          "haber": "0.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "510101",
+          "debe": "0.00",
+          "haber": "1500.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "2108",
+          "debe": "0.00",
+          "haber": "195.00",
+          "descripcion": ""
+        }
+      ]
+    },
+    {
+      "referencia": "EJ-004",
+      "fecha": "2026-01-04",
+      "concepto": "Ejemplo: devolución de mercadería comprada a crédito",
+      "tipo": "normal",
+      "detalles": [
+        {
+          "codigoCuenta": "2102",
+          "debe": "113.00",
+          "haber": "0.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "4105",
+          "debe": "0.00",
+          "haber": "100.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "1109",
+          "debe": "0.00",
+          "haber": "13.00",
+          "descripcion": ""
+        }
+      ]
+    },
+    {
+      "referencia": "EJ-005",
+      "fecha": "2026-01-05",
+      "concepto": "Ejemplo: devolución sobre venta y reembolso",
+      "tipo": "normal",
+      "detalles": [
+        {
+          "codigoCuenta": "51010402",
+          "debe": "100.00",
+          "haber": "0.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "2108",
+          "debe": "13.00",
+          "haber": "0.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "1101",
+          "debe": "0.00",
+          "haber": "113.00",
+          "descripcion": ""
+        }
+      ]
+    }
+  ],
+  "modoIva": "mas_iva"
+}

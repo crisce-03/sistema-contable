@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "modoIva": "incluido",
+  "asientos": [
+    {
+      "referencia": "IVA-INCLUIDO-001",
+      "fecha": "2026-01-01",
+      "concepto": "Ejemplo de venta por 113 IVA incluido",
+      "tipo": "normal",
+      "modoIva": "incluido",
+      "detalles": [
+        {
+          "codigoCuenta": "1101",
+          "debe": "113.00",
+          "haber": "0.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "510101",
+          "debe": "0.00",
+          "haber": "100.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "2108",
+          "debe": "0.00",
+          "haber": "13.00",
+          "descripcion": ""
+        }
+      ]
+    }
+  ]
+}

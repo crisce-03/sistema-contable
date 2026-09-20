@@ -128,3 +128,142 @@
     @apply font-sans;
   }
 }
+.field {
+  display: block;
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  margin-top: 0.25rem;
+  background: white;
+  border: 1px solid #d4d4d8;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+.primary {
+  background: #18181b;
+  color: white;
+  padding: 0.6rem 1rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.data-table {
+  width: 100%;
+  font-size: 0.875rem;
+  text-align: left;
+}
+.data-table th,
+.data-table td {
+  padding: 0.7rem;
+  border-bottom: 1px solid #e4e4e7;
+}
+.data-table th {
+  background: #f4f4f5;
+}
+
+/* Original catalog and journal presentation; accounting logic is unchanged. */
+.accounting-original .field {
+  padding: 0.5rem;
+  border-radius: 2px;
+  outline: none;
+}
+.accounting-original .field:focus {
+  border-color: #18181b;
+  box-shadow: 0 0 0 1px #18181b;
+}
+.accounting-original .primary {
+  background: #000;
+  border-radius: 2px;
+}
+.accounting-original .data-table th {
+  background: transparent;
+  border-bottom: 2px solid #18181b;
+  padding: 0.75rem 0.5rem;
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #71717a;
+  font-weight: 500;
+}
+.accounting-original .data-table td {
+  padding: 0.75rem 0.5rem;
+  border-bottom: 1px solid #f4f4f5;
+}
+.accounting-original .data-table tbody tr:hover {
+  background: #fafafa;
+}
+.catalog-original .data-table {
+  font-size: 0.75rem;
+}
+.catalog-original .data-table td:first-child {
+  font-family: monospace;
+  white-space: nowrap;
+}
+.catalog-toolbar button:not(.primary) {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d4d4d8;
+  background: white;
+  border-radius: 2px;
+}
+.accounting-original > details {
+  border-radius: 0;
+  background: white;
+  font-size: 0.75rem;
+}
+.diary-original .entry-form .data-table thead th {
+  background: #fafafa;
+}
+.diary-original .entry-form .data-table tbody {
+  background: #eff6ff66;
+}
+.diary-original .entry-form .data-table tbody .field {
+  border-color: #bfdbfe;
+}
+.diary-original .data-table tfoot {
+  background: #fafafa;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Restore the uploaded screens' compact, straight-edged controls. */
+.field {
+  border-radius: 2px;
+  padding: 0.5rem;
+}
+.primary {
+  background: #000;
+  border-radius: 2px;
+}
+.journal-header > label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #71717a;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.journal-header .field {
+  font-weight: 400;
+  color: #18181b;
+  text-transform: none;
+  letter-spacing: normal;
+}
+.catalog-original .data-table {
+  font-size: 0.875rem;
+}
+.catalog-original .data-table th {
+  font-size: 0.75rem;
+}
+.configuration-original > div > section:last-child {
+  grid-column: 1 / -1;
+}
+.configuration-original .data-table th {
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-bottom: 2px solid black;
+  background: white;
+}
