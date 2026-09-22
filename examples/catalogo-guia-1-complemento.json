@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "cuentas": [
+    {
+      "codigo": "1101020102",
+      "nombre": "Banco Cuscatlán",
+      "padreCodigo": "11010201",
+      "activa": true
+    },
+    {
+      "codigo": "4104",
+      "nombre": "Compras",
+      "padreCodigo": "41",
+      "activa": true
+    }
+  ]
+}

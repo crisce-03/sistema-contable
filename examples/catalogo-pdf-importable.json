@@ -1,0 +1,2771 @@
+{
+  "version": 1,
+  "cuentas": [
+    {
+      "codigo": "1101",
+      "nombre": "EFECTIVO Y EQUIVALENTES DE EFECTIVO",
+      "padreCodigo": "11",
+      "activa": true
+    },
+    {
+      "codigo": "110101",
+      "nombre": "CAJA",
+      "padreCodigo": "1101",
+      "activa": true
+    },
+    {
+      "codigo": "11010101",
+      "nombre": "Caja General",
+      "padreCodigo": "110101",
+      "activa": true
+    },
+    {
+      "codigo": "11010102",
+      "nombre": "Caja Chica",
+      "padreCodigo": "110101",
+      "activa": true
+    },
+    {
+      "codigo": "110102",
+      "nombre": "BANCOS MONEDA NACIONAL",
+      "padreCodigo": "1101",
+      "activa": true
+    },
+    {
+      "codigo": "11010201",
+      "nombre": "CUENTA CORRIENTE",
+      "padreCodigo": "110102",
+      "activa": true
+    },
+    {
+      "codigo": "1101020101",
+      "nombre": "Banco de América Central, S.A.",
+      "padreCodigo": "11010201",
+      "activa": true
+    },
+    {
+      "codigo": "1101020103",
+      "nombre": "Banco Davivienda, S.A.",
+      "padreCodigo": "11010201",
+      "activa": true
+    },
+    {
+      "codigo": "1101020105",
+      "nombre": "Banco Agrícola, S.A.",
+      "padreCodigo": "11010201",
+      "activa": true
+    },
+    {
+      "codigo": "1101020106",
+      "nombre": "Banco Promerica",
+      "padreCodigo": "11010201",
+      "activa": true
+    },
+    {
+      "codigo": "11010202",
+      "nombre": "CUENTA DE AHORRO",
+      "padreCodigo": "110102",
+      "activa": true
+    },
+    {
+      "codigo": "1101020201",
+      "nombre": "Banco de América Central, S.A.",
+      "padreCodigo": "11010202",
+      "activa": true
+    },
+    {
+      "codigo": "1101020205",
+      "nombre": "Banco Agrícola, S.A.",
+      "padreCodigo": "11010202",
+      "activa": true
+    },
+    {
+      "codigo": "1101020206",
+      "nombre": "Banco Promerica",
+      "padreCodigo": "11010202",
+      "activa": true
+    },
+    {
+      "codigo": "11010203",
+      "nombre": "DEPÓSITOS A PLAZO",
+      "padreCodigo": "110102",
+      "activa": true
+    },
+    {
+      "codigo": "1101020301",
+      "nombre": "Depósito a Plazo menor de tres meses",
+      "padreCodigo": "11010203",
+      "activa": true
+    },
+    {
+      "codigo": "1101020302",
+      "nombre": "Depósito a Plazo menor de seis meses",
+      "padreCodigo": "11010203",
+      "activa": true
+    },
+    {
+      "codigo": "110103",
+      "nombre": "BANCOS MONEDA EXTRANJERA",
+      "padreCodigo": "1101",
+      "activa": true
+    },
+    {
+      "codigo": "11010301",
+      "nombre": "CUENTA CORRIENTE",
+      "padreCodigo": "110103",
+      "activa": true
+    },
+    {
+      "codigo": "1101030101",
+      "nombre": "Banco en el extranjero 1",
+      "padreCodigo": "11010301",
+      "activa": true
+    },
+    {
+      "codigo": "1101030102",
+      "nombre": "Banco en el extranjero 2",
+      "padreCodigo": "11010301",
+      "activa": true
+    },
+    {
+      "codigo": "11010302",
+      "nombre": "CUENTAS DE AHORRO",
+      "padreCodigo": "110103",
+      "activa": true
+    },
+    {
+      "codigo": "1101030201",
+      "nombre": "Banco en el extranjero 1",
+      "padreCodigo": "11010302",
+      "activa": true
+    },
+    {
+      "codigo": "1101030202",
+      "nombre": "Banco en el extranjero 2",
+      "padreCodigo": "11010302",
+      "activa": true
+    },
+    {
+      "codigo": "11010303",
+      "nombre": "DEPÓSITOS A PLAZO",
+      "padreCodigo": "110103",
+      "activa": true
+    },
+    {
+      "codigo": "1101030301",
+      "nombre": "Depósito a Plazo menor de tres meses",
+      "padreCodigo": "11010303",
+      "activa": true
+    },
+    {
+      "codigo": "1101030302",
+      "nombre": "Depósito a Plazo menor de seis meses",
+      "padreCodigo": "11010303",
+      "activa": true
+    },
+    {
+      "codigo": "1102",
+      "nombre": "CUENTAS Y DOCUMENTOS POR COBRAR",
+      "padreCodigo": "11",
+      "activa": true
+    },
+    {
+      "codigo": "110201",
+      "nombre": "CUENTAS POR COBRAR CRÉDITOS OTORGADOS",
+      "padreCodigo": "1102",
+      "activa": true
+    },
+    {
+      "codigo": "11020101",
+      "nombre": "CUENTAS POR COBRAR CLIENTES",
+      "padreCodigo": "110201",
+      "activa": true
+    },
+    {
+      "codigo": "110202",
+      "nombre": "OTRAS CUENTAS POR COBRAR",
+      "padreCodigo": "1102",
+      "activa": true
+    },
+    {
+      "codigo": "11020201",
+      "nombre": "VENTA CON TARJETA DE CRÉDITO",
+      "padreCodigo": "110202",
+      "activa": true
+    },
+    {
+      "codigo": "1102020101",
+      "nombre": "Credomatic de El Salvador, S.A",
+      "padreCodigo": "11020201",
+      "activa": true
+    },
+    {
+      "codigo": "1102020102",
+      "nombre": "Serfinsa",
+      "padreCodigo": "11020201",
+      "activa": true
+    },
+    {
+      "codigo": "110203",
+      "nombre": "PRÉSTAMOS A FUNCIONARIOS Y EMPLEADOS",
+      "padreCodigo": "1102",
+      "activa": true
+    },
+    {
+      "codigo": "11020301",
+      "nombre": "Empleado 1",
+      "padreCodigo": "110203",
+      "activa": true
+    },
+    {
+      "codigo": "110204",
+      "nombre": "DOCUMENTOS POR COBRAR",
+      "padreCodigo": "1102",
+      "activa": true
+    },
+    {
+      "codigo": "11020401",
+      "nombre": "Prestamos con garantía personal",
+      "padreCodigo": "110204",
+      "activa": true
+    },
+    {
+      "codigo": "1103",
+      "nombre": "ESTIMACIÓN PARA CUENTAS INCOBRABLES (CR)",
+      "padreCodigo": "11",
+      "activa": true
+    },
+    {
+      "codigo": "110301",
+      "nombre": "Estimación para cuentas incobrables (CR)",
+      "padreCodigo": "1103",
+      "activa": true
+    },
+    {
+      "codigo": "1104",
+      "nombre": "INVERSIONES A CORTO PLAZO",
+      "padreCodigo": "11",
+      "activa": true
+    },
+    {
+      "codigo": "110401",
+      "nombre": "INVERSIONES EN BOLSA DE VALORES",
+      "padreCodigo": "1104",
+      "activa": true
+    },
+    {
+      "codigo": "11040101",
+      "nombre": "Bolproes",
+      "padreCodigo": "110401",
+      "activa": true
+    },
+    {
+      "codigo": "1105",
+      "nombre": "INVENTARIOS",
+      "padreCodigo": "11",
+      "activa": true
+    },
+    {
+      "codigo": "110501",
+      "nombre": "Bodega sucursal 01",
+      "padreCodigo": "1105",
+      "activa": true
+    },
+    {
+      "codigo": "110502",
+      "nombre": "Bodega sucursal 02",
+      "padreCodigo": "1105",
+      "activa": true
+    },
+    {
+      "codigo": "110503",
+      "nombre": "Bodega sucursal 03",
+      "padreCodigo": "1105",
+      "activa": true
+    },
+    {
+      "codigo": "110504",
+      "nombre": "Mercadería en Tránsito",
+      "padreCodigo": "1105",
+      "activa": true
+    },
+    {
+      "codigo": "110505",
+      "nombre": "Estimación por obsolescencia de inventarios (CR)",
+      "padreCodigo": "1105",
+      "activa": true
+    },
+    {
+      "codigo": "1106",
+      "nombre": "ACCIONISTAS",
+      "padreCodigo": "11",
+      "activa": true
+    },
+    {
+      "codigo": "110601",
+      "nombre": "ACCIONISTA 01",
+      "padreCodigo": "1106",
+      "activa": true
+    },
+    {
+      "codigo": "110602",
+      "nombre": "ACCIONISTA 02",
+      "padreCodigo": "1106",
+      "activa": true
+    },
+    {
+      "codigo": "110603",
+      "nombre": "ACCIONISTA 03",
+      "padreCodigo": "1106",
+      "activa": true
+    },
+    {
+      "codigo": "1107",
+      "nombre": "GASTOS PAGADOS POR ANTICIPADO",
+      "padreCodigo": "11",
+      "activa": true
+    },
+    {
+      "codigo": "110701",
+      "nombre": "Seguros pagados por anticipado",
+      "padreCodigo": "1107",
+      "activa": true
+    },
+    {
+      "codigo": "110702",
+      "nombre": "Alquileres pagados por anticipado",
+      "padreCodigo": "1107",
+      "activa": true
+    },
+    {
+      "codigo": "110703",
+      "nombre": "Papelería y útiles",
+      "padreCodigo": "1107",
+      "activa": true
+    },
+    {
+      "codigo": "110704",
+      "nombre": "Uniformes y equipo",
+      "padreCodigo": "1107",
+      "activa": true
+    },
+    {
+      "codigo": "110705",
+      "nombre": "Contratos por servicios",
+      "padreCodigo": "1107",
+      "activa": true
+    },
+    {
+      "codigo": "110706",
+      "nombre": "Otros gastos pagados por anticipado",
+      "padreCodigo": "1107",
+      "activa": true
+    },
+    {
+      "codigo": "1108",
+      "nombre": "PAGO A CUENTA - ISR",
+      "padreCodigo": "11",
+      "activa": true
+    },
+    {
+      "codigo": "110801",
+      "nombre": "Pago a cuenta ISR",
+      "padreCodigo": "1108",
+      "activa": true
+    },
+    {
+      "codigo": "11080101",
+      "nombre": "Pago a Cuenta del periodo",
+      "padreCodigo": "110801",
+      "activa": true
+    },
+    {
+      "codigo": "11080102",
+      "nombre": "Pago a Cuenta periodo anterior",
+      "padreCodigo": "110801",
+      "activa": true
+    },
+    {
+      "codigo": "1109",
+      "nombre": "CREDITO FISCAL – IVA",
+      "padreCodigo": "11",
+      "activa": true
+    },
+    {
+      "codigo": "110901",
+      "nombre": "Compras Locales",
+      "padreCodigo": "1109",
+      "activa": true
+    },
+    {
+      "codigo": "110902",
+      "nombre": "Importaciones",
+      "padreCodigo": "1109",
+      "activa": true
+    },
+    {
+      "codigo": "110903",
+      "nombre": "Percepciones 1%",
+      "padreCodigo": "1109",
+      "activa": true
+    },
+    {
+      "codigo": "110904",
+      "nombre": "IVA pagado por anticipado 2%",
+      "padreCodigo": "1109",
+      "activa": true
+    },
+    {
+      "codigo": "110905",
+      "nombre": "Retenciones 1%",
+      "padreCodigo": "1109",
+      "activa": true
+    },
+    {
+      "codigo": "1201",
+      "nombre": "PROPIEDADES, PLANTA Y EQUIPO",
+      "padreCodigo": "12",
+      "activa": true
+    },
+    {
+      "codigo": "120101",
+      "nombre": "Terrenos",
+      "padreCodigo": "1201",
+      "activa": true
+    },
+    {
+      "codigo": "120102",
+      "nombre": "Edificios",
+      "padreCodigo": "1201",
+      "activa": true
+    },
+    {
+      "codigo": "120103",
+      "nombre": "MOBILIARIO Y EQUIPO",
+      "padreCodigo": "1201",
+      "activa": true
+    },
+    {
+      "codigo": "12010301",
+      "nombre": "Mobiliario y equipo de Oficina",
+      "padreCodigo": "120103",
+      "activa": true
+    },
+    {
+      "codigo": "12010302",
+      "nombre": "Equipo de cómputo",
+      "padreCodigo": "120103",
+      "activa": true
+    },
+    {
+      "codigo": "120104",
+      "nombre": "Herramientas y equipos",
+      "padreCodigo": "1201",
+      "activa": true
+    },
+    {
+      "codigo": "120105",
+      "nombre": "Instalaciones y mejoras",
+      "padreCodigo": "1201",
+      "activa": true
+    },
+    {
+      "codigo": "120106",
+      "nombre": "Equipo de transporte",
+      "padreCodigo": "1201",
+      "activa": true
+    },
+    {
+      "codigo": "120107",
+      "nombre": "CONSTRUCCIONES EN PROCESO",
+      "padreCodigo": "1201",
+      "activa": true
+    },
+    {
+      "codigo": "12010701",
+      "nombre": "Edificios",
+      "padreCodigo": "120107",
+      "activa": true
+    },
+    {
+      "codigo": "12010702",
+      "nombre": "Instalaciones y mejoras locativas",
+      "padreCodigo": "120107",
+      "activa": true
+    },
+    {
+      "codigo": "120108",
+      "nombre": "DEPRECIACIÓN ACUMULADA – PROPIEDADES, PLANTA Y EQUIPO (CR)",
+      "padreCodigo": "1201",
+      "activa": true
+    },
+    {
+      "codigo": "12010801",
+      "nombre": "Depreciación acumulada de Edificios (CR)",
+      "padreCodigo": "120108",
+      "activa": true
+    },
+    {
+      "codigo": "12010802",
+      "nombre": "Depreciación acumulada de mobiliario y equipo (CR)",
+      "padreCodigo": "120108",
+      "activa": true
+    },
+    {
+      "codigo": "1201080201",
+      "nombre": "Depreciación acumulada de Mobiliario y equipo de oficina (CR)",
+      "padreCodigo": "12010802",
+      "activa": true
+    },
+    {
+      "codigo": "1201080202",
+      "nombre": "Depreciación acumulada de equipo de cómputo (CR)",
+      "padreCodigo": "12010802",
+      "activa": true
+    },
+    {
+      "codigo": "1201080203",
+      "nombre": "Depreciación acumulada de otros equipos (CR)",
+      "padreCodigo": "12010802",
+      "activa": true
+    },
+    {
+      "codigo": "12010803",
+      "nombre": "Depreciación acumulada de instalaciones y mejoras (CR)",
+      "padreCodigo": "120108",
+      "activa": true
+    },
+    {
+      "codigo": "12010804",
+      "nombre": "Depreciación acumulada de equipo de transporte (CR)",
+      "padreCodigo": "120108",
+      "activa": true
+    },
+    {
+      "codigo": "12010805",
+      "nombre": "Depreciación acumulada de revaluaciones (CR)",
+      "padreCodigo": "120108",
+      "activa": true
+    },
+    {
+      "codigo": "1201080501",
+      "nombre": "Depr. acum. revaluación edificios (CR)",
+      "padreCodigo": "12010805",
+      "activa": true
+    },
+    {
+      "codigo": "1201080502",
+      "nombre": "Depr. acum. revaluación mobiliario y equipo (CR)",
+      "padreCodigo": "12010805",
+      "activa": true
+    },
+    {
+      "codigo": "1201080503",
+      "nombre": "Depr. acum. revaluación instalaciones y mejoras (CR)",
+      "padreCodigo": "12010805",
+      "activa": true
+    },
+    {
+      "codigo": "1201080504",
+      "nombre": "Depr. acum. revaluación equipo de transporte (CR)",
+      "padreCodigo": "12010805",
+      "activa": true
+    },
+    {
+      "codigo": "1202",
+      "nombre": "PROPIEDADES, PLANTA Y EQUIPO – EN ARRENDAMIENTO FINANCIERO",
+      "padreCodigo": "12",
+      "activa": true
+    },
+    {
+      "codigo": "120201",
+      "nombre": "Terrenos en arrendamiento financiero",
+      "padreCodigo": "1202",
+      "activa": true
+    },
+    {
+      "codigo": "120202",
+      "nombre": "Edificios en arrendamiento financiero",
+      "padreCodigo": "1202",
+      "activa": true
+    },
+    {
+      "codigo": "120203",
+      "nombre": "Mobiliario y equipo en arrendamiento financiero",
+      "padreCodigo": "1202",
+      "activa": true
+    },
+    {
+      "codigo": "120204",
+      "nombre": "Instalaciones y mejoras en arrendamiento financiero",
+      "padreCodigo": "1202",
+      "activa": true
+    },
+    {
+      "codigo": "120205",
+      "nombre": "Equipo de transporte en arrendamiento financiero",
+      "padreCodigo": "1202",
+      "activa": true
+    },
+    {
+      "codigo": "120206",
+      "nombre": "Otros equipos en arrendamiento financiero",
+      "padreCodigo": "1202",
+      "activa": true
+    },
+    {
+      "codigo": "120207",
+      "nombre": "DEPRECIACIÓN ACUMULADA DE PROPIEDADES, PLANTA Y EQUIPO EN ARRENDAMIENTO FINANCIERO (CR)",
+      "padreCodigo": "1202",
+      "activa": true
+    },
+    {
+      "codigo": "12020701",
+      "nombre": "Depreciación acumulada de edificios en arrendamiento Financiero (CR)",
+      "padreCodigo": "120207",
+      "activa": true
+    },
+    {
+      "codigo": "12020702",
+      "nombre": "Depreciación acumulada de mobiliario y equipo en arrendamiento Financiero (CR)",
+      "padreCodigo": "120207",
+      "activa": true
+    },
+    {
+      "codigo": "12020703",
+      "nombre": "Depreciación acumulada de instalaciones y mejoras en arrendamiento Financiero (CR)",
+      "padreCodigo": "120207",
+      "activa": true
+    },
+    {
+      "codigo": "12020704",
+      "nombre": "Depreciación acumulada de equipo de transporte en arrendamiento Financiero (CR)",
+      "padreCodigo": "120207",
+      "activa": true
+    },
+    {
+      "codigo": "12020705",
+      "nombre": "Depreciación acumulada de otros equipos en arrendamiento Financiero (CR)",
+      "padreCodigo": "120207",
+      "activa": true
+    },
+    {
+      "codigo": "1203",
+      "nombre": "PROPIEDADES DE INVERSIÓN",
+      "padreCodigo": "12",
+      "activa": true
+    },
+    {
+      "codigo": "120301",
+      "nombre": "Terrenos",
+      "padreCodigo": "1203",
+      "activa": true
+    },
+    {
+      "codigo": "120302",
+      "nombre": "Edificios",
+      "padreCodigo": "1203",
+      "activa": true
+    },
+    {
+      "codigo": "120303",
+      "nombre": "Otros",
+      "padreCodigo": "1203",
+      "activa": true
+    },
+    {
+      "codigo": "1204",
+      "nombre": "INTANGIBLES",
+      "padreCodigo": "12",
+      "activa": true
+    },
+    {
+      "codigo": "120401",
+      "nombre": "Derecho de llave",
+      "padreCodigo": "1204",
+      "activa": true
+    },
+    {
+      "codigo": "120402",
+      "nombre": "Patentes y marcas",
+      "padreCodigo": "1204",
+      "activa": true
+    },
+    {
+      "codigo": "120403",
+      "nombre": "Franquicias",
+      "padreCodigo": "1204",
+      "activa": true
+    },
+    {
+      "codigo": "120404",
+      "nombre": "Licencias y concesiones",
+      "padreCodigo": "1204",
+      "activa": true
+    },
+    {
+      "codigo": "120405",
+      "nombre": "Programas y sistemas",
+      "padreCodigo": "1204",
+      "activa": true
+    },
+    {
+      "codigo": "120406",
+      "nombre": "Amortización acumulada de activos intangibles (CR)",
+      "padreCodigo": "1204",
+      "activa": true
+    },
+    {
+      "codigo": "12040601",
+      "nombre": "Amortización acumulada de derecho de llave (CR)",
+      "padreCodigo": "120406",
+      "activa": true
+    },
+    {
+      "codigo": "12040602",
+      "nombre": "Amortización acumulada de patentes y marcas (CR)",
+      "padreCodigo": "120406",
+      "activa": true
+    },
+    {
+      "codigo": "12040603",
+      "nombre": "Amortización acumulada de franquicias (CR)",
+      "padreCodigo": "120406",
+      "activa": true
+    },
+    {
+      "codigo": "12040604",
+      "nombre": "Amortización acumulada de licencias y concesiones (CR)",
+      "padreCodigo": "120406",
+      "activa": true
+    },
+    {
+      "codigo": "12040605",
+      "nombre": "Amortización acumulada de programas y sistemas (CR)",
+      "padreCodigo": "120406",
+      "activa": true
+    },
+    {
+      "codigo": "1205",
+      "nombre": "CUENTAS POR COBRAR A LARGO PLAZO",
+      "padreCodigo": "12",
+      "activa": true
+    },
+    {
+      "codigo": "120501",
+      "nombre": "Clientes / Largo plazo",
+      "padreCodigo": "1205",
+      "activa": true
+    },
+    {
+      "codigo": "120502",
+      "nombre": "Otras cuentas por cobrar a largo plazo",
+      "padreCodigo": "1205",
+      "activa": true
+    },
+    {
+      "codigo": "1206",
+      "nombre": "INVERSIONES PERMANENTES",
+      "padreCodigo": "12",
+      "activa": true
+    },
+    {
+      "codigo": "120601",
+      "nombre": "Acciones",
+      "padreCodigo": "1206",
+      "activa": true
+    },
+    {
+      "codigo": "120602",
+      "nombre": "Participaciones",
+      "padreCodigo": "1206",
+      "activa": true
+    },
+    {
+      "codigo": "1207",
+      "nombre": "DEPÓSITOS EN GARANTÍA",
+      "padreCodigo": "12",
+      "activa": true
+    },
+    {
+      "codigo": "120701",
+      "nombre": "Fianzas",
+      "padreCodigo": "1207",
+      "activa": true
+    },
+    {
+      "codigo": "120702",
+      "nombre": "Cheque certificados",
+      "padreCodigo": "1207",
+      "activa": true
+    },
+    {
+      "codigo": "120703",
+      "nombre": "Depósitos por bienes tomados en arrendamiento",
+      "padreCodigo": "1207",
+      "activa": true
+    },
+    {
+      "codigo": "120704",
+      "nombre": "Otras garantías",
+      "padreCodigo": "1207",
+      "activa": true
+    },
+    {
+      "codigo": "1208",
+      "nombre": "IMPUESTO SOBRE LA RENTA DIFERIDO - ACTIVO",
+      "padreCodigo": "12",
+      "activa": true
+    },
+    {
+      "codigo": "120801",
+      "nombre": "Crédito ISR años anteriores",
+      "padreCodigo": "1208",
+      "activa": true
+    },
+    {
+      "codigo": "120802",
+      "nombre": "Activo por Impuesto S/ Renta Diferido",
+      "padreCodigo": "1208",
+      "activa": true
+    },
+    {
+      "codigo": "1209",
+      "nombre": "OTRAS CUENTAS DEUDORAS",
+      "padreCodigo": "12",
+      "activa": true
+    },
+    {
+      "codigo": "120901",
+      "nombre": "Otras cuentas deudoras a largo plazo",
+      "padreCodigo": "1209",
+      "activa": true
+    },
+    {
+      "codigo": "2101",
+      "nombre": "PRÉSTAMOS A CORTO PLAZO Y SOBREGIROS",
+      "padreCodigo": "21",
+      "activa": true
+    },
+    {
+      "codigo": "210101",
+      "nombre": "Sobregiros bancarios",
+      "padreCodigo": "2101",
+      "activa": true
+    },
+    {
+      "codigo": "210102",
+      "nombre": "Préstamos bancarios (porción a corto plazo)",
+      "padreCodigo": "2101",
+      "activa": true
+    },
+    {
+      "codigo": "210103",
+      "nombre": "Préstamos personales (porción a corto plazo)",
+      "padreCodigo": "2101",
+      "activa": true
+    },
+    {
+      "codigo": "2102",
+      "nombre": "CUENTAS COMERCIALES POR PAGAR",
+      "padreCodigo": "21",
+      "activa": true
+    },
+    {
+      "codigo": "210201",
+      "nombre": "PROVEEDORES POR PAGAR",
+      "padreCodigo": "2102",
+      "activa": true
+    },
+    {
+      "codigo": "21020101",
+      "nombre": "PROVEEDORES NACIONALES",
+      "padreCodigo": "210201",
+      "activa": true
+    },
+    {
+      "codigo": "21020102",
+      "nombre": "OTROS PROVEEDORES",
+      "padreCodigo": "210201",
+      "activa": true
+    },
+    {
+      "codigo": "21020103",
+      "nombre": "PROVEEDORES DEL EXTERIOR",
+      "padreCodigo": "210201",
+      "activa": true
+    },
+    {
+      "codigo": "210202",
+      "nombre": "DOCUMENTOS POR PAGAR",
+      "padreCodigo": "2102",
+      "activa": true
+    },
+    {
+      "codigo": "21020201",
+      "nombre": "Documentos por pagar",
+      "padreCodigo": "210202",
+      "activa": true
+    },
+    {
+      "codigo": "2103",
+      "nombre": "ACREEDORES VARIOS",
+      "padreCodigo": "21",
+      "activa": true
+    },
+    {
+      "codigo": "210301",
+      "nombre": "Cuota patronal ISSS",
+      "padreCodigo": "2103",
+      "activa": true
+    },
+    {
+      "codigo": "210302",
+      "nombre": "Cuota patronal AFP",
+      "padreCodigo": "2103",
+      "activa": true
+    },
+    {
+      "codigo": "210303",
+      "nombre": "IVA por pagar",
+      "padreCodigo": "2103",
+      "activa": true
+    },
+    {
+      "codigo": "210304",
+      "nombre": "Pago a cuenta",
+      "padreCodigo": "2103",
+      "activa": true
+    },
+    {
+      "codigo": "210305",
+      "nombre": "Impuestos municipales",
+      "padreCodigo": "2103",
+      "activa": true
+    },
+    {
+      "codigo": "210306",
+      "nombre": "Otros impuestos por pagar",
+      "padreCodigo": "2103",
+      "activa": true
+    },
+    {
+      "codigo": "210307",
+      "nombre": "Intereses por pagar",
+      "padreCodigo": "2103",
+      "activa": true
+    },
+    {
+      "codigo": "210308",
+      "nombre": "Honorarios por pagar",
+      "padreCodigo": "2103",
+      "activa": true
+    },
+    {
+      "codigo": "210309",
+      "nombre": "Alquileres por pagar",
+      "padreCodigo": "2103",
+      "activa": true
+    },
+    {
+      "codigo": "210310",
+      "nombre": "Servicio telefónico por pagar",
+      "padreCodigo": "2103",
+      "activa": true
+    },
+    {
+      "codigo": "210311",
+      "nombre": "Anticipos de clientes",
+      "padreCodigo": "2103",
+      "activa": true
+    },
+    {
+      "codigo": "210312",
+      "nombre": "Provisiones de caja chica",
+      "padreCodigo": "2103",
+      "activa": true
+    },
+    {
+      "codigo": "210313",
+      "nombre": "Provisiones de arrendamiento",
+      "padreCodigo": "2103",
+      "activa": true
+    },
+    {
+      "codigo": "210314",
+      "nombre": "Otras cuentas por pagar",
+      "padreCodigo": "2103",
+      "activa": true
+    },
+    {
+      "codigo": "2104",
+      "nombre": "RETENCIONES POR PAGAR",
+      "padreCodigo": "21",
+      "activa": true
+    },
+    {
+      "codigo": "210401",
+      "nombre": "Cotización ISSS / Salud",
+      "padreCodigo": "2104",
+      "activa": true
+    },
+    {
+      "codigo": "210402",
+      "nombre": "COTIZACIÓN A FONDOS DE PENSIONES",
+      "padreCodigo": "2104",
+      "activa": true
+    },
+    {
+      "codigo": "21040201",
+      "nombre": "ISSS provisional",
+      "padreCodigo": "210402",
+      "activa": true
+    },
+    {
+      "codigo": "21040202",
+      "nombre": "AFP Crecer",
+      "padreCodigo": "210402",
+      "activa": true
+    },
+    {
+      "codigo": "21040203",
+      "nombre": "AFP Confía",
+      "padreCodigo": "210402",
+      "activa": true
+    },
+    {
+      "codigo": "21040204",
+      "nombre": "IPSFA",
+      "padreCodigo": "210402",
+      "activa": true
+    },
+    {
+      "codigo": "21040205",
+      "nombre": "INPEP",
+      "padreCodigo": "210402",
+      "activa": true
+    },
+    {
+      "codigo": "210403",
+      "nombre": "RETENCIÓN DE IMPUESTO SOBRE LA RENTA",
+      "padreCodigo": "2104",
+      "activa": true
+    },
+    {
+      "codigo": "21040301",
+      "nombre": "Retencion con subordinación laboral",
+      "padreCodigo": "210403",
+      "activa": true
+    },
+    {
+      "codigo": "21040302",
+      "nombre": "Retencion 10% eventuales",
+      "padreCodigo": "210403",
+      "activa": true
+    },
+    {
+      "codigo": "21040303",
+      "nombre": "Retencion Pensionados",
+      "padreCodigo": "210403",
+      "activa": true
+    },
+    {
+      "codigo": "2105",
+      "nombre": "BENEFICIOS A EMPLEADOS POR PAGAR",
+      "padreCodigo": "21",
+      "activa": true
+    },
+    {
+      "codigo": "210501",
+      "nombre": "Sueldos por pagar",
+      "padreCodigo": "2105",
+      "activa": true
+    },
+    {
+      "codigo": "210502",
+      "nombre": "Comisiones por pagar",
+      "padreCodigo": "2105",
+      "activa": true
+    },
+    {
+      "codigo": "210503",
+      "nombre": "Horas extras por pagar",
+      "padreCodigo": "2105",
+      "activa": true
+    },
+    {
+      "codigo": "210504",
+      "nombre": "Vacaciones por pagar",
+      "padreCodigo": "2105",
+      "activa": true
+    },
+    {
+      "codigo": "210505",
+      "nombre": "Aguinaldos por pagar",
+      "padreCodigo": "2105",
+      "activa": true
+    },
+    {
+      "codigo": "210506",
+      "nombre": "Gratificaciones y bonificaciones por pagar",
+      "padreCodigo": "2105",
+      "activa": true
+    },
+    {
+      "codigo": "210507",
+      "nombre": "Indemnizaciones por pagar",
+      "padreCodigo": "2105",
+      "activa": true
+    },
+    {
+      "codigo": "210508",
+      "nombre": "Bonificaciones por pagar",
+      "padreCodigo": "2105",
+      "activa": true
+    },
+    {
+      "codigo": "210509",
+      "nombre": "Otros beneficios a empleados por pagar",
+      "padreCodigo": "2105",
+      "activa": true
+    },
+    {
+      "codigo": "2106",
+      "nombre": "IMPUESTO SOBRE LA RENTA POR PAGAR",
+      "padreCodigo": "21",
+      "activa": true
+    },
+    {
+      "codigo": "210601",
+      "nombre": "Impuesto sobre la Renta Anual",
+      "padreCodigo": "2106",
+      "activa": true
+    },
+    {
+      "codigo": "210602",
+      "nombre": "Pago a cuenta",
+      "padreCodigo": "2106",
+      "activa": true
+    },
+    {
+      "codigo": "2107",
+      "nombre": "OBLIGACIONES POR ARRENDAMIENTO FINANCIERO",
+      "padreCodigo": "21",
+      "activa": true
+    },
+    {
+      "codigo": "210701",
+      "nombre": "Arrendamientos por leasing (Porcion a corto plazo)",
+      "padreCodigo": "2107",
+      "activa": true
+    },
+    {
+      "codigo": "2108",
+      "nombre": "IVA - DÉBITO FISCAL",
+      "padreCodigo": "21",
+      "activa": true
+    },
+    {
+      "codigo": "210801",
+      "nombre": "IVA - DÉBITO FISCAL",
+      "padreCodigo": "2108",
+      "activa": true
+    },
+    {
+      "codigo": "21080101",
+      "nombre": "IVA - débito fiscal - facturas de consumidor final",
+      "padreCodigo": "210801",
+      "activa": true
+    },
+    {
+      "codigo": "21080102",
+      "nombre": "IVA - débito fiscal - comprobante crédito fiscal",
+      "padreCodigo": "210801",
+      "activa": true
+    },
+    {
+      "codigo": "21080103",
+      "nombre": "IVA - retenido por pagar",
+      "padreCodigo": "210801",
+      "activa": true
+    },
+    {
+      "codigo": "2109",
+      "nombre": "CUENTAS POR PAGAR COMPAÑIAS RELACIONADAS Y ACCIONISTAS",
+      "padreCodigo": "21",
+      "activa": true
+    },
+    {
+      "codigo": "210901",
+      "nombre": "ACCIONISTA 01",
+      "padreCodigo": "2109",
+      "activa": true
+    },
+    {
+      "codigo": "210902",
+      "nombre": "ACCIONISTA 02",
+      "padreCodigo": "2109",
+      "activa": true
+    },
+    {
+      "codigo": "2110",
+      "nombre": "DIVIDENDOS POR PAGAR",
+      "padreCodigo": "21",
+      "activa": true
+    },
+    {
+      "codigo": "211001",
+      "nombre": "ACCIONISTA 01",
+      "padreCodigo": "2110",
+      "activa": true
+    },
+    {
+      "codigo": "211002",
+      "nombre": "ACCIONISTA 02",
+      "padreCodigo": "2110",
+      "activa": true
+    },
+    {
+      "codigo": "2201",
+      "nombre": "PRESTAMOS POR PAGAR A LARGO PLAZO",
+      "padreCodigo": "22",
+      "activa": true
+    },
+    {
+      "codigo": "220101",
+      "nombre": "Préstamos bancarios (Porción a largo plazo)",
+      "padreCodigo": "2201",
+      "activa": true
+    },
+    {
+      "codigo": "220102",
+      "nombre": "Préstamos personales (Porción a largo plazo)",
+      "padreCodigo": "2201",
+      "activa": true
+    },
+    {
+      "codigo": "2202",
+      "nombre": "OBLIGACIONES POR ARRENDAMIENTO FINANCIERO",
+      "padreCodigo": "22",
+      "activa": true
+    },
+    {
+      "codigo": "220201",
+      "nombre": "Arrendamientos por leasing (Porcion a largo plazo)",
+      "padreCodigo": "2202",
+      "activa": true
+    },
+    {
+      "codigo": "2203",
+      "nombre": "BENEFICIOS POR PAGAR A EMPLEADOS – LARGO PLAZO",
+      "padreCodigo": "22",
+      "activa": true
+    },
+    {
+      "codigo": "220301",
+      "nombre": "Indemnizaciones por pagar",
+      "padreCodigo": "2203",
+      "activa": true
+    },
+    {
+      "codigo": "220302",
+      "nombre": "Otras prestaciones por pagar a largo plazo",
+      "padreCodigo": "2203",
+      "activa": true
+    },
+    {
+      "codigo": "2204",
+      "nombre": "IMPUESTO SOBRE LA RENTA DIFERIDO - PASIVO",
+      "padreCodigo": "22",
+      "activa": true
+    },
+    {
+      "codigo": "220401",
+      "nombre": "Pasivo por Impuesto sobre la Renta diferido",
+      "padreCodigo": "2204",
+      "activa": true
+    },
+    {
+      "codigo": "3101",
+      "nombre": "CAPITAL SOCIAL",
+      "padreCodigo": "31",
+      "activa": true
+    },
+    {
+      "codigo": "310101",
+      "nombre": "CAPITAL SOCIAL MÍNIMO",
+      "padreCodigo": "3101",
+      "activa": true
+    },
+    {
+      "codigo": "31010101",
+      "nombre": "Capital Social Mínimo pagado",
+      "padreCodigo": "310101",
+      "activa": true
+    },
+    {
+      "codigo": "31010102",
+      "nombre": "Capital Social Mínimo por pagar",
+      "padreCodigo": "310101",
+      "activa": true
+    },
+    {
+      "codigo": "310102",
+      "nombre": "CAPITAL SOCIAL VARIABLE",
+      "padreCodigo": "3101",
+      "activa": true
+    },
+    {
+      "codigo": "31010201",
+      "nombre": "Capital social variable pagado",
+      "padreCodigo": "310102",
+      "activa": true
+    },
+    {
+      "codigo": "31010202",
+      "nombre": "Capital social variable por pagar",
+      "padreCodigo": "310102",
+      "activa": true
+    },
+    {
+      "codigo": "3102",
+      "nombre": "RESERVA LEGAL",
+      "padreCodigo": "31",
+      "activa": true
+    },
+    {
+      "codigo": "3103",
+      "nombre": "SUPERAVIT POR REVALUACIONES",
+      "padreCodigo": "31",
+      "activa": true
+    },
+    {
+      "codigo": "3201",
+      "nombre": "UTILIDADES DE EJERCICIOS ANTERIORES",
+      "padreCodigo": "32",
+      "activa": true
+    },
+    {
+      "codigo": "320101",
+      "nombre": "UTILIDADES DE EJERCICIOS ANTERIORES",
+      "padreCodigo": "3201",
+      "activa": true
+    },
+    {
+      "codigo": "32010101",
+      "nombre": "Utilidad año anterior",
+      "padreCodigo": "320101",
+      "activa": true
+    },
+    {
+      "codigo": "3202",
+      "nombre": "UTILIDAD DEL PRESENTE EJERCICIO",
+      "padreCodigo": "32",
+      "activa": true
+    },
+    {
+      "codigo": "320201",
+      "nombre": "UTILIDAD DEL PRESENTE EJERCICIO",
+      "padreCodigo": "3202",
+      "activa": true
+    },
+    {
+      "codigo": "32020101",
+      "nombre": "Utilidad del presente ejercicio",
+      "padreCodigo": "320201",
+      "activa": true
+    },
+    {
+      "codigo": "3203",
+      "nombre": "DÉFICIT DE EJERCICIOS ANTERIORES",
+      "padreCodigo": "32",
+      "activa": true
+    },
+    {
+      "codigo": "320301",
+      "nombre": "DÉFICIT DE EJERCICIOS ANTERIORES",
+      "padreCodigo": "3203",
+      "activa": true
+    },
+    {
+      "codigo": "32030101",
+      "nombre": "Ejercicio pasado",
+      "padreCodigo": "320301",
+      "activa": true
+    },
+    {
+      "codigo": "32030102",
+      "nombre": "Ejercicio anterior",
+      "padreCodigo": "320301",
+      "activa": true
+    },
+    {
+      "codigo": "3204",
+      "nombre": "DÉFICIT DEL PRESENTE EJERCICIO",
+      "padreCodigo": "32",
+      "activa": true
+    },
+    {
+      "codigo": "320401",
+      "nombre": "Déficit del presente ejercicio",
+      "padreCodigo": "3204",
+      "activa": true
+    },
+    {
+      "codigo": "32040101",
+      "nombre": "Déficit del presente ejercicio",
+      "padreCodigo": "320401",
+      "activa": true
+    },
+    {
+      "codigo": "4101",
+      "nombre": "COSTO DE VENTAS",
+      "padreCodigo": "41",
+      "activa": true
+    },
+    {
+      "codigo": "410101",
+      "nombre": "COSTO DE VENTA MERCADERÍA ADQUIRIDA PARA LA VENTA SUCURSAL 01",
+      "padreCodigo": "4101",
+      "activa": true
+    },
+    {
+      "codigo": "41010101",
+      "nombre": "Compra de mercadería adquirida para linea de venta 01",
+      "padreCodigo": "410101",
+      "activa": true
+    },
+    {
+      "codigo": "41010102",
+      "nombre": "Compra de mercadería adquirida para linea de venta 02",
+      "padreCodigo": "410101",
+      "activa": true
+    },
+    {
+      "codigo": "41010103",
+      "nombre": "Compra de mercadería adquirida para linea de venta 03",
+      "padreCodigo": "410101",
+      "activa": true
+    },
+    {
+      "codigo": "410102",
+      "nombre": "COSTO DE VENTA MERCADERÍA ADQUIRIDA PARA LA VENTA SUCURSAL 02",
+      "padreCodigo": "4101",
+      "activa": true
+    },
+    {
+      "codigo": "41010201",
+      "nombre": "Compra de mercadería adquirida para linea de venta 01",
+      "padreCodigo": "410102",
+      "activa": true
+    },
+    {
+      "codigo": "41010202",
+      "nombre": "Compra de mercadería adquirida para linea de venta 02",
+      "padreCodigo": "410102",
+      "activa": true
+    },
+    {
+      "codigo": "41010203",
+      "nombre": "Compra de mercadería adquirida para linea de venta 03",
+      "padreCodigo": "410102",
+      "activa": true
+    },
+    {
+      "codigo": "410103",
+      "nombre": "COSTO DE VENTA MERCADERÍA ADQUIRIDA PARA LA VENTA SUCURSAL 03",
+      "padreCodigo": "4101",
+      "activa": true
+    },
+    {
+      "codigo": "41010301",
+      "nombre": "Compra de mercadería adquirida para linea de venta 01",
+      "padreCodigo": "410103",
+      "activa": true
+    },
+    {
+      "codigo": "41010302",
+      "nombre": "Compra de mercadería adquirida para linea de venta 02",
+      "padreCodigo": "410103",
+      "activa": true
+    },
+    {
+      "codigo": "41010303",
+      "nombre": "Compra de mercadería adquirida para linea de venta 03",
+      "padreCodigo": "410103",
+      "activa": true
+    },
+    {
+      "codigo": "4102",
+      "nombre": "GASTOS ADMINISTRATIVOS",
+      "padreCodigo": "41",
+      "activa": true
+    },
+    {
+      "codigo": "410201",
+      "nombre": "GASTOS DE PERSONAL",
+      "padreCodigo": "4102",
+      "activa": true
+    },
+    {
+      "codigo": "41020101",
+      "nombre": "Salarios",
+      "padreCodigo": "410201",
+      "activa": true
+    },
+    {
+      "codigo": "41020102",
+      "nombre": "Vacaciones",
+      "padreCodigo": "410201",
+      "activa": true
+    },
+    {
+      "codigo": "41020103",
+      "nombre": "Aguinaldos",
+      "padreCodigo": "410201",
+      "activa": true
+    },
+    {
+      "codigo": "41020104",
+      "nombre": "Bonificaciones y gratificaciones",
+      "padreCodigo": "410201",
+      "activa": true
+    },
+    {
+      "codigo": "41020105",
+      "nombre": "Horas extras",
+      "padreCodigo": "410201",
+      "activa": true
+    },
+    {
+      "codigo": "41020106",
+      "nombre": "Indemnizaciones",
+      "padreCodigo": "410201",
+      "activa": true
+    },
+    {
+      "codigo": "41020107",
+      "nombre": "Viáticos",
+      "padreCodigo": "410201",
+      "activa": true
+    },
+    {
+      "codigo": "41020108",
+      "nombre": "Cuota patronal seguridad social ISSS",
+      "padreCodigo": "410201",
+      "activa": true
+    },
+    {
+      "codigo": "41020109",
+      "nombre": "Cuota patronal fondo de pensiones AFP",
+      "padreCodigo": "410201",
+      "activa": true
+    },
+    {
+      "codigo": "41020110",
+      "nombre": "INSAFORP",
+      "padreCodigo": "410201",
+      "activa": true
+    },
+    {
+      "codigo": "41020111",
+      "nombre": "Comisiones, premios e incentivos",
+      "padreCodigo": "410201",
+      "activa": true
+    },
+    {
+      "codigo": "41020112",
+      "nombre": "Gastos por equipos de proteccion contra COVID",
+      "padreCodigo": "410201",
+      "activa": true
+    },
+    {
+      "codigo": "41020113",
+      "nombre": "Otros gastos del personal",
+      "padreCodigo": "410201",
+      "activa": true
+    },
+    {
+      "codigo": "410202",
+      "nombre": "GASTOS DE MANTENIMIENTO",
+      "padreCodigo": "4102",
+      "activa": true
+    },
+    {
+      "codigo": "41020201",
+      "nombre": "Mantenimiento de edificaciones e instalaciones propias",
+      "padreCodigo": "410202",
+      "activa": true
+    },
+    {
+      "codigo": "41020202",
+      "nombre": "Mantenimiento de Mobiliario Equipo De Oficina",
+      "padreCodigo": "410202",
+      "activa": true
+    },
+    {
+      "codigo": "41020203",
+      "nombre": "Mantenimiento y Reparación De Vehículos",
+      "padreCodigo": "410202",
+      "activa": true
+    },
+    {
+      "codigo": "41020204",
+      "nombre": "Otros gastos por mantenimiento",
+      "padreCodigo": "410202",
+      "activa": true
+    },
+    {
+      "codigo": "410203",
+      "nombre": "GASTOS POR SERVICIOS PÚBLICOS Y PRIVADOS",
+      "padreCodigo": "4102",
+      "activa": true
+    },
+    {
+      "codigo": "41020301",
+      "nombre": "Servicio de agua",
+      "padreCodigo": "410203",
+      "activa": true
+    },
+    {
+      "codigo": "41020302",
+      "nombre": "Servicio de energía eléctrica",
+      "padreCodigo": "410203",
+      "activa": true
+    },
+    {
+      "codigo": "41020303",
+      "nombre": "Servicio de Teléfono",
+      "padreCodigo": "410203",
+      "activa": true
+    },
+    {
+      "codigo": "41020304",
+      "nombre": "Servicio de internet/cable",
+      "padreCodigo": "410203",
+      "activa": true
+    },
+    {
+      "codigo": "41020305",
+      "nombre": "Servicio de vigilancia",
+      "padreCodigo": "410203",
+      "activa": true
+    },
+    {
+      "codigo": "41020306",
+      "nombre": "Publicidad y promoción",
+      "padreCodigo": "410203",
+      "activa": true
+    },
+    {
+      "codigo": "41020307",
+      "nombre": "Impresiones y Encuadernaciones",
+      "padreCodigo": "410203",
+      "activa": true
+    },
+    {
+      "codigo": "41020308",
+      "nombre": "Suscripciones periódicos y Revistas",
+      "padreCodigo": "410203",
+      "activa": true
+    },
+    {
+      "codigo": "41020309",
+      "nombre": "Servicios de limpieza y Ornamentación",
+      "padreCodigo": "410203",
+      "activa": true
+    },
+    {
+      "codigo": "41020310",
+      "nombre": "Otros servicios",
+      "padreCodigo": "410203",
+      "activa": true
+    },
+    {
+      "codigo": "410204",
+      "nombre": "HONORARIOS PROFESIONALES",
+      "padreCodigo": "4102",
+      "activa": true
+    },
+    {
+      "codigo": "41020401",
+      "nombre": "Honorarios legales",
+      "padreCodigo": "410204",
+      "activa": true
+    },
+    {
+      "codigo": "41020402",
+      "nombre": "Honorarios contables",
+      "padreCodigo": "410204",
+      "activa": true
+    },
+    {
+      "codigo": "41020403",
+      "nombre": "Honorarios de auditoria",
+      "padreCodigo": "410204",
+      "activa": true
+    },
+    {
+      "codigo": "41020404",
+      "nombre": "Honorarios por servicios administrativos",
+      "padreCodigo": "410204",
+      "activa": true
+    },
+    {
+      "codigo": "41020405",
+      "nombre": "Otros honorarios",
+      "padreCodigo": "410204",
+      "activa": true
+    },
+    {
+      "codigo": "410205",
+      "nombre": "GASTOS POR DEPRECIACIÓN",
+      "padreCodigo": "4102",
+      "activa": true
+    },
+    {
+      "codigo": "41020501",
+      "nombre": "Depreciación de edificaciones",
+      "padreCodigo": "410205",
+      "activa": true
+    },
+    {
+      "codigo": "41020502",
+      "nombre": "Depreciación a instalaciones",
+      "padreCodigo": "410205",
+      "activa": true
+    },
+    {
+      "codigo": "41020503",
+      "nombre": "Depreciación de mejoras a propiedades arrendadas",
+      "padreCodigo": "410205",
+      "activa": true
+    },
+    {
+      "codigo": "41020504",
+      "nombre": "Depreciación de Maquinaria y Equipo Industrial",
+      "padreCodigo": "410205",
+      "activa": true
+    },
+    {
+      "codigo": "41020505",
+      "nombre": "Depreciación de Mobiliario y Equipo de Oficina",
+      "padreCodigo": "410205",
+      "activa": true
+    },
+    {
+      "codigo": "41020506",
+      "nombre": "Depreciación de Herramientas y Equipo Pequeño",
+      "padreCodigo": "410205",
+      "activa": true
+    },
+    {
+      "codigo": "41020507",
+      "nombre": "Depreciación de Equipo de transporte",
+      "padreCodigo": "410205",
+      "activa": true
+    },
+    {
+      "codigo": "41020508",
+      "nombre": "Depreciación de edificaciones bajo arrendamiento financiero",
+      "padreCodigo": "410205",
+      "activa": true
+    },
+    {
+      "codigo": "41020509",
+      "nombre": "Depreciación de Maquinaria y Equipo Industrial bajo a arrendamiento financiero",
+      "padreCodigo": "410205",
+      "activa": true
+    },
+    {
+      "codigo": "41020510",
+      "nombre": "Depreciación de Mobiliario y Equipo de Oficina bajo a arrendamiento financiero",
+      "padreCodigo": "410205",
+      "activa": true
+    },
+    {
+      "codigo": "41020511",
+      "nombre": "Depreciación de Equipo de transporte bajo a arrendamiento financiero",
+      "padreCodigo": "410205",
+      "activa": true
+    },
+    {
+      "codigo": "410206",
+      "nombre": "GASTOS POR AMORTIZACIÓN",
+      "padreCodigo": "4102",
+      "activa": true
+    },
+    {
+      "codigo": "41020601",
+      "nombre": "Amortización de activos intangibles",
+      "padreCodigo": "410206",
+      "activa": true
+    },
+    {
+      "codigo": "41020602",
+      "nombre": "Amortización Licencias de software",
+      "padreCodigo": "410206",
+      "activa": true
+    },
+    {
+      "codigo": "410207",
+      "nombre": "GASTOS POR SEGUROS",
+      "padreCodigo": "4102",
+      "activa": true
+    },
+    {
+      "codigo": "41020701",
+      "nombre": "Seguro de vida y medico",
+      "padreCodigo": "410207",
+      "activa": true
+    },
+    {
+      "codigo": "41020702",
+      "nombre": "Seguro de activos",
+      "padreCodigo": "410207",
+      "activa": true
+    },
+    {
+      "codigo": "410208",
+      "nombre": "GASTOS POR IMPUESTOS, TASAS MUNICIPALES Y OTRAS CONTRIBUCIONES",
+      "padreCodigo": "4102",
+      "activa": true
+    },
+    {
+      "codigo": "41020801",
+      "nombre": "Impuestos y tasas municipales",
+      "padreCodigo": "410208",
+      "activa": true
+    },
+    {
+      "codigo": "41020802",
+      "nombre": "Derechos y aranceles de registros de comercio",
+      "padreCodigo": "410208",
+      "activa": true
+    },
+    {
+      "codigo": "41020803",
+      "nombre": "Impuestos y derechos de aduanas",
+      "padreCodigo": "410208",
+      "activa": true
+    },
+    {
+      "codigo": "41020804",
+      "nombre": "Otras contribuciones públicas",
+      "padreCodigo": "410208",
+      "activa": true
+    },
+    {
+      "codigo": "410209",
+      "nombre": "GASTOS A CLIENTES Y EMPLEADOS",
+      "padreCodigo": "4102",
+      "activa": true
+    },
+    {
+      "codigo": "41020901",
+      "nombre": "Atención a visitas y funcionarios",
+      "padreCodigo": "410209",
+      "activa": true
+    },
+    {
+      "codigo": "41020902",
+      "nombre": "Atención a empleados",
+      "padreCodigo": "410209",
+      "activa": true
+    },
+    {
+      "codigo": "41020903",
+      "nombre": "Atención a Clientes",
+      "padreCodigo": "410209",
+      "activa": true
+    },
+    {
+      "codigo": "41020904",
+      "nombre": "Cursos de capacitación a empleados",
+      "padreCodigo": "410209",
+      "activa": true
+    },
+    {
+      "codigo": "41020905",
+      "nombre": "Otras atenciones a clientes y empleados",
+      "padreCodigo": "410209",
+      "activa": true
+    },
+    {
+      "codigo": "41020906",
+      "nombre": "Promoción y difusion de medidas sanitaria por COVID",
+      "padreCodigo": "410209",
+      "activa": true
+    },
+    {
+      "codigo": "410210",
+      "nombre": "GASTOS DE VIÁTICOS, VIAJES Y DE REPRESENTACIÓN",
+      "padreCodigo": "4102",
+      "activa": true
+    },
+    {
+      "codigo": "41021001",
+      "nombre": "Gastos de transportes",
+      "padreCodigo": "410210",
+      "activa": true
+    },
+    {
+      "codigo": "41021002",
+      "nombre": "Gastos de Viajes",
+      "padreCodigo": "410210",
+      "activa": true
+    },
+    {
+      "codigo": "41021003",
+      "nombre": "Gastos de Alimentación",
+      "padreCodigo": "410210",
+      "activa": true
+    },
+    {
+      "codigo": "41021004",
+      "nombre": "Gastos de representación",
+      "padreCodigo": "410210",
+      "activa": true
+    },
+    {
+      "codigo": "41021005",
+      "nombre": "Gasto de Hospedaje",
+      "padreCodigo": "410210",
+      "activa": true
+    },
+    {
+      "codigo": "41021006",
+      "nombre": "Gasto de boletos aéreos",
+      "padreCodigo": "410210",
+      "activa": true
+    },
+    {
+      "codigo": "41021007",
+      "nombre": "Combustibles y lubricantes",
+      "padreCodigo": "410210",
+      "activa": true
+    },
+    {
+      "codigo": "41021008",
+      "nombre": "FOVIAL",
+      "padreCodigo": "410210",
+      "activa": true
+    },
+    {
+      "codigo": "41021009",
+      "nombre": "Alquileres",
+      "padreCodigo": "410210",
+      "activa": true
+    },
+    {
+      "codigo": "41021010",
+      "nombre": "Papelería y útiles",
+      "padreCodigo": "410210",
+      "activa": true
+    },
+    {
+      "codigo": "41021011",
+      "nombre": "Donaciones",
+      "padreCodigo": "410210",
+      "activa": true
+    },
+    {
+      "codigo": "41021012",
+      "nombre": "Otros gastos varios administrativos",
+      "padreCodigo": "410210",
+      "activa": true
+    },
+    {
+      "codigo": "4103",
+      "nombre": "GASTOS DE VENTA",
+      "padreCodigo": "41",
+      "activa": true
+    },
+    {
+      "codigo": "410301",
+      "nombre": "GASTOS DE PERSONAL",
+      "padreCodigo": "4103",
+      "activa": true
+    },
+    {
+      "codigo": "41030101",
+      "nombre": "Salarios",
+      "padreCodigo": "410301",
+      "activa": true
+    },
+    {
+      "codigo": "41030102",
+      "nombre": "Vacaciones",
+      "padreCodigo": "410301",
+      "activa": true
+    },
+    {
+      "codigo": "41030103",
+      "nombre": "Aguinaldos",
+      "padreCodigo": "410301",
+      "activa": true
+    },
+    {
+      "codigo": "41030104",
+      "nombre": "Bonificaciones y gratificaciones",
+      "padreCodigo": "410301",
+      "activa": true
+    },
+    {
+      "codigo": "41030105",
+      "nombre": "Horas extras",
+      "padreCodigo": "410301",
+      "activa": true
+    },
+    {
+      "codigo": "41030106",
+      "nombre": "Indemnizaciones",
+      "padreCodigo": "410301",
+      "activa": true
+    },
+    {
+      "codigo": "41030107",
+      "nombre": "Viáticos",
+      "padreCodigo": "410301",
+      "activa": true
+    },
+    {
+      "codigo": "41030108",
+      "nombre": "Cuota patronal seguridad social ISSS",
+      "padreCodigo": "410301",
+      "activa": true
+    },
+    {
+      "codigo": "41030109",
+      "nombre": "Cuota patronal fondo de pensiones AFP",
+      "padreCodigo": "410301",
+      "activa": true
+    },
+    {
+      "codigo": "41030110",
+      "nombre": "INSAFORP",
+      "padreCodigo": "410301",
+      "activa": true
+    },
+    {
+      "codigo": "41030111",
+      "nombre": "Comisiones, premios e incentivos",
+      "padreCodigo": "410301",
+      "activa": true
+    },
+    {
+      "codigo": "41030112",
+      "nombre": "Gastos por equipos de proteccion contra COVID",
+      "padreCodigo": "410301",
+      "activa": true
+    },
+    {
+      "codigo": "41030113",
+      "nombre": "Otros gastos del personal",
+      "padreCodigo": "410301",
+      "activa": true
+    },
+    {
+      "codigo": "410302",
+      "nombre": "GASTOS DE MANTENIMIENTO",
+      "padreCodigo": "4103",
+      "activa": true
+    },
+    {
+      "codigo": "41030201",
+      "nombre": "Mantenimiento de edificaciones e instalaciones propias",
+      "padreCodigo": "410302",
+      "activa": true
+    },
+    {
+      "codigo": "41030202",
+      "nombre": "Mantenimiento de Mobiliario Equipo De Oficina",
+      "padreCodigo": "410302",
+      "activa": true
+    },
+    {
+      "codigo": "41030203",
+      "nombre": "Mantenimiento y Reparación De Vehículos",
+      "padreCodigo": "410302",
+      "activa": true
+    },
+    {
+      "codigo": "41030204",
+      "nombre": "Otros gastos por mantenimiento",
+      "padreCodigo": "410302",
+      "activa": true
+    },
+    {
+      "codigo": "410303",
+      "nombre": "GASTOS POR SERVICIOS PÚBLICOS Y PRIVADOS",
+      "padreCodigo": "4103",
+      "activa": true
+    },
+    {
+      "codigo": "41030301",
+      "nombre": "Servicio de agua",
+      "padreCodigo": "410303",
+      "activa": true
+    },
+    {
+      "codigo": "41030302",
+      "nombre": "Servicio de energía eléctrica",
+      "padreCodigo": "410303",
+      "activa": true
+    },
+    {
+      "codigo": "41030303",
+      "nombre": "Servicio de Teléfono",
+      "padreCodigo": "410303",
+      "activa": true
+    },
+    {
+      "codigo": "41030304",
+      "nombre": "Servicio de internet/cable",
+      "padreCodigo": "410303",
+      "activa": true
+    },
+    {
+      "codigo": "41030305",
+      "nombre": "Servicio de vigilancia",
+      "padreCodigo": "410303",
+      "activa": true
+    },
+    {
+      "codigo": "41030306",
+      "nombre": "Publicidad y promoción",
+      "padreCodigo": "410303",
+      "activa": true
+    },
+    {
+      "codigo": "41030307",
+      "nombre": "Impresiones y Encuadernaciones",
+      "padreCodigo": "410303",
+      "activa": true
+    },
+    {
+      "codigo": "41030308",
+      "nombre": "Suscripciones periódicos y Revistas",
+      "padreCodigo": "410303",
+      "activa": true
+    },
+    {
+      "codigo": "41030309",
+      "nombre": "Servicios de limpieza y Ornamentación",
+      "padreCodigo": "410303",
+      "activa": true
+    },
+    {
+      "codigo": "410304",
+      "nombre": "HONORARIOS PROFESIONALES",
+      "padreCodigo": "4103",
+      "activa": true
+    },
+    {
+      "codigo": "41030401",
+      "nombre": "Honorarios legales",
+      "padreCodigo": "410304",
+      "activa": true
+    },
+    {
+      "codigo": "41030402",
+      "nombre": "Honorarios contables",
+      "padreCodigo": "410304",
+      "activa": true
+    },
+    {
+      "codigo": "41030403",
+      "nombre": "Honorarios de auditoria",
+      "padreCodigo": "410304",
+      "activa": true
+    },
+    {
+      "codigo": "41030404",
+      "nombre": "Honorarios por servicios administrativos",
+      "padreCodigo": "410304",
+      "activa": true
+    },
+    {
+      "codigo": "410305",
+      "nombre": "GASTOS POR DEPRECIACIÓN",
+      "padreCodigo": "4103",
+      "activa": true
+    },
+    {
+      "codigo": "41030501",
+      "nombre": "Depreciación de edificaciones",
+      "padreCodigo": "410305",
+      "activa": true
+    },
+    {
+      "codigo": "41030502",
+      "nombre": "Depreciación a instalaciones",
+      "padreCodigo": "410305",
+      "activa": true
+    },
+    {
+      "codigo": "41030503",
+      "nombre": "Depreciación de mejoras a propiedades arrendadas",
+      "padreCodigo": "410305",
+      "activa": true
+    },
+    {
+      "codigo": "41030504",
+      "nombre": "Depreciación de Maquinaria y Equipo Industrial",
+      "padreCodigo": "410305",
+      "activa": true
+    },
+    {
+      "codigo": "41030505",
+      "nombre": "Depreciación de Mobiliario y Equipo de Oficina",
+      "padreCodigo": "410305",
+      "activa": true
+    },
+    {
+      "codigo": "41030506",
+      "nombre": "Depreciación de Herramientas y Equipo Pequeño",
+      "padreCodigo": "410305",
+      "activa": true
+    },
+    {
+      "codigo": "41030507",
+      "nombre": "Depreciación de Equipo de transporte",
+      "padreCodigo": "410305",
+      "activa": true
+    },
+    {
+      "codigo": "41030508",
+      "nombre": "Depreciación de edificaciones bajo a arrendamiento financiero",
+      "padreCodigo": "410305",
+      "activa": true
+    },
+    {
+      "codigo": "41030509",
+      "nombre": "Depreciación de Maquinaria y Equipo Industrial bajo arrendamiento financiero",
+      "padreCodigo": "410305",
+      "activa": true
+    },
+    {
+      "codigo": "41030510",
+      "nombre": "Depreciación de Mobiliario y Equipo de Oficina bajo arrendamiento financiero",
+      "padreCodigo": "410305",
+      "activa": true
+    },
+    {
+      "codigo": "41030511",
+      "nombre": "Depreciación de Equipo de transporte bajo arrendamiento financiero",
+      "padreCodigo": "410305",
+      "activa": true
+    },
+    {
+      "codigo": "410306",
+      "nombre": "GASTOS POR AMORTIZACIÓN",
+      "padreCodigo": "4103",
+      "activa": true
+    },
+    {
+      "codigo": "41030601",
+      "nombre": "Amortización de activos intangibles",
+      "padreCodigo": "410306",
+      "activa": true
+    },
+    {
+      "codigo": "41030602",
+      "nombre": "Amortización Licencias de software",
+      "padreCodigo": "410306",
+      "activa": true
+    },
+    {
+      "codigo": "410307",
+      "nombre": "GASTOS POR SEGUROS",
+      "padreCodigo": "4103",
+      "activa": true
+    },
+    {
+      "codigo": "41030701",
+      "nombre": "Seguro de vida y medico",
+      "padreCodigo": "410307",
+      "activa": true
+    },
+    {
+      "codigo": "41030702",
+      "nombre": "Seguro de activos",
+      "padreCodigo": "410307",
+      "activa": true
+    },
+    {
+      "codigo": "410308",
+      "nombre": "GASTOS POR IMPUESTOS, TASAS MUNICIPALES Y OTRAS CONTRIBUCIONES",
+      "padreCodigo": "4103",
+      "activa": true
+    },
+    {
+      "codigo": "41030801",
+      "nombre": "Impuestos y tasas municipales",
+      "padreCodigo": "410308",
+      "activa": true
+    },
+    {
+      "codigo": "41030802",
+      "nombre": "Derechos y aranceles de registros de comercio",
+      "padreCodigo": "410308",
+      "activa": true
+    },
+    {
+      "codigo": "41030803",
+      "nombre": "Impuestos y derechos de aduanas",
+      "padreCodigo": "410308",
+      "activa": true
+    },
+    {
+      "codigo": "41030804",
+      "nombre": "Otras contribuciones públicas",
+      "padreCodigo": "410308",
+      "activa": true
+    },
+    {
+      "codigo": "41030805",
+      "nombre": "Gastos a clientes y empleados",
+      "padreCodigo": "410308",
+      "activa": true
+    },
+    {
+      "codigo": "41030806",
+      "nombre": "Atención a visitas y funcionarios",
+      "padreCodigo": "410308",
+      "activa": true
+    },
+    {
+      "codigo": "410309",
+      "nombre": "ATENCIÓN A EMPLEADOS",
+      "padreCodigo": "4103",
+      "activa": true
+    },
+    {
+      "codigo": "41030901",
+      "nombre": "Atención a empleados repatriados",
+      "padreCodigo": "410309",
+      "activa": true
+    },
+    {
+      "codigo": "41030902",
+      "nombre": "Atención a Clientes",
+      "padreCodigo": "410309",
+      "activa": true
+    },
+    {
+      "codigo": "41030903",
+      "nombre": "Cursos de capacitación a empleados",
+      "padreCodigo": "410309",
+      "activa": true
+    },
+    {
+      "codigo": "41030904",
+      "nombre": "Otras atenciones a clientes y empleados",
+      "padreCodigo": "410309",
+      "activa": true
+    },
+    {
+      "codigo": "41030905",
+      "nombre": "Promoción y difusión de medidas sanitaria por COVID",
+      "padreCodigo": "410309",
+      "activa": true
+    },
+    {
+      "codigo": "410310",
+      "nombre": "GASTOS DE VIÁTICOS, VIAJES Y DE REPRESENTACIÓN",
+      "padreCodigo": "4103",
+      "activa": true
+    },
+    {
+      "codigo": "41031001",
+      "nombre": "Gastos de transportes",
+      "padreCodigo": "410310",
+      "activa": true
+    },
+    {
+      "codigo": "41031002",
+      "nombre": "Gastos de Viajes",
+      "padreCodigo": "410310",
+      "activa": true
+    },
+    {
+      "codigo": "41031003",
+      "nombre": "Gastos de Alimentación",
+      "padreCodigo": "410310",
+      "activa": true
+    },
+    {
+      "codigo": "41031004",
+      "nombre": "Gastos de representación",
+      "padreCodigo": "410310",
+      "activa": true
+    },
+    {
+      "codigo": "41031005",
+      "nombre": "Gasto de Hospedaje",
+      "padreCodigo": "410310",
+      "activa": true
+    },
+    {
+      "codigo": "41031006",
+      "nombre": "Gasto de boletos aéreos",
+      "padreCodigo": "410310",
+      "activa": true
+    },
+    {
+      "codigo": "41031007",
+      "nombre": "Combustibles y lubricantes",
+      "padreCodigo": "410310",
+      "activa": true
+    },
+    {
+      "codigo": "41031008",
+      "nombre": "FOVIAL",
+      "padreCodigo": "410310",
+      "activa": true
+    },
+    {
+      "codigo": "41031009",
+      "nombre": "Alquileres",
+      "padreCodigo": "410310",
+      "activa": true
+    },
+    {
+      "codigo": "41031010",
+      "nombre": "Papelería y útiles",
+      "padreCodigo": "410310",
+      "activa": true
+    },
+    {
+      "codigo": "41031011",
+      "nombre": "Donaciones",
+      "padreCodigo": "410310",
+      "activa": true
+    },
+    {
+      "codigo": "41031012",
+      "nombre": "Otros gastos varios administrativos",
+      "padreCodigo": "410310",
+      "activa": true
+    },
+    {
+      "codigo": "4201",
+      "nombre": "GASTOS FINANCIEROS",
+      "padreCodigo": "42",
+      "activa": true
+    },
+    {
+      "codigo": "420101",
+      "nombre": "Intereses sobre préstamos",
+      "padreCodigo": "4201",
+      "activa": true
+    },
+    {
+      "codigo": "420102",
+      "nombre": "Comisiones",
+      "padreCodigo": "4201",
+      "activa": true
+    },
+    {
+      "codigo": "420103",
+      "nombre": "Seguros",
+      "padreCodigo": "4201",
+      "activa": true
+    },
+    {
+      "codigo": "420104",
+      "nombre": "Impuesto a las Operaciones Financieras",
+      "padreCodigo": "4201",
+      "activa": true
+    },
+    {
+      "codigo": "4202",
+      "nombre": "PÉRDIDA EN VENTA O RETIRO DE ACTIVOS FIJOS",
+      "padreCodigo": "42",
+      "activa": true
+    },
+    {
+      "codigo": "420201",
+      "nombre": "Pérdida en venta o retiro de activos fijos",
+      "padreCodigo": "4202",
+      "activa": true
+    },
+    {
+      "codigo": "4203",
+      "nombre": "GASTOS POR DETERIORO EN EL VALOR DE ACTIVOS",
+      "padreCodigo": "42",
+      "activa": true
+    },
+    {
+      "codigo": "420301",
+      "nombre": "Gastos por deterioro en el valor de activos",
+      "padreCodigo": "4203",
+      "activa": true
+    },
+    {
+      "codigo": "4204",
+      "nombre": "PÉRDIDAS POR SINIESTROS",
+      "padreCodigo": "42",
+      "activa": true
+    },
+    {
+      "codigo": "420401",
+      "nombre": "Pérdidas por siniestros",
+      "padreCodigo": "4204",
+      "activa": true
+    },
+    {
+      "codigo": "4205",
+      "nombre": "GASTOS DE EJERCICIOS ANTERIORES",
+      "padreCodigo": "42",
+      "activa": true
+    },
+    {
+      "codigo": "420501",
+      "nombre": "Gastos de ejercicios anteriores",
+      "padreCodigo": "4205",
+      "activa": true
+    },
+    {
+      "codigo": "4206",
+      "nombre": "OTROS GASTOS",
+      "padreCodigo": "42",
+      "activa": true
+    },
+    {
+      "codigo": "420601",
+      "nombre": "Otros Gastos no Clasificados",
+      "padreCodigo": "4206",
+      "activa": true
+    },
+    {
+      "codigo": "5101",
+      "nombre": "INGRESOS OPERACIONALES",
+      "padreCodigo": "51",
+      "activa": true
+    },
+    {
+      "codigo": "510101",
+      "nombre": "VENTAS LOCALES SALA DE VENTAS 01",
+      "padreCodigo": "5101",
+      "activa": true
+    },
+    {
+      "codigo": "51010101",
+      "nombre": "Ventas a contribuyentes",
+      "padreCodigo": "510101",
+      "activa": true
+    },
+    {
+      "codigo": "51010102",
+      "nombre": "Ventas a consumidor final",
+      "padreCodigo": "510101",
+      "activa": true
+    },
+    {
+      "codigo": "51010103",
+      "nombre": "Ventas de exportación",
+      "padreCodigo": "510101",
+      "activa": true
+    },
+    {
+      "codigo": "510102",
+      "nombre": "VENTAS LOCALES SALA DE VENTAS 02",
+      "padreCodigo": "5101",
+      "activa": true
+    },
+    {
+      "codigo": "51010201",
+      "nombre": "Ventas a contribuyentes",
+      "padreCodigo": "510102",
+      "activa": true
+    },
+    {
+      "codigo": "51010202",
+      "nombre": "Ventas a consumidor final",
+      "padreCodigo": "510102",
+      "activa": true
+    },
+    {
+      "codigo": "51010203",
+      "nombre": "Ventas de exportación",
+      "padreCodigo": "510102",
+      "activa": true
+    },
+    {
+      "codigo": "510103",
+      "nombre": "VENTAS LOCALES SALA DE VENTAS 03",
+      "padreCodigo": "5101",
+      "activa": true
+    },
+    {
+      "codigo": "51010301",
+      "nombre": "Ventas a contribuyentes",
+      "padreCodigo": "510103",
+      "activa": true
+    },
+    {
+      "codigo": "51010302",
+      "nombre": "Ventas a consumidor final",
+      "padreCodigo": "510103",
+      "activa": true
+    },
+    {
+      "codigo": "51010303",
+      "nombre": "Ventas de exportación",
+      "padreCodigo": "510103",
+      "activa": true
+    },
+    {
+      "codigo": "510104",
+      "nombre": "REBAJAS Y DEVOLUCIONES SOBRE VENTAS",
+      "padreCodigo": "5101",
+      "activa": true
+    },
+    {
+      "codigo": "51010401",
+      "nombre": "Rebajas sobre ventas",
+      "padreCodigo": "510104",
+      "activa": true
+    },
+    {
+      "codigo": "51010402",
+      "nombre": "Devoluciones sobre ventas",
+      "padreCodigo": "510104",
+      "activa": true
+    },
+    {
+      "codigo": "5201",
+      "nombre": "PRODUCTOS FINANCIEROS",
+      "padreCodigo": "52",
+      "activa": true
+    },
+    {
+      "codigo": "520101",
+      "nombre": "Intereses bancarios",
+      "padreCodigo": "5201",
+      "activa": true
+    },
+    {
+      "codigo": "520102",
+      "nombre": "Intereses sobre inversiones exentas de impuestos",
+      "padreCodigo": "5201",
+      "activa": true
+    },
+    {
+      "codigo": "520103",
+      "nombre": "Otros Intereses",
+      "padreCodigo": "5201",
+      "activa": true
+    },
+    {
+      "codigo": "5202",
+      "nombre": "GANANCIA EN VENTA DE ACTIVOS FIJOS",
+      "padreCodigo": "52",
+      "activa": true
+    },
+    {
+      "codigo": "520201",
+      "nombre": "Ganancia en venta de activos fijos",
+      "padreCodigo": "5202",
+      "activa": true
+    },
+    {
+      "codigo": "5203",
+      "nombre": "INDEMNIZACIONES POR SINIESTROS",
+      "padreCodigo": "52",
+      "activa": true
+    },
+    {
+      "codigo": "520301",
+      "nombre": "Indemnizaciones por siniestros",
+      "padreCodigo": "5203",
+      "activa": true
+    },
+    {
+      "codigo": "5204",
+      "nombre": "OTROS PRODUCTOS",
+      "padreCodigo": "52",
+      "activa": true
+    },
+    {
+      "codigo": "520401",
+      "nombre": "Diferencia en cambio de moneda extranjera",
+      "padreCodigo": "5204",
+      "activa": true
+    },
+    {
+      "codigo": "520402",
+      "nombre": "Comisiones",
+      "padreCodigo": "5204",
+      "activa": true
+    },
+    {
+      "codigo": "520403",
+      "nombre": "Otros productos",
+      "padreCodigo": "5204",
+      "activa": true
+    },
+    {
+      "codigo": "6101",
+      "nombre": "PÉRDIDAS Y GANANCIAS",
+      "padreCodigo": "61",
+      "activa": true
+    },
+    {
+      "codigo": "610101",
+      "nombre": "Pérdidas y ganancias",
+      "padreCodigo": "6101",
+      "activa": true
+    },
+    {
+      "codigo": "7101",
+      "nombre": "CUENTAS DE ORDEN POR DERECHOS CONTINGENTES",
+      "padreCodigo": "71",
+      "activa": true
+    },
+    {
+      "codigo": "710101",
+      "nombre": "Cuentas de orden por derechos contingentes",
+      "padreCodigo": "7101",
+      "activa": true
+    },
+    {
+      "codigo": "7102",
+      "nombre": "CUENTAS DE ORDEN POR RESPONSABILIDADES CONTINGENTES",
+      "padreCodigo": "71",
+      "activa": true
+    },
+    {
+      "codigo": "710201",
+      "nombre": "Cuentas de orden por responsabilidades contingentes",
+      "padreCodigo": "7102",
+      "activa": true
+    },
+    {
+      "codigo": "7201",
+      "nombre": "CUENTAS DE ORDEN POR DERECHOS CONTINGENTES – POR CONTRA",
+      "padreCodigo": "72",
+      "activa": true
+    },
+    {
+      "codigo": "720101",
+      "nombre": "Cuenta de orden por derechos contingentes",
+      "padreCodigo": "7201",
+      "activa": true
+    },
+    {
+      "codigo": "7202",
+      "nombre": "CUENTAS DE ORDEN POR RESPONSABILIDADES CONTINGENTES – POR EL CONTRARIO",
+      "padreCodigo": "72",
+      "activa": true
+    },
+    {
+      "codigo": "720201",
+      "nombre": "Cuentas de orden por responsabilidades contingentes",
+      "padreCodigo": "7202",
+      "activa": true
+    }
+  ]
+}

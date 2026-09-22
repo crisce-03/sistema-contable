@@ -1,0 +1,138 @@
+[
+  {
+    "id": "efectivo",
+    "codigo": "1101",
+    "nombre": "Efectivo y equivalentes de efectivo",
+    "grupo": "Activo",
+    "naturaleza": "Deudora",
+    "rubro": "activo_corriente"
+  },
+  {
+    "id": "cobrar",
+    "codigo": "1102",
+    "nombre": "Cuentas por cobrar",
+    "grupo": "Activo",
+    "naturaleza": "Deudora",
+    "rubro": "activo_corriente"
+  },
+  {
+    "id": "inventarios",
+    "codigo": "1105",
+    "nombre": "Inventarios",
+    "grupo": "Activo",
+    "naturaleza": "Deudora",
+    "rubro": "activo_corriente"
+  },
+  {
+    "id": "anticipados",
+    "codigo": "1107",
+    "nombre": "Gastos pagados por anticipado",
+    "grupo": "Activo",
+    "naturaleza": "Deudora",
+    "rubro": "activo_corriente"
+  },
+  {
+    "id": "iva_credito",
+    "codigo": "1109",
+    "nombre": "IVA - Crédito Fiscal",
+    "grupo": "Activo",
+    "naturaleza": "Deudora",
+    "rubro": "activo_corriente"
+  },
+  {
+    "id": "ppe",
+    "codigo": "1201",
+    "nombre": "Propiedad, Planta y Equipo",
+    "grupo": "Activo",
+    "naturaleza": "Deudora",
+    "rubro": "activo_no_corriente"
+  },
+  {
+    "id": "pagar",
+    "codigo": "2102",
+    "nombre": "Cuentas por pagar",
+    "grupo": "Pasivo",
+    "naturaleza": "Acreedora",
+    "rubro": "pasivo_corriente"
+  },
+  {
+    "id": "iva_debito",
+    "codigo": "2108",
+    "nombre": "IVA - Débito Fiscal",
+    "grupo": "Pasivo",
+    "naturaleza": "Acreedora",
+    "rubro": "pasivo_corriente"
+  },
+  {
+    "id": "prestamos",
+    "codigo": "2201",
+    "nombre": "Préstamos a largo plazo",
+    "grupo": "Pasivo",
+    "naturaleza": "Acreedora",
+    "rubro": "pasivo_no_corriente"
+  },
+  {
+    "id": "capital",
+    "codigo": "3101",
+    "nombre": "Capital Social",
+    "grupo": "Patrimonio",
+    "naturaleza": "Acreedora",
+    "rubro": "patrimonio"
+  },
+  {
+    "id": "administrativos",
+    "codigo": "4102",
+    "nombre": "Gastos administrativos",
+    "grupo": "Gastos",
+    "naturaleza": "Deudora",
+    "rubro": "gastos_administrativos"
+  },
+  {
+    "id": "gastos_venta",
+    "codigo": "4103",
+    "nombre": "Gastos de Venta",
+    "grupo": "Gastos",
+    "naturaleza": "Deudora",
+    "rubro": "gastos_venta"
+  },
+  {
+    "id": "compras",
+    "codigo": "4104",
+    "nombre": "Compras",
+    "grupo": "Costos",
+    "naturaleza": "Deudora",
+    "rubro": "compras_periodicas"
+  },
+  {
+    "id": "devol_compras",
+    "codigo": "4105",
+    "nombre": "Devolución sobre Compra",
+    "grupo": "Costos",
+    "naturaleza": "Acreedora",
+    "rubro": "devoluciones_compras"
+  },
+  {
+    "id": "financieros",
+    "codigo": "4201",
+    "nombre": "Gastos Financieros",
+    "grupo": "Gastos",
+    "naturaleza": "Deudora",
+    "rubro": "gastos_financieros"
+  },
+  {
+    "id": "ventas",
+    "codigo": "5101",
+    "nombre": "Ventas",
+    "grupo": "Ingresos",
+    "naturaleza": "Acreedora",
+    "rubro": "ventas"
+  },
+  {
+    "id": "devol_ventas",
+    "codigo": "51010402",
+    "nombre": "Devolución sobre Venta",
+    "grupo": "Ingresos",
+    "naturaleza": "Deudora",
+    "rubro": "devoluciones_ventas"
+  }
+]

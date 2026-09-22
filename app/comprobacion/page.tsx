@@ -1,12 +1,12 @@
 "use client";
 import { useState } from "react";
 import { useAccountingStore } from "@/lib/store/accountingStore";
-import { ledger, trial, cents, money } from "@/lib/accounting/core";
+import { majorLedger, trial, cents, money } from "@/lib/accounting/core";
 export default function Comprobacion() {
   const { cuentas, asientos } = useAccountingStore();
   const [hasta, setHasta] = useState("");
   const rows = trial(
-    ledger(
+    majorLedger(
       cuentas,
       asientos.filter((a) => !hasta || a.fecha <= hasta),
     ),

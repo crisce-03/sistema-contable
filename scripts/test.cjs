@@ -24,6 +24,7 @@ fs.writeFileSync(
   }).outputText,
 );
 fs.copyFileSync("lib/accounting/families.json", ".test-build/families.json");
+fs.copyFileSync("lib/accounting/classifications.json", ".test-build/classifications.json");
 const r = cp.spawnSync(
   process.execPath,
   [

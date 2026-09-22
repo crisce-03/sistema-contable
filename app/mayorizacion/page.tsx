@@ -1,14 +1,12 @@
 "use client";
 import { useState } from "react";
 import { useAccountingStore } from "@/lib/store/accountingStore";
-import { familias, cents, money } from "@/lib/accounting/core";
+import { majorAccount, cents, money } from "@/lib/accounting/core";
 export default function Mayor() {
   const { cuentas, asientos } = useAccountingStore();
-  const [hasta, setHasta] = useState(""),
-    [group, setGroup] = useState(true);
-  const display = group
-    ? familias.map((f) => ({ id: f.id, codigo: f.codigo, nombre: f.nombre }))
-    : cuentas;
+  const [hasta, setHasta] = useState("");
+  const display = cuentas.filter((c) => c.codigo.length === 4)
+    .sort((a, b) => a.codigo.localeCompare(b.codigo));
   return (
     <div className="max-w-6xl mx-auto space-y-8 font-sans text-zinc-900 pb-12">
       <header className="border-b border-zinc-200 pb-4">
@@ -18,8 +16,8 @@ export default function Mayor() {
         </p>
       </header>
       <p className="text-sm text-zinc-600">
-        Cargos, abonos y saldo real. Cada asiento guardado se refleja
-        automáticamente.
+        Cuentas de mayor de 4 dígitos. Cada una acumula sus movimientos y los
+        de sus subcuentas de 6, 8 y 10 dígitos, sin duplicarlos.
       </p>
       <div className="flex gap-6 items-end">
         <label className="text-sm">
@@ -31,20 +29,12 @@ export default function Mayor() {
             onChange={(e) => setHasta(e.target.value)}
           />
         </label>
-        <label className="text-sm">
-          <input
-            type="checkbox"
-            checked={group}
-            onChange={(e) => setGroup(e.target.checked)}
-          />{" "}
-          Agrupar por cuenta principal
-        </label>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {display.map((c) => {
           const ids = new Set(
             cuentas
-              .filter((a) => (group ? a.familia === c.id : a.id === c.id))
+              .filter((a) => majorAccount(a, cuentas)?.id === c.id)
               .map((a) => a.id),
           );
           const movements = asientos

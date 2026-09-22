@@ -66,9 +66,11 @@ export type ModoInventario = "traslados_compras" | "inventarios_explicitos";
 export interface ConfiguracionLibro {
   modoIva: ModoIva;
   modoInventario: ModoInventario;
+  cuentaIvaCredito?: string;
+  cuentaIvaDebito?: string;
 }
 export interface LibroLocal {
-  versionLocal: 2;
+  versionLocal: 2 | 3;
   cuentas: Cuenta[];
   asientos: Asiento[];
   periodos: Periodo[];

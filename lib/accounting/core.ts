@@ -1,4 +1,5 @@
 import definitions from "./families.json";
+import classifications from "./classifications.json";
 import type {
   Cuenta,
   CuentaInput,
@@ -7,6 +8,37 @@ import type {
   ConfiguracionLibro,
 } from "../types";
 export const familias = definitions;
+const classificationPrefixes = [...classifications].sort(
+  (a, b) => b.codigo.length - a.codigo.length,
+);
+// Classification supports the existing journal assistants; it does not create
+// accounts or restrict the four-digit codes that a user can register.
+export function accountClassification(codigo: string) {
+  return (
+    classificationPrefixes.find((f) => codigo.startsWith(f.codigo)) ??
+    familias.find((f) => f.codigo === codigo.slice(0, 2))
+  );
+}
+export function baseAccounts(): Cuenta[] {
+  return familias.map((f) => ({
+    id: `base-${f.codigo}`,
+    codigo: f.codigo,
+    nombre: f.nombre,
+    familia: f.id,
+    tipo: f.grupo,
+    naturaleza: f.naturaleza as Cuenta["naturaleza"],
+    rubro: f.rubro,
+    padreCodigo: f.codigo.length === 1 ? null : f.codigo[0],
+    activa: true,
+    movimiento: false,
+    debe: 0,
+    haber: 0,
+    saldo: 0,
+  }));
+}
+export function parentCode(codigo: string) {
+  return codigo.slice(0, codigo.length - 2);
+}
 export function cents(value: unknown): number {
   if (typeof value !== "string" && typeof value !== "number")
     throw new Error("El importe debe ser texto decimal o número.");
@@ -62,18 +94,27 @@ export function parseCatalog(
     const r = obj(raw);
     keys(r, ["codigo", "nombre", "familia", "padreCodigo", "activa"]);
     const codigo = str(r.codigo, "Código", 14);
-    if (!/^\d{4,14}$/.test(codigo) || seen.has(codigo))
-      throw new Error(`Código inválido o repetido: ${codigo}`);
+    if (!/^(\d{4}|\d{6}|\d{8}|\d{10})$/.test(codigo) || seen.has(codigo))
+      throw new Error(
+        `Código inválido o repetido: ${codigo}. Use 4, 6, 8 o 10 dígitos; los niveles de 1 y 2 son predefinidos.`,
+      );
     seen.add(codigo);
-    const f = familias.find((f) => f.id === r.familia);
-    if (!f || !codigo.startsWith(f.codigo))
+    const f = accountClassification(codigo);
+    if (
+      !f ||
+      (r.familia !== undefined && r.familia !== f.id && r.familia !== codigo.slice(0, 2))
+    )
       throw new Error(`Familia o prefijo incompatible: ${codigo}`);
     if (typeof r.activa !== "boolean")
       throw new Error("activa debe ser true o false.");
     const padreCodigo =
-      r.padreCodigo === null ? null : str(r.padreCodigo, "Código padre", 14);
-    if (padreCodigo === null && codigo !== f.codigo)
-      throw new Error("Una subcuenta debe indicar padreCodigo.");
+      r.padreCodigo === undefined || (r.padreCodigo === null && codigo.length === 4)
+        ? parentCode(codigo)
+        : str(r.padreCodigo, "Código padre", 8);
+    if (padreCodigo !== parentCode(codigo))
+      throw new Error(
+        `Padre incompatible: ${codigo}. Debe ser ${parentCode(codigo)} (jerarquía 2 → 4 → 6 → 8 → 10).`,
+      );
     const prev = existing.find((c) => c.codigo === codigo);
     if (prev && (prev.familia !== f.id || prev.padreCodigo !== padreCodigo))
       throw new Error(
@@ -87,16 +128,13 @@ export function parseCatalog(
       activa: r.activa,
     };
   });
-  const all = new Map([...existing, ...items].map((c) => [c.codigo, c]));
+  const all = new Map(
+    [...baseAccounts(), ...existing, ...items].map((c) => [c.codigo, c]),
+  );
   for (const c of items)
     if (c.padreCodigo !== null) {
       const parent = all.get(c.padreCodigo);
-      if (
-        !parent ||
-        parent.familia !== c.familia ||
-        parent.codigo.length >= c.codigo.length ||
-        !c.codigo.startsWith(parent.codigo)
-      )
+      if (!parent || parent.codigo !== parentCode(c.codigo))
         throw new Error(`Padre inexistente o incompatible: ${c.codigo}`);
     }
   return items.sort(
@@ -105,29 +143,64 @@ export function parseCatalog(
   );
 }
 export function canPost(c: Cuenta, all: Cuenta[]) {
-  if (!c.activa || !c.movimiento) return false;
+  if (
+    !/^(\d{4}|\d{6}|\d{8}|\d{10})$/.test(c.codigo) ||
+    !c.activa
+  ) return false;
   let current: Cuenta | undefined = c;
-  const visited = new Set<string>();
-  while (current?.padreCodigo) {
-    if (visited.has(current.codigo)) return false;
-    visited.add(current.codigo);
-    current = all.find((a) => a.codigo === current?.padreCodigo);
+  // A line may stop at any level from four digits onwards, even with children.
+  // Every immediate ancestor must exist and be active, including its major.
+  while (current.codigo.length > 1) {
+    const expected: string = current.codigo.length === 2
+      ? current.codigo.slice(0, 1)
+      : parentCode(current.codigo);
+    if (current.padreCodigo !== expected) return false;
+    current = all.find((a) => a.codigo === expected);
     if (!current?.activa) return false;
   }
-  return true;
+  return current.padreCodigo === null;
+}
+/** Resolve the actual catalog ancestry, independently of classification. */
+export function majorAccount(c: Cuenta, all: Cuenta[]): Cuenta | undefined {
+  let current: Cuenta | undefined = c;
+  const seen = new Set<string>();
+  while (current && current.codigo.length > 4) {
+    if (seen.has(current.codigo)) return undefined;
+    seen.add(current.codigo);
+    current = all.find((a) => a.codigo === current?.padreCodigo);
+  }
+  return current?.codigo.length === 4 ? current : undefined;
+}
+/** Only four-digit accounts receive consolidated balances, once per line. */
+export function majorLedger(cuentas: Cuenta[], asientos: Asiento[]): Cuenta[] {
+  const owners = new Map(cuentas.map((c) => [c.id, majorAccount(c, cuentas)]));
+  const consolidated = asientos.map((a) => ({
+    ...a,
+    detalles: a.detalles.map((d) => {
+      const owner = owners.get(d.cuentaId);
+      if (!owner)
+        throw new Error(`La cuenta ${d.codigoCuenta} no tiene una cuenta de mayor de 4 dígitos.`);
+      return { ...d, cuentaId: owner.id };
+    }),
+  }));
+  return ledger(cuentas.filter((c) => c.codigo.length === 4), consolidated);
 }
 export function parseEntries(
   value: unknown,
   accounts: Cuenta[],
   config?: ConfiguracionLibro,
+  requireIvaMode = false,
 ): AsientoInput[] {
   const root = obj(value);
   keys(root, ["version", "asientos", "modoIva"]);
   if (
     root.modoIva !== undefined &&
-    (!config || root.modoIva !== config.modoIva)
+    root.modoIva !== "mas_iva" && root.modoIva !== "incluido"
   )
-    throw new Error("El modo de IVA del archivo no coincide con el ejercicio.");
+    throw new Error("Modo de IVA del archivo inválido: use mas_iva o incluido.");
+  const ivaMismatch = "El modo de IVA del JSON no coincide con el activo en Configuración. Cambia y guarda la configuración antes de importar.";
+  if (config && root.modoIva !== undefined && root.modoIva !== config.modoIva)
+    throw new Error(ivaMismatch);
   if (
     root.version !== 1 ||
     !Array.isArray(root.asientos) ||
@@ -148,9 +221,20 @@ export function parseEntries(
         "modoIva",
         "ajusteInventario",
       ]);
-      if (a.modoIva !== undefined && (!config || a.modoIva !== config.modoIva))
+      if (
+        a.modoIva !== undefined &&
+        a.modoIva !== "mas_iva" && a.modoIva !== "incluido"
+      ) throw new Error("Modo de IVA del asiento inválido.");
+      if (requireIvaMode && a.modoIva === undefined && root.modoIva === undefined)
+        throw new Error("El JSON debe declarar modoIva: mas_iva o incluido, en el archivo o en cada asiento.");
+      if (config && a.modoIva !== undefined && a.modoIva !== config.modoIva)
+        throw new Error(ivaMismatch);
+      if (
+        root.modoIva !== undefined && a.modoIva !== undefined &&
+        a.modoIva !== root.modoIva
+      )
         throw new Error(
-          "No se pueden mezclar modos de IVA en el mismo ejercicio.",
+          "El modo de IVA del asiento no coincide con el declarado en el archivo.",
         );
       if (
         a.ajusteInventario !== undefined &&
@@ -180,7 +264,7 @@ export function parseEntries(
         const c = accounts.find((c) => c.codigo === codigoCuenta);
         if (!c || !canPost(c, accounts))
           throw new Error(
-            `Cuenta inexistente, inactiva o de agrupación: ${codigoCuenta}`,
+            `Cuenta inexistente, inactiva o sin jerarquía válida desde una cuenta de 4 dígitos: ${codigoCuenta}`,
           );
         const debe = cents(d.debe),
           haber = cents(d.haber);
@@ -240,10 +324,14 @@ export function parseEntries(
             );
         }
       }
+      const modoIva = (a.modoIva ?? root.modoIva ?? config?.modoIva) as
+        ConfiguracionLibro["modoIva"] | undefined;
       return {
+        // JSON amounts are final: preserve the declared mode through preview
+        // and commit; both stages check against the active configuration.
+        ...(modoIva !== undefined ? { modoIva } : {}),
         ...(config
           ? {
-              modoIva: config.modoIva,
               ajusteInventario: (a.ajusteInventario ?? null) as
                 | "inicial"
                 | "final"

@@ -1,0 +1,286 @@
+{
+  "version": 1,
+  "modoIva": "incluido",
+  "asientos": [
+    {
+      "referencia": "GUIA1-2026-001",
+      "fecha": "2026-01-01",
+      "concepto": "Inicio de actividades de La Vaquita, S.A. de C.V.: aporte de efectivo e inventarios de los socios.",
+      "tipo": "normal",
+      "detalles": [
+        {
+          "codigoCuenta": "11010101",
+          "debe": "30000.00",
+          "haber": "0.00",
+          "descripcion": "Aporte de dinero en efectivo"
+        },
+        {
+          "codigoCuenta": "1105",
+          "debe": "6000.00",
+          "haber": "0.00",
+          "descripcion": "Inventario inicial aportado por los socios"
+        },
+        {
+          "codigoCuenta": "3101",
+          "debe": "0.00",
+          "haber": "36000.00",
+          "descripcion": "Aporte total de los socios"
+        }
+      ]
+    },
+    {
+      "referencia": "GUIA1-2026-002",
+      "fecha": "2026-01-03",
+      "concepto": "Apertura de cuenta corriente N.º 0001 en Banco Cuscatlán con depósito de efectivo.",
+      "tipo": "normal",
+      "detalles": [
+        {
+          "codigoCuenta": "11010201",
+          "debe": "20000.00",
+          "haber": "0.00",
+          "descripcion": "Banco Cuscatlán, cuenta corriente N.º 0001"
+        },
+        {
+          "codigoCuenta": "11010101",
+          "debe": "0.00",
+          "haber": "20000.00",
+          "descripcion": "Efectivo depositado en el banco"
+        }
+      ]
+    },
+    {
+      "referencia": "GUIA1-2026-003",
+      "fecha": "2026-01-05",
+      "concepto": "Compra de queso a crédito simple por $10,000.00 IVA incluido, pagadera a 30 días. Proveedor: Lácteos Metapán.",
+      "tipo": "normal",
+      "detalles": [
+        {
+          "codigoCuenta": "4104",
+          "debe": "8849.56",
+          "haber": "0.00",
+          "descripcion": "Ingreso de mercadería al inventario por compra de queso, sin IVA"
+        },
+        {
+          "codigoCuenta": "110901",
+          "debe": "1150.44",
+          "haber": "0.00",
+          "descripcion": "IVA incluido en la compra; CCF 1644 recibido el 15 de enero"
+        },
+        {
+          "codigoCuenta": "21020101",
+          "debe": "0.00",
+          "haber": "10000.00",
+          "descripcion": "Lácteos Metapán: deuda por compra de mercadería"
+        }
+      ]
+    },
+    {
+      "referencia": "GUIA1-2026-004",
+      "fecha": "2026-01-10",
+      "concepto": "Venta de queso a Lácteos, S.A. de C.V. por $12,000.00 IVA incluido, a crédito en dos cuotas. CCF N.º 001.",
+      "tipo": "normal",
+      "detalles": [
+        {
+          "codigoCuenta": "11020101",
+          "debe": "12000.00",
+          "haber": "0.00",
+          "descripcion": "Lácteos, S.A. de C.V.: venta a crédito"
+        },
+        {
+          "codigoCuenta": "5101",
+          "debe": "0.00",
+          "haber": "10619.47",
+          "descripcion": "Venta de mercadería sin IVA"
+        },
+        {
+          "codigoCuenta": "21080102",
+          "debe": "0.00",
+          "haber": "1380.53",
+          "descripcion": "IVA incluido en CCF N.º 001"
+        }
+      ]
+    },
+    {
+      "referencia": "GUIA1-2026-005",
+      "fecha": "2026-01-15",
+      "concepto": "Pago por transferencia a Lácteos Metapán de la compra del 5 de enero. Recepción del CCF N.º 1644.",
+      "tipo": "normal",
+      "detalles": [
+        {
+          "codigoCuenta": "21020101",
+          "debe": "10000.00",
+          "haber": "0.00",
+          "descripcion": "Cancelación de la deuda por compra del 5 de enero"
+        },
+        {
+          "codigoCuenta": "11010201",
+          "debe": "0.00",
+          "haber": "10000.00",
+          "descripcion": "Transferencia desde Banco Cuscatlán, cuenta N.º 0001"
+        }
+      ]
+    },
+    {
+      "referencia": "GUIA1-2026-006",
+      "fecha": "2026-01-31",
+      "concepto": "Compra en efectivo de dos escritorios a Office Depot, a $150.00 cada uno, IVA incluido, para administración. CCF N.º 123.",
+      "tipo": "normal",
+      "detalles": [
+        {
+          "codigoCuenta": "12010301",
+          "debe": "265.49",
+          "haber": "0.00",
+          "descripcion": "Dos escritorios: valor sin IVA"
+        },
+        {
+          "codigoCuenta": "110901",
+          "debe": "34.51",
+          "haber": "0.00",
+          "descripcion": "IVA incluido en CCF N.º 123"
+        },
+        {
+          "codigoCuenta": "11010101",
+          "debe": "0.00",
+          "haber": "300.00",
+          "descripcion": "Pago en efectivo a Office Depot"
+        }
+      ]
+    },
+    {
+      "referencia": "GUIA1-2026-007",
+      "fecha": "2026-02-10",
+      "concepto": "Cobro por transferencia de la primera cuota de la venta del 10 de enero a Lácteos, S.A. de C.V.; se asumen dos cuotas iguales.",
+      "tipo": "normal",
+      "detalles": [
+        {
+          "codigoCuenta": "11010201",
+          "debe": "6000.00",
+          "haber": "0.00",
+          "descripcion": "Abono en Banco Cuscatlán, cuenta corriente N.º 0001"
+        },
+        {
+          "codigoCuenta": "11020101",
+          "debe": "0.00",
+          "haber": "6000.00",
+          "descripcion": "Primera cuota: 50% de la venta por $12,000.00"
+        }
+      ]
+    },
+    {
+      "referencia": "GUIA1-2026-008",
+      "fecha": "2026-02-15",
+      "concepto": "Compra de laptop a SIMAN por $580.00 IVA incluido, pagada con cheque. CCF N.º 001.",
+      "tipo": "normal",
+      "detalles": [
+        {
+          "codigoCuenta": "12010302",
+          "debe": "513.27",
+          "haber": "0.00",
+          "descripcion": "Laptop para uso de la empresa: valor sin IVA"
+        },
+        {
+          "codigoCuenta": "110901",
+          "debe": "66.73",
+          "haber": "0.00",
+          "descripcion": "IVA incluido en CCF N.º 001 de SIMAN"
+        },
+        {
+          "codigoCuenta": "11010201",
+          "debe": "0.00",
+          "haber": "580.00",
+          "descripcion": "Cheque de Banco Cuscatlán, cuenta N.º 0001"
+        }
+      ]
+    },
+    {
+      "referencia": "GUIA1-2026-009",
+      "fecha": "2026-02-16",
+      "concepto": "Venta de productos a Lácteos, S.A. de C.V. por $5,000.00 IVA incluido, cobrada en efectivo. CCF N.º 002.",
+      "tipo": "normal",
+      "detalles": [
+        {
+          "codigoCuenta": "11010101",
+          "debe": "5000.00",
+          "haber": "0.00",
+          "descripcion": "Cobro en efectivo de CCF N.º 002"
+        },
+        {
+          "codigoCuenta": "5101",
+          "debe": "0.00",
+          "haber": "4424.78",
+          "descripcion": "Venta de mercadería sin IVA"
+        },
+        {
+          "codigoCuenta": "21080102",
+          "debe": "0.00",
+          "haber": "575.22",
+          "descripcion": "IVA incluido en CCF N.º 002"
+        }
+      ]
+    },
+    {
+      "referencia": "GUIA1-2026-010",
+      "fecha": "2026-02-20",
+      "concepto": "Compra de vehículo a Grupo Q por $15,000.00 IVA incluido; 10% pagado por transferencia y 90% pendiente de pago.",
+      "tipo": "normal",
+      "detalles": [
+        {
+          "codigoCuenta": "120106",
+          "debe": "13274.34",
+          "haber": "0.00",
+          "descripcion": "Vehículo para uso de la empresa: valor sin IVA"
+        },
+        {
+          "codigoCuenta": "110901",
+          "debe": "1725.66",
+          "haber": "0.00",
+          "descripcion": "IVA incluido en la compra del vehículo"
+        },
+        {
+          "codigoCuenta": "11010201",
+          "debe": "0.00",
+          "haber": "1500.00",
+          "descripcion": "Pago del 10% desde Banco Cuscatlán"
+        },
+        {
+          "codigoCuenta": "210314",
+          "debe": "0.00",
+          "haber": "13500.00",
+          "descripcion": "Saldo pendiente con Grupo Q por compra de activo fijo"
+        }
+      ]
+    },
+    {
+      "referencia": "GUIA1-2026-011",
+      "fecha": "2026-02-20",
+      "concepto": "Préstamo de Banco Davivienda por $20,000.00 al 18% anual y plazo de 8 años; comisión del 5% más IVA descontada del desembolso.",
+      "tipo": "normal",
+      "detalles": [
+        {
+          "codigoCuenta": "1101020103",
+          "debe": "18870.00",
+          "haber": "0.00",
+          "descripcion": "Desembolso neto en cuenta corriente de Banco Davivienda"
+        },
+        {
+          "codigoCuenta": "420102",
+          "debe": "1000.00",
+          "haber": "0.00",
+          "descripcion": "Comisión: 5% de $20,000.00"
+        },
+        {
+          "codigoCuenta": "110901",
+          "debe": "130.00",
+          "haber": "0.00",
+          "descripcion": "IVA del 13% sobre comisión de $1,000.00"
+        },
+        {
+          "codigoCuenta": "220101",
+          "debe": "0.00",
+          "haber": "20000.00",
+          "descripcion": "Principal del préstamo bancario a 8 años"
+        }
+      ]
+    }
+  ]
+}

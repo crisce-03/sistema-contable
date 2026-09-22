@@ -1,16 +1,13 @@
 "use client";
-import { Wand2, Save, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { Download, Wand2, Save, Trash2 } from "lucide-react";
+import { Fragment, useState } from "react";
 import { useAccountingStore } from "@/lib/store/accountingStore";
 import { canPost, cents, money, parseEntries } from "@/lib/accounting/core";
-import { taxBreakdown } from "@/lib/accounting/local";
+import { draftLineDetails, taxBreakdown, type JournalDraftLine } from "@/lib/accounting/local";
 import JsonImport, { download } from "./json-import";
-interface Line {
-  codigoCuenta: string;
-  debe: string;
-  haber: string;
-  descripcion: string;
-}
+import JournalAccountSelector from "./journal-account-selector";
+import type { ModoIva } from "@/lib/types";
+type Line = JournalDraftLine;
 const blank = (): Line => ({
   codigoCuenta: "",
   debe: "0.00",
@@ -38,8 +35,45 @@ export default function LibroDiario() {
   const [ajusteInventario, setAjusteInventario] = useState<
     "inicial" | "final" | ""
   >("");
-  const posting = cuentas.filter((c) => canPost(c, cuentas));
-  const sums = lines.reduce(
+  const posting = cuentas.filter((c) => canPost(c, cuentas))
+    .sort((a, b) => a.codigo.localeCompare(b.codigo));
+  const exportable = asientos.filter((a) => a.tipo !== "reversion");
+  const exportGroups = (["incluido", "mas_iva"] as const).map((modoIva) => ({
+    modoIva,
+    label: modoIva === "incluido" ? "IVA incluido" : "Más IVA",
+    entries: exportable.filter((a) => (a.modoIva ?? configuracion.modoIva) === modoIva),
+  })).filter((group) => group.entries.length > 0);
+  function downloadEntries(mode: ModoIva) {
+    const group = exportGroups.find((g) => g.modoIva === mode);
+    if (!group) return;
+    download(mode === "incluido" ? "asientos-iva-incluido.json" : "asientos-mas-iva.json", {
+      version: 1,
+      modoIva: mode,
+      asientos: group.entries.map((a) => ({
+        referencia: a.referencia,
+        fecha: a.fecha,
+        concepto: a.concepto,
+        tipo: a.tipo,
+        modoIva: mode,
+        ajusteInventario: a.ajusteInventario ?? null,
+        detalles: a.detalles.map((d) => ({
+          codigoCuenta: d.codigoCuenta,
+          debe: d.debe.toFixed(2),
+          haber: d.haber.toFixed(2),
+          descripcion: d.descripcion ?? "",
+        })),
+      })),
+    });
+  }
+  const calculated = lines.map((line) => {
+    try {
+      return { ...draftLineDetails(line, configuracion, cuentas), error: "" };
+    } catch (e) {
+      return { detalles: [], desglose: null, error: (e as Error).message };
+    }
+  });
+  const finalLines = calculated.flatMap((line) => line.detalles);
+  const sums = finalLines.reduce(
     (s, l) => {
       try {
         return {
@@ -51,18 +85,36 @@ export default function LibroDiario() {
         return { ...s, invalid: true };
       }
     },
-    { debe: 0, haber: 0, invalid: false },
+    { debe: 0, haber: 0, invalid: calculated.some((line) => !!line.error) },
   );
-  function change(i: number, field: keyof Line, value: string) {
-    setLines(lines.map((l, j) => (i === j ? { ...l, [field]: value } : l)));
+  function change(i: number, field: "codigoCuenta" | "debe" | "haber" | "descripcion", value: string) {
+    setLines((current) => current.map((l, j) => (i === j ? { ...l, [field]: value } : l)));
+  }
+  function toggleIva(i: number, enabled: boolean) {
+    setLines((current) => current.map((line, j) => {
+      if (i !== j) return line;
+      if (!enabled) return { ...line, iva: undefined };
+      return { ...line, iva: { tipo: "" } };
+    }));
+  }
+  function changeIva(i: number, patch: Partial<NonNullable<Line["iva"]>>) {
+    setLines((current) => current.map((line, j) => {
+      if (i !== j || !line.iva) return line;
+      return { ...line, iva: { ...line.iva, ...patch } };
+    }));
   }
   async function importEntries(data: unknown) {
-    const r = await ejecutar("entries", data);
+    const r = await ejecutar("entries", {
+      version: 1,
+      asientos: parseEntries(data, cuentas, configuracion, true),
+    });
     return `${r.insertados} asientos guardados; ${r.omitidos} ya existían sin cambios.`;
   }
   async function save(e: React.FormEvent) {
     e.preventDefault();
     try {
+      const invalid = calculated.find((line) => line.error);
+      if (invalid) throw new Error(invalid.error);
       const data = {
         version: 1,
         asientos: [
@@ -71,7 +123,7 @@ export default function LibroDiario() {
             concepto,
             referencia,
             tipo,
-            detalles: lines,
+            detalles: finalLines,
             modoIva: configuracion.modoIva,
             ajusteInventario: ajusteInventario || null,
           },
@@ -173,6 +225,33 @@ export default function LibroDiario() {
           <Wand2 size={14} /> Asistente Fiscal Automático
         </button>
       </header>
+      <section aria-label="Descargar asientos registrados" className="border border-zinc-200 bg-white p-4 space-y-3">
+        <div className="flex flex-wrap items-center gap-3">
+          {exportGroups.map((group) => (
+            <button
+              key={group.modoIva}
+              type="button"
+              className="primary flex items-center gap-2"
+              disabled={ocupado}
+              onClick={() => downloadEntries(group.modoIva)}
+            >
+              <Download size={16} aria-hidden="true" />
+              Descargar asientos (JSON) · {group.label} ({group.entries.length})
+            </button>
+          ))}
+          {!exportGroups.length && (
+            <button type="button" className="primary flex items-center gap-2" disabled>
+              <Download size={16} aria-hidden="true" /> Descargar asientos (JSON)
+            </button>
+          )}
+        </div>
+        <p className="text-xs text-zinc-500">
+          {exportable.length
+            ? "Descarga los asientos normales y ajustes registrados, incluidos los ingresados por JSON. Cada archivo corresponde a un modo de IVA; para importarlo, activa ese mismo modo en Configuración."
+            : "Guarda o importa asientos para habilitar la descarga."}
+          {" "}El respaldo completo con reversiones se descarga en Configuración.
+        </p>
+      </section>
       {assist && (
         <section className="p-6 border border-blue-200 bg-blue-50 space-y-3">
           <h2 className="font-medium">
@@ -249,10 +328,11 @@ export default function LibroDiario() {
         </section>
       )}
       <p className="text-xs text-zinc-600">
-        Modo del ejercicio:{" "}
+        Modo para nuevos asientos y el asistente:{" "}
         {configuracion.modoIva === "mas_iva" ? "Más IVA" : "IVA incluido"}. Las
-        columnas Debe y Haber siempre reciben importes contables finales: no se
-        les vuelve a aplicar IVA.
+        columnas Debe y Haber reciben el importe de la operación. Marca
+        Calcular IVA solo en las líneas que lo necesitan. Selecciona una cuenta de 4 dígitos en cada
+        línea. Puedes detallar con subcuentas de 6, 8 y 10 dígitos; son opcionales.
       </p>
       <form onSubmit={save} className="entry-form space-y-6">
         <div className="journal-header grid md:grid-cols-4 gap-6 border border-zinc-200 bg-white p-6">
@@ -327,9 +407,12 @@ export default function LibroDiario() {
           </label>
         )}
         <p className="text-xs text-zinc-600">
-          Registra una línea por cuenta de movimiento. Las subcuentas se
-          desglosan con importes propios; no repitas el total en su padre. La
-          descripción auxiliar no suma dinero.
+          El importe se registra una sola vez, en el último nivel elegido, y
+          se acumula en su cuenta de mayor de 4 dígitos. La descripción auxiliar
+          no suma dinero. Ingresa el importe en Debe o Haber. Con IVA incluido
+          se separa el impuesto del total; con Más IVA se agrega el 13%. La base
+          a guardar aparece debajo del importe y el IVA en una fila del mismo lado. Completa la
+          contrapartida de caja, banco o crédito hasta que la diferencia sea cero.
         </p>
         <div className="overflow-auto border border-zinc-200 bg-white">
           <table className="data-table">
@@ -337,31 +420,24 @@ export default function LibroDiario() {
               <tr>
                 <th>Cuenta</th>
                 <th>Descripción auxiliar</th>
-                <th>Debe</th>
-                <th>Haber</th>
+                <th>Debe · importe ingresado</th>
+                <th>Haber · importe ingresado</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
               {lines.map((l, i) => (
-                <tr key={i}>
+                <Fragment key={i}>
+                <tr>
                   <td>
-                    <select
-                      aria-label={`Cuenta línea ${i + 1}`}
-                      className="field min-w-48"
+                    <JournalAccountSelector
+                      accounts={posting}
+                      lineNumber={i + 1}
                       value={l.codigoCuenta}
-                      onChange={(e) =>
-                        change(i, "codigoCuenta", e.target.value)
+                      onChange={(code) =>
+                        change(i, "codigoCuenta", code)
                       }
-                      required
-                    >
-                      <option value="">Seleccionar…</option>
-                      {posting.map((c) => (
-                        <option key={c.id} value={c.codigo}>
-                          {c.codigo} · {c.nombre}
-                        </option>
-                      ))}
-                    </select>
+                    />
                   </td>
                   <td>
                     <input
@@ -371,6 +447,44 @@ export default function LibroDiario() {
                       maxLength={200}
                       onChange={(e) => change(i, "descripcion", e.target.value)}
                     />
+                    <label className="mt-3 flex items-center gap-2 text-sm">
+                      <input
+                        type="checkbox"
+                        aria-label={`Calcular IVA línea ${i + 1}`}
+                        checked={!!l.iva}
+                        onChange={(e) => toggleIva(i, e.target.checked)}
+                      />
+                      Calcular IVA (13%)
+                    </label>
+                    {l.iva && (
+                      <div className="mt-3 min-w-72 space-y-3 border border-blue-200 bg-blue-50 p-3 text-xs">
+                        <label className="block">
+                          Tipo de IVA
+                          <select
+                            className="field"
+                            aria-label={`Tipo de IVA línea ${i + 1}`}
+                            value={l.iva.tipo}
+                            required
+                            onChange={(e) => changeIva(i, { tipo: e.target.value as "credito" | "debito" | "" })}
+                          >
+                            <option value="">Seleccionar…</option>
+                            <option value="credito">IVA crédito fiscal</option>
+                            <option value="debito">IVA débito fiscal</option>
+                          </select>
+                        </label>
+                        <p>{configuracion.modoIva === "incluido"
+                          ? "IVA incluido: el importe ingresado es el total con impuesto."
+                          : "Más IVA: al importe ingresado se le suma el 13%."}</p>
+                        {calculated[i].error ? (
+                          <p role="status" className="text-red-700">{calculated[i].error}</p>
+                        ) : calculated[i].desglose && (
+                          <p role="status">
+                            Base: ${money(calculated[i].desglose.base)} · IVA: ${money(calculated[i].desglose.iva)} · Total: ${money(calculated[i].desglose.total)}
+                          </p>
+                        )}
+                        <p>Al desmarcar, se conserva el importe ingresado y se retira el IVA generado.</p>
+                      </div>
+                    )}
                   </td>
                   <td>
                     <input
@@ -380,6 +494,9 @@ export default function LibroDiario() {
                       value={l.debe}
                       onChange={(e) => change(i, "debe", e.target.value)}
                     />
+                    {l.iva && calculated[i].desglose && Number(l.debe) > 0 && (
+                      <p className="mt-1 text-xs text-blue-800">Base a guardar: ${money(calculated[i].desglose.base)}</p>
+                    )}
                   </td>
                   <td>
                     <input
@@ -389,6 +506,9 @@ export default function LibroDiario() {
                       value={l.haber}
                       onChange={(e) => change(i, "haber", e.target.value)}
                     />
+                    {l.iva && calculated[i].desglose && Number(l.haber) > 0 && (
+                      <p className="mt-1 text-xs text-blue-800">Base a guardar: ${money(calculated[i].desglose.base)}</p>
+                    )}
                   </td>
                   <td>
                     <button
@@ -400,6 +520,19 @@ export default function LibroDiario() {
                     </button>
                   </td>
                 </tr>
+                {l.iva && calculated[i].detalles[1] && (
+                  <tr className="text-blue-800">
+                    <td>
+                      <span className="block font-medium">IVA automático · línea {i + 1}</span>
+                      {calculated[i].detalles[1].codigoCuenta} · {posting.find((c) => c.codigo === calculated[i].detalles[1].codigoCuenta)?.nombre}
+                    </td>
+                    <td className="text-xs">Se actualiza con el importe de la operación.</td>
+                    <td className="text-right">{calculated[i].detalles[1].debe}</td>
+                    <td className="text-right">{calculated[i].detalles[1].haber}</td>
+                    <td />
+                  </tr>
+                )}
+                </Fragment>
               ))}
             </tbody>
             <tfoot>
@@ -409,9 +542,9 @@ export default function LibroDiario() {
                     ? "Corrige los importes"
                     : `Diferencia: $${money(Math.abs(sums.debe - sums.haber))}`}
                 </td>
-                <td className="text-right font-semibold">{money(sums.debe)}</td>
+                <td className="text-right font-semibold"><span className="block text-xs">Debe a guardar</span>{money(sums.debe)}</td>
                 <td className="text-right font-semibold">
-                  {money(sums.haber)}
+                  <span className="block text-xs">Haber a guardar</span>{money(sums.haber)}
                 </td>
                 <td />
               </tr>
@@ -433,7 +566,8 @@ export default function LibroDiario() {
               sums.invalid ||
               sums.debe !== sums.haber ||
               sums.debe === 0 ||
-              lines.length < 2
+              finalLines.length < 2 || finalLines.length > 200 ||
+              finalLines.some((l) => !posting.some((c) => c.codigo === l.codigoCuenta))
             }
           >
             <span className="flex items-center gap-2">
@@ -442,6 +576,11 @@ export default function LibroDiario() {
             </span>
           </button>
         </div>
+        {finalLines.length > 200 && (
+          <p role="status" className="text-sm text-red-700">
+            El asiento supera las 200 líneas permitidas, contando las de IVA automático.
+          </p>
+        )}
       </form>
       {message && (
         <p role="status" className="text-sm whitespace-pre-wrap">
@@ -452,37 +591,7 @@ export default function LibroDiario() {
         <h2 className="text-lg font-semibold">
           Diario registrado ({asientos.length})
         </h2>
-        <button
-          disabled={!asientos.length}
-          onClick={() =>
-            download("asientos.json", {
-              version: 1,
-              asientos: asientos
-                .filter((a) => a.tipo !== "reversion")
-                .map((a) => ({
-                  referencia: a.referencia,
-                  fecha: a.fecha,
-                  concepto: a.concepto,
-                  tipo: a.tipo,
-                  modoIva: a.modoIva,
-                  ajusteInventario: a.ajusteInventario ?? null,
-                  detalles: a.detalles.map((d) => ({
-                    codigoCuenta: d.codigoCuenta,
-                    debe: d.debe.toFixed(2),
-                    haber: d.haber.toFixed(2),
-                    descripcion: d.descripcion ?? "",
-                  })),
-                })),
-            })
-          }
-        >
-          Exportar normales y ajustes
-        </button>
       </div>
-      <p className="text-xs text-zinc-500">
-        El JSON de importación no incluye reversiones. El respaldo completo de
-        auditoría se descarga en Configuración.
-      </p>
       {!asientos.length && (
         <p className="text-sm p-6 border border-dashed text-center">
           Todavía no hay asientos.
@@ -591,12 +700,18 @@ export default function LibroDiario() {
           </button>
         </form>
       )}
+      <p className="text-sm text-zinc-600">
+        El JSON debe declarar modoIva y coincidir con el modo activo en
+        Configuración: {configuracion.modoIva === "incluido" ? "IVA incluido" : "Más IVA"}.
+        Se conservan sus importes finales. Las cuentas deben existir en el
+        Catálogo y el año debe estar abierto.
+      </p>
       <JsonImport
         label="Importar asientos JSON"
         busy={ocupado}
         validate={(v) => ({
           version: 1,
-          asientos: parseEntries(v, cuentas, configuracion),
+          asientos: parseEntries(v, cuentas, configuracion, true),
         })}
         commit={importEntries}
       />

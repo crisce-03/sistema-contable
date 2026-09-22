@@ -4,22 +4,24 @@ import { useAccountingStore } from "@/lib/store/accountingStore";
 import { download } from "@/components/accounting/json-import";
 import { archives } from "@/lib/accounting/browser-storage";
 import type { ConfiguracionLibro, LibroLocal } from "@/lib/types";
+import { canPost } from "@/lib/accounting/core";
+import { resolveIvaAccount } from "@/lib/accounting/local";
 function Options({ onSaved }: { onSaved: (message: string) => void }) {
-  const { configuracion, asientos, ejecutar, ocupado } = useAccountingStore();
+  const { configuracion, cuentas, asientos, ejecutar, ocupado } = useAccountingStore();
   const [draft, setDraft] = useState({ ...configuracion }),
     [message, setMessage] = useState("");
-  const locked = asientos.length > 0;
+  const inventoryLocked = asientos.length > 0;
   return (
     <section className="border border-zinc-200 bg-white p-6 space-y-4">
       <h2 className="text-xs font-bold text-zinc-400 uppercase tracking-wider border-b border-zinc-100 pb-2">
         Reglas del ejercicio
       </h2>
       <label className="block text-sm">
-        Interpretación del importe en el asistente
+        Modo de IVA
         <select
-          aria-label="Interpretación del importe en el asistente"
+          aria-label="Modo de IVA"
           className="field"
-          disabled={locked || ocupado}
+          disabled={ocupado}
           value={draft.modoIva}
           onChange={(e) =>
             setDraft({
@@ -32,12 +34,41 @@ function Options({ onSaved }: { onSaved: (message: string) => void }) {
           <option value="incluido">IVA incluido</option>
         </select>
       </label>
+      <p className="text-sm text-zinc-600">
+        Puedes cambiar entre Más IVA e IVA incluido. El asistente usará el modo
+        guardado para los próximos cálculos; los asientos registrados conservan
+        sus importes y su modo de IVA original.
+      </p>
+      {(["credito", "debito"] as const).map((tipo) => {
+        const key = tipo === "credito" ? "cuentaIvaCredito" : "cuentaIvaDebito";
+        const detected = resolveIvaAccount(tipo, { ...draft, [key]: "" }, cuentas);
+        return (
+          <label key={tipo} className="block text-sm">
+            Cuenta de IVA {tipo === "credito" ? "crédito" : "débito"} fiscal
+            <select
+              className="field"
+              disabled={ocupado}
+              value={draft[key] ?? ""}
+              onChange={(e) => setDraft({ ...draft, [key]: e.target.value })}
+            >
+              <option value="">{detected ? `Automática: ${detected.codigo} · ${detected.nombre}` : "Selecciona una cuenta del catálogo"}</option>
+              {cuentas.filter((c) => canPost(c, cuentas)).sort((a, b) => a.codigo.localeCompare(b.codigo)).map((c) => (
+                <option key={c.codigo} value={c.codigo}>{c.codigo} · {c.nombre}</option>
+              ))}
+            </select>
+          </label>
+        );
+      })}
+      <p className="text-xs text-zinc-500">
+        En cada línea del Diario solo eliges crédito o débito fiscal. Se usa la
+        cuenta asignada aquí o se reconoce por su nombre en el catálogo.
+      </p>
       <label className="block text-sm">
         Tratamiento de inventarios
         <select
           aria-label="Tratamiento de inventarios"
           className="field"
-          disabled={locked || ocupado}
+          disabled={inventoryLocked || ocupado}
           value={draft.modoInventario}
           onChange={(e) =>
             setDraft({
@@ -66,7 +97,7 @@ function Options({ onSaved }: { onSaved: (message: string) => void }) {
       </p>
       <button
         className="primary"
-        disabled={locked || ocupado}
+        disabled={ocupado}
         onClick={() =>
           void ejecutar("settings", draft)
             .then(() => onSaved("Configuración guardada."))
@@ -75,10 +106,10 @@ function Options({ onSaved }: { onSaved: (message: string) => void }) {
       >
         Guardar configuración
       </button>
-      {locked && (
+      {inventoryLocked && (
         <p className="text-sm text-amber-800">
-          Las reglas se fijan al guardar el primer asiento. Para probar otras,
-          inicia un ejercicio nuevo; el actual se archivará sin borrarse.
+          El tratamiento de inventarios se fija al guardar el primer asiento.
+          Para cambiarlo, inicia un ejercicio nuevo; el actual se archivará.
         </p>
       )}
       {message && <p role="status">{message}</p>}
@@ -115,6 +146,8 @@ export default function Configuracion() {
           key={
             s.configuracion.modoIva +
             s.configuracion.modoInventario +
+            (s.configuracion.cuentaIvaCredito ?? "") +
+            (s.configuracion.cuentaIvaDebito ?? "") +
             String(s.asientos.length > 0)
           }
         />

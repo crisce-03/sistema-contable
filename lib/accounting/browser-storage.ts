@@ -22,7 +22,7 @@ export async function browserCommand(action: string, data: unknown) {
     req.onsuccess = () => {
       try {
         const current = req.result as LibroLocal | undefined;
-        if (current && current.versionLocal !== 2)
+        if (current && current.versionLocal !== 2 && current.versionLocal !== 3)
           throw new Error(
             "Versión local incompatible. No se sobrescribieron los datos.",
           );
@@ -30,6 +30,8 @@ export async function browserCommand(action: string, data: unknown) {
           if (current) store.put(current, "archive-" + crypto.randomUUID());
           result = { estado: emptyBook(), insertados: 0, omitidos: 0 };
         } else result = localCommand(current ?? emptyBook(), action, data);
+        if (action !== "newExercise" && current?.versionLocal === 2)
+          store.put(current, "archive-" + crypto.randomUUID());
         store.put(result.estado, "current");
       } catch (e) {
         failure = e;

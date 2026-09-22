@@ -3,163 +3,152 @@
   "cuentas": [
     {
       "codigo": "1101",
-      "nombre": "Efectivo y Equivalentes",
-      "familia": "efectivo",
-      "padreCodigo": null,
-      "activa": true
-    },
-    {
-      "codigo": "1102",
-      "nombre": "Cuentas por cobrar",
-      "familia": "cobrar",
-      "padreCodigo": null,
-      "activa": true
-    },
-    {
-      "codigo": "1105",
-      "nombre": "Inventarios",
-      "familia": "inventarios",
-      "padreCodigo": null,
-      "activa": true
-    },
-    {
-      "codigo": "1107",
-      "nombre": "Gastos pagados por anticipado",
-      "familia": "anticipados",
-      "padreCodigo": null,
-      "activa": true
-    },
-    {
-      "codigo": "1109",
-      "nombre": "IVA - Crédito Fiscal",
-      "familia": "iva_credito",
-      "padreCodigo": null,
-      "activa": true
-    },
-    {
-      "codigo": "1201",
-      "nombre": "Propiedad, Planta y Equipo",
-      "familia": "ppe",
-      "padreCodigo": null,
-      "activa": true
-    },
-    {
-      "codigo": "2102",
-      "nombre": "Cuentas por pagar",
-      "familia": "pagar",
-      "padreCodigo": null,
-      "activa": true
-    },
-    {
-      "codigo": "2108",
-      "nombre": "IVA - Débito Fiscal",
-      "familia": "iva_debito",
-      "padreCodigo": null,
-      "activa": true
-    },
-    {
-      "codigo": "2201",
-      "nombre": "Préstamos a largo plazo",
-      "familia": "prestamos",
-      "padreCodigo": null,
-      "activa": true
-    },
-    {
-      "codigo": "3101",
-      "nombre": "Capital Social",
-      "familia": "capital",
-      "padreCodigo": null,
-      "activa": true
-    },
-    {
-      "codigo": "4102",
-      "nombre": "Gastos administrativos",
-      "familia": "administrativos",
-      "padreCodigo": null,
-      "activa": true
-    },
-    {
-      "codigo": "4103",
-      "nombre": "Gastos de Venta",
-      "familia": "gastos_venta",
-      "padreCodigo": null,
-      "activa": true
-    },
-    {
-      "codigo": "4104",
-      "nombre": "Compras",
-      "familia": "compras",
-      "padreCodigo": null,
-      "activa": true
-    },
-    {
-      "codigo": "4105",
-      "nombre": "Devolución sobre Compra",
-      "familia": "devol_compras",
-      "padreCodigo": null,
-      "activa": true
-    },
-    {
-      "codigo": "4201",
-      "nombre": "Gastos Financieros",
-      "familia": "financieros",
-      "padreCodigo": null,
-      "activa": true
-    },
-    {
-      "codigo": "510101",
-      "nombre": "Ventas",
-      "familia": "ventas",
-      "padreCodigo": null,
-      "activa": true
-    },
-    {
-      "codigo": "51010402",
-      "nombre": "Devolución sobre Venta",
-      "familia": "devol_ventas",
-      "padreCodigo": null,
+      "nombre": "Efectivo y equivalentes de efectivo",
+      "padreCodigo": "11",
       "activa": true
     },
     {
       "codigo": "110101",
       "nombre": "Caja",
-      "familia": "efectivo",
       "padreCodigo": "1101",
       "activa": true
     },
     {
       "codigo": "110102",
-      "nombre": "Bancos",
-      "familia": "efectivo",
+      "nombre": "Bancos moneda nacional",
       "padreCodigo": "1101",
       "activa": true
     },
     {
-      "codigo": "120106",
-      "nombre": "Equipo de transporte",
-      "familia": "ppe",
-      "padreCodigo": "1201",
+      "codigo": "1102",
+      "nombre": "Cuentas por cobrar",
+      "padreCodigo": "11",
+      "activa": true
+    },
+    {
+      "codigo": "1105",
+      "nombre": "Inventarios",
+      "padreCodigo": "11",
+      "activa": true
+    },
+    {
+      "codigo": "1107",
+      "nombre": "Gastos pagados por anticipado",
+      "padreCodigo": "11",
+      "activa": true
+    },
+    {
+      "codigo": "1109",
+      "nombre": "IVA - Crédito Fiscal",
+      "padreCodigo": "11",
+      "activa": true
+    },
+    {
+      "codigo": "1201",
+      "nombre": "Propiedad, Planta y Equipo",
+      "padreCodigo": "12",
       "activa": true
     },
     {
       "codigo": "120103",
       "nombre": "Mobiliario y equipo",
-      "familia": "ppe",
       "padreCodigo": "1201",
       "activa": true
     },
     {
       "codigo": "12010301",
       "nombre": "Equipo de oficina",
-      "familia": "ppe",
       "padreCodigo": "120103",
       "activa": true
     },
     {
       "codigo": "12010302",
       "nombre": "Equipo de cómputo",
-      "familia": "ppe",
       "padreCodigo": "120103",
+      "activa": true
+    },
+    {
+      "codigo": "120106",
+      "nombre": "Equipo de transporte",
+      "padreCodigo": "1201",
+      "activa": true
+    },
+    {
+      "codigo": "2102",
+      "nombre": "Cuentas por pagar",
+      "padreCodigo": "21",
+      "activa": true
+    },
+    {
+      "codigo": "2108",
+      "nombre": "IVA - Débito Fiscal",
+      "padreCodigo": "21",
+      "activa": true
+    },
+    {
+      "codigo": "2201",
+      "nombre": "Préstamos a largo plazo",
+      "padreCodigo": "22",
+      "activa": true
+    },
+    {
+      "codigo": "3101",
+      "nombre": "Capital Social",
+      "padreCodigo": "31",
+      "activa": true
+    },
+    {
+      "codigo": "4102",
+      "nombre": "Gastos administrativos",
+      "padreCodigo": "41",
+      "activa": true
+    },
+    {
+      "codigo": "4103",
+      "nombre": "Gastos de Venta",
+      "padreCodigo": "41",
+      "activa": true
+    },
+    {
+      "codigo": "4104",
+      "nombre": "Compras",
+      "padreCodigo": "41",
+      "activa": true
+    },
+    {
+      "codigo": "4105",
+      "nombre": "Devolución sobre Compra",
+      "padreCodigo": "41",
+      "activa": true
+    },
+    {
+      "codigo": "4201",
+      "nombre": "Gastos Financieros",
+      "padreCodigo": "42",
+      "activa": true
+    },
+    {
+      "codigo": "5101",
+      "nombre": "Ingresos operacionales",
+      "padreCodigo": "51",
+      "activa": true
+    },
+    {
+      "codigo": "510101",
+      "nombre": "Ventas",
+      "padreCodigo": "5101",
+      "activa": true
+    },
+    {
+      "codigo": "510104",
+      "nombre": "Rebajas y devoluciones sobre ventas",
+      "padreCodigo": "5101",
+      "activa": true
+    },
+    {
+      "codigo": "51010402",
+      "nombre": "Devolución sobre Venta",
+      "padreCodigo": "510104",
       "activa": true
     }
   ]

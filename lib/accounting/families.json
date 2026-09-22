@@ -1,138 +1,162 @@
 [
   {
-    "id": "efectivo",
-    "codigo": "1101",
-    "nombre": "Efectivo y Equivalentes",
+    "id": "1",
+    "codigo": "1",
+    "nombre": "Activo",
+    "grupo": "Activo",
+    "naturaleza": "Deudora",
+    "rubro": "activo"
+  },
+  {
+    "id": "11",
+    "codigo": "11",
+    "nombre": "Activo corriente",
     "grupo": "Activo",
     "naturaleza": "Deudora",
     "rubro": "activo_corriente"
   },
   {
-    "id": "cobrar",
-    "codigo": "1102",
-    "nombre": "Cuentas por cobrar",
-    "grupo": "Activo",
-    "naturaleza": "Deudora",
-    "rubro": "activo_corriente"
-  },
-  {
-    "id": "inventarios",
-    "codigo": "1105",
-    "nombre": "Inventarios",
-    "grupo": "Activo",
-    "naturaleza": "Deudora",
-    "rubro": "activo_corriente"
-  },
-  {
-    "id": "anticipados",
-    "codigo": "1107",
-    "nombre": "Gastos pagados por anticipado",
-    "grupo": "Activo",
-    "naturaleza": "Deudora",
-    "rubro": "activo_corriente"
-  },
-  {
-    "id": "iva_credito",
-    "codigo": "1109",
-    "nombre": "IVA - Crédito Fiscal",
-    "grupo": "Activo",
-    "naturaleza": "Deudora",
-    "rubro": "activo_corriente"
-  },
-  {
-    "id": "ppe",
-    "codigo": "1201",
-    "nombre": "Propiedad, Planta y Equipo",
+    "id": "12",
+    "codigo": "12",
+    "nombre": "Activo no corriente",
     "grupo": "Activo",
     "naturaleza": "Deudora",
     "rubro": "activo_no_corriente"
   },
   {
-    "id": "pagar",
-    "codigo": "2102",
-    "nombre": "Cuentas por pagar",
+    "id": "2",
+    "codigo": "2",
+    "nombre": "Pasivo",
+    "grupo": "Pasivo",
+    "naturaleza": "Acreedora",
+    "rubro": "pasivo"
+  },
+  {
+    "id": "21",
+    "codigo": "21",
+    "nombre": "Pasivo corriente",
     "grupo": "Pasivo",
     "naturaleza": "Acreedora",
     "rubro": "pasivo_corriente"
   },
   {
-    "id": "iva_debito",
-    "codigo": "2108",
-    "nombre": "IVA - Débito Fiscal",
-    "grupo": "Pasivo",
-    "naturaleza": "Acreedora",
-    "rubro": "pasivo_corriente"
-  },
-  {
-    "id": "prestamos",
-    "codigo": "2201",
-    "nombre": "Préstamos a largo plazo",
+    "id": "22",
+    "codigo": "22",
+    "nombre": "Pasivo no corriente",
     "grupo": "Pasivo",
     "naturaleza": "Acreedora",
     "rubro": "pasivo_no_corriente"
   },
   {
-    "id": "capital",
-    "codigo": "3101",
-    "nombre": "Capital Social",
+    "id": "3",
+    "codigo": "3",
+    "nombre": "Patrimonio",
     "grupo": "Patrimonio",
     "naturaleza": "Acreedora",
     "rubro": "patrimonio"
   },
   {
-    "id": "administrativos",
-    "codigo": "4102",
-    "nombre": "Gastos administrativos",
-    "grupo": "Gastos",
-    "naturaleza": "Deudora",
-    "rubro": "gastos_administrativos"
-  },
-  {
-    "id": "gastos_venta",
-    "codigo": "4103",
-    "nombre": "Gastos de Venta",
-    "grupo": "Gastos",
-    "naturaleza": "Deudora",
-    "rubro": "gastos_venta"
-  },
-  {
-    "id": "compras",
-    "codigo": "4104",
-    "nombre": "Compras",
-    "grupo": "Costos",
-    "naturaleza": "Deudora",
-    "rubro": "compras_periodicas"
-  },
-  {
-    "id": "devol_compras",
-    "codigo": "4105",
-    "nombre": "Devolución sobre Compra",
-    "grupo": "Costos",
+    "id": "31",
+    "codigo": "31",
+    "nombre": "Capital y reservas",
+    "grupo": "Patrimonio",
     "naturaleza": "Acreedora",
-    "rubro": "devoluciones_compras"
+    "rubro": "patrimonio"
   },
   {
-    "id": "financieros",
-    "codigo": "4201",
-    "nombre": "Gastos Financieros",
+    "id": "32",
+    "codigo": "32",
+    "nombre": "Resultados por aplicar",
+    "grupo": "Patrimonio",
+    "naturaleza": "Acreedora",
+    "rubro": "patrimonio"
+  },
+  {
+    "id": "4",
+    "codigo": "4",
+    "nombre": "Cuentas de resultado deudoras",
     "grupo": "Gastos",
     "naturaleza": "Deudora",
-    "rubro": "gastos_financieros"
+    "rubro": "resultados_deudores"
   },
   {
-    "id": "ventas",
-    "codigo": "510101",
-    "nombre": "Ventas",
+    "id": "41",
+    "codigo": "41",
+    "nombre": "Costos y gastos de operación",
+    "grupo": "Gastos",
+    "naturaleza": "Deudora",
+    "rubro": "costos_gastos_operacion"
+  },
+  {
+    "id": "42",
+    "codigo": "42",
+    "nombre": "Otros costos y gastos",
+    "grupo": "Gastos",
+    "naturaleza": "Deudora",
+    "rubro": "otros_costos_gastos"
+  },
+  {
+    "id": "5",
+    "codigo": "5",
+    "nombre": "Cuentas de resultado acreedoras",
+    "grupo": "Ingresos",
+    "naturaleza": "Acreedora",
+    "rubro": "resultados_acreedores"
+  },
+  {
+    "id": "51",
+    "codigo": "51",
+    "nombre": "Ingresos por ventas y servicios",
     "grupo": "Ingresos",
     "naturaleza": "Acreedora",
     "rubro": "ventas"
   },
   {
-    "id": "devol_ventas",
-    "codigo": "51010402",
-    "nombre": "Devolución sobre Venta",
+    "id": "52",
+    "codigo": "52",
+    "nombre": "Otros productos",
     "grupo": "Ingresos",
+    "naturaleza": "Acreedora",
+    "rubro": "otros_productos"
+  },
+  {
+    "id": "6",
+    "codigo": "6",
+    "nombre": "Cuenta de cierre",
+    "grupo": "Cierre",
     "naturaleza": "Deudora",
-    "rubro": "devoluciones_ventas"
+    "rubro": "cierre"
+  },
+  {
+    "id": "61",
+    "codigo": "61",
+    "nombre": "Cuenta liquidadora",
+    "grupo": "Cierre",
+    "naturaleza": "Deudora",
+    "rubro": "cierre"
+  },
+  {
+    "id": "7",
+    "codigo": "7",
+    "nombre": "Cuentas de orden",
+    "grupo": "Orden",
+    "naturaleza": "Deudora",
+    "rubro": "orden"
+  },
+  {
+    "id": "71",
+    "codigo": "71",
+    "nombre": "Cuentas de orden",
+    "grupo": "Orden",
+    "naturaleza": "Deudora",
+    "rubro": "orden"
+  },
+  {
+    "id": "72",
+    "codigo": "72",
+    "nombre": "Cuentas de orden por el contrario",
+    "grupo": "Orden",
+    "naturaleza": "Acreedora",
+    "rubro": "orden_contrario"
   }
 ]
