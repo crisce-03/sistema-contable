@@ -64,11 +64,21 @@ export interface AsientoInput {
 
 export type ModoIva = "mas_iva" | "incluido";
 export type ModoInventario = "traslados_compras" | "inventarios_explicitos";
+export type RolReporte =
+  | "inventarios"
+  | "compras"
+  | "gastosCompra"
+  | "devolCompras"
+  | "ventas"
+  | "devolVentas"
+  | "utilidad";
 export interface ConfiguracionLibro {
   modoIva: ModoIva;
   modoInventario: ModoInventario;
   cuentaIvaCredito?: string;
   cuentaIvaDebito?: string;
+  cuentasReporte?: Partial<Record<RolReporte, string>>;
+  inventarioFinalFisico?: string;
 }
 export interface LibroLocal {
   versionLocal: 2 | 3;

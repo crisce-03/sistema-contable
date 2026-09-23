@@ -1,0 +1,164 @@
+{
+  "version": 1,
+  "modoIva": "incluido",
+  "asientos": [
+    {
+      "referencia": "AN-2026-001",
+      "fecha": "2026-01-01",
+      "concepto": "Apertura del ejercicio",
+      "tipo": "normal",
+      "ajusteInventario": null,
+      "detalles": [
+        { "codigoCuenta": "110101", "debe": "5000.00", "haber": "0.00", "descripcion": "Caja" },
+        { "codigoCuenta": "110102", "debe": "40000.00", "haber": "0.00", "descripcion": "Bancos" },
+        { "codigoCuenta": "1102", "debe": "12000.00", "haber": "0.00", "descripcion": "Inventario inicial" },
+        { "codigoCuenta": "110401", "debe": "8000.00", "haber": "0.00", "descripcion": "Clientes" },
+        { "codigoCuenta": "12010101", "debe": "10000.00", "haber": "0.00", "descripcion": "Equipo de cómputo" },
+        { "codigoCuenta": "210101", "debe": "0.00", "haber": "15000.00", "descripcion": "Proveedores" },
+        { "codigoCuenta": "220101", "debe": "0.00", "haber": "20000.00", "descripcion": "Préstamo bancario" },
+        { "codigoCuenta": "3101", "debe": "0.00", "haber": "40000.00", "descripcion": "Capital social" }
+      ]
+    },
+    {
+      "referencia": "AN-2026-002",
+      "fecha": "2026-02-10",
+      "concepto": "Compra de mercadería al crédito",
+      "tipo": "normal",
+      "ajusteInventario": null,
+      "detalles": [
+        { "codigoCuenta": "4101", "debe": "30000.00", "haber": "0.00", "descripcion": "Mercadería" },
+        { "codigoCuenta": "1103", "debe": "3900.00", "haber": "0.00", "descripcion": "IVA 13%" },
+        { "codigoCuenta": "210101", "debe": "0.00", "haber": "33900.00", "descripcion": "Proveedores" }
+      ]
+    },
+    {
+      "referencia": "AN-2026-003",
+      "fecha": "2026-02-12",
+      "concepto": "Fletes sobre la compra, pagados con cheque",
+      "tipo": "normal",
+      "ajusteInventario": null,
+      "detalles": [
+        { "codigoCuenta": "4106", "debe": "1500.00", "haber": "0.00", "descripcion": "Flete de entrada" },
+        { "codigoCuenta": "1103", "debe": "195.00", "haber": "0.00", "descripcion": "IVA 13%" },
+        { "codigoCuenta": "110102", "debe": "0.00", "haber": "1695.00", "descripcion": "Bancos" }
+      ]
+    },
+    {
+      "referencia": "AN-2026-004",
+      "fecha": "2026-02-20",
+      "concepto": "Devolución de mercadería al proveedor",
+      "tipo": "normal",
+      "ajusteInventario": null,
+      "detalles": [
+        { "codigoCuenta": "210101", "debe": "2260.00", "haber": "0.00", "descripcion": "Proveedores" },
+        { "codigoCuenta": "510201", "debe": "0.00", "haber": "2000.00", "descripcion": "Devolución" },
+        { "codigoCuenta": "1103", "debe": "0.00", "haber": "260.00", "descripcion": "IVA 13%" }
+      ]
+    },
+    {
+      "referencia": "AN-2026-005",
+      "fecha": "2026-02-25",
+      "concepto": "Rebaja concedida por el proveedor",
+      "tipo": "normal",
+      "ajusteInventario": null,
+      "detalles": [
+        { "codigoCuenta": "210101", "debe": "565.00", "haber": "0.00", "descripcion": "Proveedores" },
+        { "codigoCuenta": "510202", "debe": "0.00", "haber": "500.00", "descripcion": "Rebaja" },
+        { "codigoCuenta": "1103", "debe": "0.00", "haber": "65.00", "descripcion": "IVA 13%" }
+      ]
+    },
+    {
+      "referencia": "AN-2026-006",
+      "fecha": "2026-03-05",
+      "concepto": "Venta de mercadería al crédito",
+      "tipo": "normal",
+      "ajusteInventario": null,
+      "detalles": [
+        { "codigoCuenta": "110401", "debe": "56500.00", "haber": "0.00", "descripcion": "Clientes" },
+        { "codigoCuenta": "5101", "debe": "0.00", "haber": "50000.00", "descripcion": "Ventas" },
+        { "codigoCuenta": "2102", "debe": "0.00", "haber": "6500.00", "descripcion": "IVA 13%" }
+      ]
+    },
+    {
+      "referencia": "AN-2026-007",
+      "fecha": "2026-03-12",
+      "concepto": "Devolución recibida del cliente",
+      "tipo": "normal",
+      "ajusteInventario": null,
+      "detalles": [
+        { "codigoCuenta": "410201", "debe": "3000.00", "haber": "0.00", "descripcion": "Devolución" },
+        { "codigoCuenta": "2102", "debe": "390.00", "haber": "0.00", "descripcion": "IVA 13%" },
+        { "codigoCuenta": "110401", "debe": "0.00", "haber": "3390.00", "descripcion": "Clientes" }
+      ]
+    },
+    {
+      "referencia": "AN-2026-008",
+      "fecha": "2026-03-18",
+      "concepto": "Rebaja concedida al cliente",
+      "tipo": "normal",
+      "ajusteInventario": null,
+      "detalles": [
+        { "codigoCuenta": "410202", "debe": "1000.00", "haber": "0.00", "descripcion": "Rebaja" },
+        { "codigoCuenta": "2102", "debe": "130.00", "haber": "0.00", "descripcion": "IVA 13%" },
+        { "codigoCuenta": "110401", "debe": "0.00", "haber": "1130.00", "descripcion": "Clientes" }
+      ]
+    },
+    {
+      "referencia": "AN-2026-009",
+      "fecha": "2026-04-30",
+      "concepto": "Gastos de administración del período",
+      "tipo": "normal",
+      "ajusteInventario": null,
+      "detalles": [
+        { "codigoCuenta": "4107", "debe": "6000.00", "haber": "0.00", "descripcion": "Sueldos y servicios" },
+        { "codigoCuenta": "1103", "debe": "780.00", "haber": "0.00", "descripcion": "IVA 13%" },
+        { "codigoCuenta": "110102", "debe": "0.00", "haber": "6780.00", "descripcion": "Bancos" }
+      ]
+    },
+    {
+      "referencia": "AN-2026-010",
+      "fecha": "2026-05-31",
+      "concepto": "Gastos de venta del período",
+      "tipo": "normal",
+      "ajusteInventario": null,
+      "detalles": [
+        { "codigoCuenta": "4108", "debe": "4000.00", "haber": "0.00", "descripcion": "Publicidad y comisiones" },
+        { "codigoCuenta": "1103", "debe": "520.00", "haber": "0.00", "descripcion": "IVA 13%" },
+        { "codigoCuenta": "110102", "debe": "0.00", "haber": "4520.00", "descripcion": "Bancos" }
+      ]
+    },
+    {
+      "referencia": "AN-2026-011",
+      "fecha": "2026-06-30",
+      "concepto": "Intereses del préstamo bancario",
+      "tipo": "normal",
+      "ajusteInventario": null,
+      "detalles": [
+        { "codigoCuenta": "410301", "debe": "1200.00", "haber": "0.00", "descripcion": "Intereses" },
+        { "codigoCuenta": "110102", "debe": "0.00", "haber": "1200.00", "descripcion": "Bancos" }
+      ]
+    },
+    {
+      "referencia": "AN-2026-012",
+      "fecha": "2026-07-15",
+      "concepto": "Cobro parcial a clientes",
+      "tipo": "normal",
+      "ajusteInventario": null,
+      "detalles": [
+        { "codigoCuenta": "110102", "debe": "30000.00", "haber": "0.00", "descripcion": "Bancos" },
+        { "codigoCuenta": "110401", "debe": "0.00", "haber": "30000.00", "descripcion": "Clientes" }
+      ]
+    },
+    {
+      "referencia": "AN-2026-013",
+      "fecha": "2026-08-20",
+      "concepto": "Pago parcial a proveedores",
+      "tipo": "normal",
+      "ajusteInventario": null,
+      "detalles": [
+        { "codigoCuenta": "210101", "debe": "25000.00", "haber": "0.00", "descripcion": "Proveedores" },
+        { "codigoCuenta": "110102", "debe": "0.00", "haber": "25000.00", "descripcion": "Bancos" }
+      ]
+    }
+  ]
+}

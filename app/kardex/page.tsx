@@ -2,12 +2,18 @@
 
 import { useState } from "react";
 import { useAccountingStore } from "@/lib/store/accountingStore";
-import { calcularKardex, rolesKardex } from "@/lib/accounting/local";
+import {
+  calcularKardex,
+  rolesKardex,
+  trasladosKardex,
+} from "@/lib/accounting/local";
 import { money } from "@/lib/accounting/core";
+import { resolverCuentaReporte } from "@/lib/accounting/reports";
 import type { KardexProducto } from "@/lib/types";
 
 export default function KardexInteractivo() {
-  const { cuentas, asientos, kardex, ejecutar, ocupado } = useAccountingStore();
+  const { cuentas, asientos, kardex, configuracion, ejecutar, ocupado } =
+    useAccountingStore();
 
   const [seleccionado, setSeleccionado] = useState<string | null>(null);
   const [borrador, setBorrador] = useState<KardexProducto | null>(null);
@@ -40,6 +46,13 @@ export default function KardexInteractivo() {
     setBorrador({ ...producto, ...cambios });
     setMensaje("");
   }
+
+  const cuentaInventario = resolverCuentaReporte(
+    "inventarios",
+    configuracion,
+    cuentas,
+  );
+  const traslados = trasladosKardex(asientos, producto);
 
   let resultado: ReturnType<typeof calcularKardex> | null = null;
   let errorCalculo = "";
@@ -292,12 +305,6 @@ export default function KardexInteractivo() {
       </form>
       </div>
 
-      {mensaje && (
-          <p role="status" className="text-sm">
-            {mensaje}
-          </p>
-        )}
-
             {errorCalculo && mostrarConfiguracion && (
         <p role="alert" className="text-sm text-amber-800">
           {errorCalculo}
@@ -430,6 +437,68 @@ export default function KardexInteractivo() {
             : {resultado.unidades} unidades · $
             {money(resultado.inventarioFinal)}
           </p>
+
+          {producto.id && (
+            <section className="border border-zinc-200 bg-white p-4 text-xs space-y-2">
+              <h2 className="font-bold uppercase tracking-wider text-zinc-400">
+                Traslados al mayor
+              </h2>
+              {configuracion.modoInventario !== "traslados_compras" ? (
+                <p>
+                  El ejercicio está en analítico sin traslados: el Kardex
+                  calcula la existencia, pero no la asienta contra Compras.
+                </p>
+              ) : !cuentaInventario ? (
+                <p className="text-amber-800">
+                  No se reconoce la cuenta de Inventarios. Asígnala en
+                  Configuración → Enlaces de cuentas y cierre para que el
+                  inventario llegue al mayor.
+                </p>
+              ) : (
+                <>
+                  <p className="text-zinc-500">
+                    Inventarios: {cuentaInventario.codigo} ·{" "}
+                    {cuentaInventario.nombre} · Compras:{" "}
+                    {producto.cuentas.compras || "sin asignar"}
+                  </p>
+                  <table className="data-table">
+                    <tbody>
+                      {(["inicial", "final"] as const).map((clase) => {
+                        const t = traslados[clase];
+                        const importe =
+                          clase === "inicial"
+                            ? producto.inicial * Number(producto.costo) * 100
+                            : resultado.inventarioFinal;
+                        return (
+                          <tr key={clase}>
+                            <td className="capitalize">Inventario {clase}</td>
+                            <td className="text-right tabular-nums">
+                              ${money(Math.round(importe))}
+                            </td>
+                            <td>
+                              {t.asiento ? (
+                                `Registrado en el asiento #${t.asiento.numero} (${t.asiento.fecha})`
+                              ) : t.revertido ? (
+                                <span className="text-amber-800">
+                                  Revertido a mano; no se vuelve a crear solo.
+                                </span>
+                              ) : importe ? (
+                                <span className="text-amber-800">
+                                  Pendiente: guarda los parámetros del Kardex.
+                                </span>
+                              ) : (
+                                "Sin importe que trasladar."
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </>
+              )}
+            </section>
+          )}
 
           {resultado.avisos.length > 0 && (
             <details className="border border-amber-200 bg-amber-50 p-3 text-xs">
