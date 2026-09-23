@@ -3,6 +3,7 @@ import type {
   LibroLocal,
   ConfiguracionLibro,
   AsientoInput,
+  KardexProducto,
 } from "../types";
 import {
   accountClassification,
@@ -22,6 +23,7 @@ export const DEFAULT_CONFIG: ConfiguracionLibro = {
 export function emptyBook(year = new Date().getFullYear()): LibroLocal {
   return {
     versionLocal: 3,
+    kardex: [],
     cuentas: baseAccounts(),
     asientos: [],
     periodos: [{ anio: year, cerrado: false }],
@@ -196,9 +198,15 @@ export function localCommand(
   // Clone before validation: rejection leaves the entire previous book intact.
   const s = structuredClone(current);
   migrateCatalog(s, uuid);
+  s.kardex ??= [];
   let insertados = 0,
     omitidos = 0;
-  if (action === "catalog") {
+  if (action === "liquidacion-iva") {
+    registrarLiquidacionIva(s, data, uuid);
+    insertados = 1;
+  } else if (action === "kardex") {
+    guardarProductoKardex(s, data);
+  } else if (action === "catalog") {
     const items = parseCatalog(data, s.cuentas);
     for (const c of items) {
       const existing = s.cuentas.find((a) => a.codigo === c.codigo),
@@ -349,6 +357,655 @@ export function localCommand(
       modoInventario: d.modoInventario,
     } as ConfiguracionLibro;
   } else if (action !== "init") throw new Error("Acción local no permitida.");
+  if (["kardex", "entries", "reverse"].includes(action)) {
+    for (const producto of s.kardex ?? []) {
+      sincronizarFinalKardex(s, producto);
+    }
+  }
+    for (const a of s.asientos) {
+    if (
+      a.tipo === "ajuste" &&
+      a.liquidacionIva &&
+      !s.asientos.some(r => r.reversaDe === a.id)
+    ) {
+      if (calcularLiquidacionIva(s, a.liquidacionIva).desactualizada) {
+        throw new Error(
+          `Revierte primero la liquidación de IVA ${a.liquidacionIva} para cambiar sus importes.`,
+        );
+      }
+    }
+  }
   s.cuentas = ledger(postingFlags(s.cuentas), s.asientos);
   return { estado: s, insertados, omitidos };
+}
+
+export const rolesKardex = [
+  ["compras", "Compras"],
+  ["ventas", "Ventas"],
+  ["devolCompras", "Devolución sobre Compra"],
+  ["devolVentas", "Devolución sobre Venta"],
+] as const;
+
+function parametrosKardex(p: KardexProducto) {
+  const costo = cents(p.costo);
+  const venta = cents(p.venta);
+
+  if (!costo || !venta) {
+    throw new Error("Costo y venta deben ser mayores que cero.");
+  }
+
+  date(p.inicio);
+  date(p.fin);
+
+  if (p.fin < p.inicio) {
+    throw new Error("El fin no puede ser anterior al inicio.");
+  }
+
+  if (!Number.isSafeInteger(p.inicial) || p.inicial < 0) {
+    throw new Error(
+      "El inventario inicial debe ser un número entero no negativo.",
+    );
+  }
+
+  if (!Number.isSafeInteger(p.inicial * costo)) {
+    throw new Error("El valor del inventario inicial es demasiado grande.");
+  }
+
+  return { costo, venta };
+}
+
+function guardarProductoKardex(s: LibroLocal, data: unknown) {
+  const d = object(data);
+  const cuentas = object(d.cuentas);
+
+  if (
+    typeof d.id !== "string" ||
+    !d.id ||
+    d.id.length > 100 ||
+    typeof d.nombre !== "string" ||
+    !d.nombre.trim() ||
+    d.nombre.length > 120 ||
+    typeof d.costo !== "string" ||
+    typeof d.venta !== "string" ||
+    typeof d.inicio !== "string" ||
+    typeof d.fin !== "string" ||
+    typeof d.inicial !== "number"
+  ) {
+    throw new Error("Completa los datos del producto.");
+  }
+
+  const p: KardexProducto = {
+    id: d.id,
+    nombre: d.nombre.trim(),
+    costo: d.costo,
+    venta: d.venta,
+    inicio: d.inicio,
+    fin: d.fin,
+    inicial: d.inicial,
+    cuentas: {
+      compras: "",
+      ventas: "",
+      devolCompras: "",
+      devolVentas: "",
+    },
+  };
+
+  parametrosKardex(p);
+
+  const usados = new Set<string>();
+
+  for (const [rol, titulo] of rolesKardex) {
+    const codigo = cuentas[rol];
+
+    if (
+      typeof codigo !== "string" ||
+      (!codigo && (rol === "compras" || rol === "ventas"))
+    ) {
+      throw new Error(`Selecciona la cuenta de ${titulo}.`);
+    }
+
+    if (codigo) {
+      const cuenta = s.cuentas.find(c => c.codigo === codigo);
+
+      if (!cuenta || !/^\d{4,10}$/.test(codigo)) {
+        throw new Error(
+          `Cuenta inexistente o nivel incorrecto: ${codigo}.`,
+        );
+      }
+
+      if (
+        [
+          s.configuracion.cuentaIvaCredito,
+          s.configuracion.cuentaIvaDebito,
+        ].includes(codigo) ||
+        ["iva_credito", "iva_debito"].includes(cuenta.familia)
+      ) {
+        throw new Error("No asignes cuentas de IVA al Kardex.");
+      }
+
+      if (
+        usados.has(codigo) ||
+        (s.kardex ?? []).some(
+          otro =>
+            otro.id !== p.id &&
+            Object.values(otro.cuentas).includes(codigo),
+        )
+      ) {
+        throw new Error(
+          `La cuenta ${codigo} ya está asignada. Usa una subcuenta distinta por producto.`,
+        );
+      }
+
+      usados.add(codigo);
+    }
+
+    p.cuentas[rol] = codigo;
+  }
+
+  s.kardex = [
+    ...(s.kardex ?? []).filter(otro => otro.id !== p.id),
+    p,
+  ];
+}
+
+export function calcularKardex(
+  p: KardexProducto,
+  asientos: Asiento[],
+) {
+  const { costo, venta } = parametrosKardex(p);
+  let existencias = p.inicial;
+  let valido = true;
+  const avisos: string[] = [];
+
+  const filas = [{
+    id: "inicial",
+    fecha: p.inicio,
+    concepto: "Inventario inicial",
+    entrada: p.inicial,
+    salida: 0,
+    existencias,
+    deudor: p.inicial * costo,
+    acreedor: 0,
+    saldo: p.inicial * costo,
+  }];
+
+  const movimientos = [...asientos]
+    .filter(a => a.fecha >= p.inicio && a.fecha <= p.fin)
+    .sort(
+      (a, b) =>
+        a.fecha.localeCompare(b.fecha) || a.numero - b.numero,
+    );
+
+  for (const a of movimientos) {
+    // Los ajustes contables no son compras/ventas físicas adicionales.
+    const origen = a.tipo === "reversion"
+      ? asientos.find(original => original.id === a.reversaDe)
+      : a;
+
+    if (
+      !origen ||
+      origen.tipo !== "normal" ||
+      origen.ajusteInventario
+    ) {
+      continue;
+    }
+
+    for (const d of a.detalles) {
+      const asignacion = rolesKardex.find(
+        ([rol]) =>
+          p.cuentas[rol] !== "" &&
+          p.cuentas[rol] === d.codigoCuenta,
+      );
+
+      if (!asignacion) continue;
+
+      const [rol, titulo] = asignacion;
+
+      // Estos importes ya tienen separado el IVA.
+      const neto = cents(d.debe) - cents(d.haber);
+      if (!neto) continue;
+
+      const precio =
+        rol === "ventas" || rol === "devolVentas"
+          ? venta
+          : costo;
+
+      const unidades = Math.round(Math.abs(neto) / precio);
+      const diferencia = unidades * precio - Math.abs(neto);
+
+      if (diferencia) {
+        avisos.push(
+          `#${a.numero} · ${titulo}: ` +
+          `${Math.abs(neto) / 100} / ${precio / 100} = ` +
+          `${(Math.abs(neto) / precio).toFixed(4)} → ` +
+          `${unidades} unidades. Diferencia: ` +
+          `$${(diferencia / 100).toFixed(2)}.`,
+        );
+      }
+
+      if (!unidades) {
+        valido = false;
+        avisos.push(
+          `#${a.numero}: el importe equivale a menos de media unidad; revisa el precio.`,
+        );
+      }
+
+      // Compra y devolución de venta: debe → entrada.
+      // Venta y devolución de compra: haber → salida.
+      // También permite invertir el movimiento en una reversión.
+      const entrada = neto > 0 ? unidades : 0;
+      const salida = neto < 0 ? unidades : 0;
+
+      existencias += entrada - salida;
+
+      const deudor = entrada * costo;
+      const acreedor = salida * costo;
+      const saldo = existencias * costo;
+
+      if (
+        ![existencias, deudor, acreedor, saldo]
+          .every(Number.isSafeInteger)
+      ) {
+        throw new Error("Los importes exceden la precisión permitida.");
+      }
+
+      if (existencias < 0) {
+        valido = false;
+        avisos.push(
+          `#${a.numero}: salida superior a las existencias disponibles.`,
+        );
+      }
+
+      filas.push({
+        id: `${a.id}-${d.id}`,
+        fecha: a.fecha,
+        concepto:
+          `#${a.numero} · ` +
+          `${a.tipo === "reversion" ? "Reversión · " : ""}` +
+          `${titulo} · ${a.concepto}`,
+        entrada,
+        salida,
+        existencias,
+        deudor,
+        acreedor,
+        saldo,
+      });
+    }
+  }
+
+  return {
+    filas,
+    avisos,
+    valido,
+    unidades: existencias,
+    inventarioFinal: existencias * costo,
+  };
+}
+
+function sincronizarFinalKardex(
+  s: LibroLocal,
+  p: KardexProducto,
+) {
+  if (s.configuracion.modoInventario !== "traslados_compras") {
+    return;
+  }
+
+  const activos = s.asientos.filter(a =>
+    a.tipo === "ajuste" &&
+    a.fecha.slice(0, 4) === p.inicio.slice(0, 4) &&
+    !s.asientos.some(r => r.reversaDe === a.id) &&
+    a.detalles.some(d => d.codigoCuenta === p.cuentas.compras),
+  );
+
+  const finales = activos.filter(
+    a => a.ajusteInventario === "final",
+  );
+
+  // Si todavía no existe el traslado final,
+  // se conservan los parámetros sin crear un asiento.
+  if (!finales.length) return;
+
+  if (finales.length !== 1) {
+    throw new Error(
+      "Hay varios ajustes finales para este producto.",
+    );
+  }
+
+  const final = finales[0];
+
+  if (p.fin !== final.fecha) {
+    throw new Error(
+      `La fecha final del Kardex debe ser ${final.fecha}, ` +
+      `igual que el ajuste #${final.numero}.`,
+    );
+  }
+
+  const iniciales = activos.filter(
+    a => a.ajusteInventario === "inicial",
+  );
+
+  if (iniciales.length !== 1) {
+    throw new Error(
+      "Debe existir un único traslado de inventario inicial para estas compras.",
+    );
+  }
+
+  const inicial = iniciales[0];
+
+  const compraFinal = final.detalles.find(
+    d => d.codigoCuenta === p.cuentas.compras,
+  )!;
+
+  const inventarioFinal = final.detalles.find(
+    d => d.codigoCuenta !== p.cuentas.compras,
+  );
+
+  const compraInicial = inicial.detalles.find(
+    d => d.codigoCuenta === p.cuentas.compras,
+  )!;
+
+  const inventarioInicial = inicial.detalles.find(
+    d => d.codigoCuenta !== p.cuentas.compras,
+  );
+
+  // Comprueba la estructura de los dos traslados.
+  if (
+    final.detalles.length !== 2 ||
+    inicial.detalles.length !== 2 ||
+    !inventarioFinal ||
+    !inventarioInicial ||
+    inventarioFinal.codigoCuenta !== inventarioInicial.codigoCuenta ||
+    cents(compraFinal.debe) !== 0 ||
+    cents(inventarioFinal.haber) !== 0 ||
+    cents(compraInicial.haber) !== 0 ||
+    cents(inventarioInicial.debe) !== 0 ||
+    cents(compraFinal.haber) !== cents(inventarioFinal.debe) ||
+    cents(compraInicial.debe) !== cents(inventarioInicial.haber)
+  ) {
+    throw new Error(
+      "Los traslados deben tener dos líneas: Compras e Inventarios, con importes iguales.",
+    );
+  }
+
+  if (inicial.fecha < p.inicio || inicial.fecha > p.fin) {
+    throw new Error(
+      "El traslado inicial está fuera del intervalo del Kardex.",
+    );
+  }
+
+  const resultado = calcularKardex(p, s.asientos);
+
+  if (!resultado.valido) {
+    throw new Error(
+      "Corrige las inconsistencias del Kardex antes de actualizar el mayor.",
+    );
+  }
+
+  // Evita modificar el inventario final partiendo
+  // de un inventario inicial distinto al contabilizado.
+  if (p.inicial * cents(p.costo) !== cents(compraInicial.debe)) {
+    throw new Error(
+      "El valor inicial del Kardex no coincide con el traslado inicial. " +
+      "Revisa las unidades, el costo y el asiento de apertura.",
+    );
+  }
+
+  const importe = resultado.inventarioFinal;
+
+  // Guardar otra vez los mismos valores no cambia el asiento.
+  if (importe === cents(inventarioFinal.debe)) return;
+
+  requirePeriod(s, final.fecha);
+
+  // Comprueba el límite de importes permitido por el diario.
+  cents((importe / 100).toFixed(2));
+
+  inventarioFinal.debe = importe / 100;
+  compraFinal.haber = importe / 100;
+}
+
+export function calcularLiquidacionIva(
+  s: LibroLocal,
+  mes: string,
+) {
+  if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(mes)) {
+    throw new Error("Selecciona un mes válido.");
+  }
+
+  date(`${mes}-01`);
+
+  const credito = resolveIvaAccount(
+    "credito",
+    s.configuracion,
+    s.cuentas,
+  );
+
+  const debito = resolveIvaAccount(
+    "debito",
+    s.configuracion,
+    s.cuentas,
+  );
+
+  if (!credito || !debito) {
+    throw new Error(
+      "Asigna IVA Crédito y Débito Fiscal en Configuración.",
+    );
+  }
+
+  if (
+    credito.codigo.startsWith(debito.codigo) ||
+    debito.codigo.startsWith(credito.codigo)
+  ) {
+    throw new Error(
+      "Las cuentas de IVA deben ser distintas y no contenerse entre sí.",
+    );
+  }
+
+  const pertenece = (codigo: string, raiz: string) =>
+    codigo.startsWith(raiz);
+
+  let cf = 0;
+  let df = 0;
+
+  for (const a of s.asientos) {
+    const origen = a.reversaDe
+      ? s.asientos.find(x => x.id === a.reversaDe)
+      : undefined;
+
+    // Calcula el IVA del mes antes de su liquidación.
+    // Excluye liquidaciones anteriores y sus reversiones.
+    if (
+      !a.fecha.startsWith(mes + "-") ||
+      a.liquidacionIva ||
+      origen?.liquidacionIva
+    ) {
+      continue;
+    }
+
+    for (const d of a.detalles) {
+      if (pertenece(d.codigoCuenta, credito.codigo)) {
+        cf += cents(d.debe) - cents(d.haber);
+      }
+
+      if (pertenece(d.codigoCuenta, debito.codigo)) {
+        df += cents(d.haber) - cents(d.debe);
+      }
+    }
+  }
+
+  if (![cf, df].every(Number.isSafeInteger)) {
+    throw new Error("Los saldos exceden la precisión admitida.");
+  }
+
+  if (cf < 0 || df < 0) {
+    throw new Error(
+      "Hay saldos de IVA contrarios a su naturaleza. Revisa los asientos del mes.",
+    );
+  }
+
+  const registradas = s.asientos.filter(
+    a =>
+      a.tipo === "ajuste" &&
+      a.liquidacionIva === mes &&
+      !s.asientos.some(r => r.reversaDe === a.id),
+  );
+
+  if (registradas.length > 1) {
+    throw new Error(
+      "Hay más de una liquidación activa para este mes.",
+    );
+  }
+
+  const registrada = registradas[0];
+
+  const cerradoCredito =
+    registrada?.detalles.reduce(
+      (n, d) =>
+        n +
+        (pertenece(d.codigoCuenta, credito.codigo)
+          ? cents(d.haber) - cents(d.debe)
+          : 0),
+      0,
+    ) ?? 0;
+
+  const cerradoDebito =
+    registrada?.detalles.reduce(
+      (n, d) =>
+        n +
+        (pertenece(d.codigoCuenta, debito.codigo)
+          ? cents(d.debe) - cents(d.haber)
+          : 0),
+      0,
+    ) ?? 0;
+
+  const desactualizada =
+    !!registrada &&
+    (cf !== cerradoCredito || df !== cerradoDebito);
+
+  const fecha = new Date(
+    Date.UTC(
+      Number(mes.slice(0, 4)),
+      Number(mes.slice(5)),
+      0,
+    ),
+  ).toISOString().slice(0, 10);
+
+  return {
+    credito,
+    debito,
+    cf,
+    df,
+    diferencia: df - cf,
+    registrada,
+    desactualizada,
+    fecha,
+  };
+}
+
+function registrarLiquidacionIva(
+  s: LibroLocal,
+  data: unknown,
+  uuid: () => string,
+) {
+  const d = object(data);
+
+  if (typeof d.mes !== "string") {
+    throw new Error("Selecciona el mes.");
+  }
+
+  // Recalcula aquí: no confía en importes enviados por la pantalla.
+  const r = calcularLiquidacionIva(s, d.mes);
+
+  if (r.registrada) {
+    throw new Error(
+      "Este mes ya tiene una liquidación. Reviértela antes de reemplazarla.",
+    );
+  }
+
+  requirePeriod(s, r.fecha);
+
+  if (!r.cf && !r.df) {
+    throw new Error("No hay IVA para liquidar en este mes.");
+  }
+
+  const lineas: {
+    codigoCuenta: string;
+    debe: number;
+    haber: number;
+  }[] = [];
+
+  if (r.df) {
+    lineas.push({
+      codigoCuenta: r.debito.codigo,
+      debe: r.df,
+      haber: 0,
+    });
+  }
+
+  if (r.cf) {
+    lineas.push({
+      codigoCuenta: r.credito.codigo,
+      debe: 0,
+      haber: r.cf,
+    });
+  }
+
+  if (r.diferencia) {
+    const destino = s.cuentas.find(
+      c => c.codigo === d.destino,
+    );
+
+    if (
+      !destino ||
+      !canPost(destino, s.cuentas) ||
+      destino.tipo !== (r.diferencia > 0 ? "Pasivo" : "Activo") ||
+      [r.credito.codigo, r.debito.codigo].some(
+        c =>
+          destino.codigo.startsWith(c) ||
+          c.startsWith(destino.codigo),
+      )
+    ) {
+      throw new Error(
+        "Selecciona una cuenta separada de IVA por pagar (Pasivo) " +
+        "o remanente (Activo), según el resultado.",
+      );
+    }
+
+    lineas.push({
+      codigoCuenta: destino.codigo,
+      debe: Math.max(-r.diferencia, 0),
+      haber: Math.max(r.diferencia, 0),
+    });
+  }
+
+  for (const l of lineas) {
+    cents((l.debe / 100).toFixed(2));
+    cents((l.haber / 100).toFixed(2));
+  }
+
+  const id = uuid();
+
+  s.asientos.push({
+    id,
+    referencia: `LIQ-IVA-${d.mes}-${id}`,
+    numero: s.asientos.length + 1,
+    fecha: r.fecha,
+    concepto: `Liquidación de IVA ${d.mes}`,
+    tipo: "ajuste",
+    modoIva: s.configuracion.modoIva,
+    ajusteInventario: null,
+    liquidacionIva: d.mes,
+    cuadra: true,
+    detalles: lineas.map(l => ({
+      ...l,
+      id: uuid(),
+      cuentaId: s.cuentas.find(
+        c => c.codigo === l.codigoCuenta,
+      )!.id,
+      parcial: 0,
+      debe: l.debe / 100,
+      haber: l.haber / 100,
+      descripcion: `Liquidación de IVA ${d.mes}`,
+    })),
+  });
 }

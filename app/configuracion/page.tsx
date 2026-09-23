@@ -222,6 +222,7 @@ export default function Configuracion() {
             onClick={() =>
               download("respaldo-contabilidad-local.json", {
                 versionAuditoria: 2,
+                kardex: s.kardex ?? [],
                 exportadoEn: new Date().toISOString(),
                 configuracion: s.configuracion,
                 cuentas: s.cuentas,

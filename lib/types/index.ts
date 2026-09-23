@@ -34,6 +34,7 @@ export interface Asiento {
   ajusteInventario?: "inicial" | "final" | null;
   detalles: DetalleAsiento[];
   cuadra: boolean;
+  liquidacionIva?: string;
 }
 export interface Periodo {
   anio: number;
@@ -75,4 +76,19 @@ export interface LibroLocal {
   asientos: Asiento[];
   periodos: Periodo[];
   configuracion: ConfiguracionLibro;
+  kardex?: KardexProducto[];
+}
+
+export interface KardexProducto {
+  id: string;
+  nombre: string;
+  costo: string;
+  venta: string;
+  inicio: string;
+  fin: string;
+  inicial: number;
+  cuentas: Record<
+    "compras" | "ventas" | "devolCompras" | "devolVentas",
+    string
+  >;
 }
