@@ -62,13 +62,13 @@ export default function LiquidacionIvaPage() {
       ? [
           {
             nombre: r.debito.nombre,
-            debe: r.df,
-            haber: 0,
+            debe: Math.max(r.df, 0),
+            haber: Math.max(-r.df, 0),
           },
           {
             nombre: r.credito.nombre,
-            debe: 0,
-            haber: r.cf,
+            debe: Math.max(-r.cf, 0),
+            haber: Math.max(r.cf, 0),
           },
           {
             nombre:
@@ -123,6 +123,15 @@ export default function LiquidacionIvaPage() {
         )}
 
         {mensaje && <p role="status">{mensaje}</p>}
+
+        {r?.invertidos && (
+          <p role="alert" className="text-amber-800">
+            Este mes cierra con algún IVA contrario a su naturaleza, lo normal
+            tras revertir una operación de otro mes. Se liquida cancelando
+            cada cuenta por el lado que le corresponde; revisa los asientos
+            si no lo esperabas.
+          </p>
+        )}
 
         {r?.registrada && (
           <p>

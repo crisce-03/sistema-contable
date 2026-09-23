@@ -1,34 +1,31 @@
 "use client";
 
 import Link from 'next/link';
-import { UserCog } from 'lucide-react';
-import { Car } from 'lucide-react';
 import { usePathname } from 'next/navigation';
-import { 
+import {
   Settings,
-  LayoutGrid, 
-  List, 
-  BookText, 
-  BookMarked, 
+  LayoutGrid,
+  List,
+  BookText,
+  BookMarked,
   LineChart,
   Calculator,
   Archive,
-  FileText
+  Scale,
 } from 'lucide-react';
 
+// El recorrido sigue el ciclo contable: se registra, se mayoriza, se
+// comprueba, se valúa el inventario y se informa.
 const navItems = [
   { name: 'Configuración', path: '/configuracion', icon: Settings },
   { name: 'Resumen', path: '/', icon: LayoutGrid },
   { name: 'Catálogo', path: '/catalogo', icon: List },
   { name: 'Libro Diario', path: '/asientos', icon: BookText },
   { name: 'Mayor', path: '/mayorizacion', icon: BookMarked },
+  { name: 'Bal. Comprobación', path: '/comprobacion', icon: Scale },
   { name: 'Kardex', path: '/kardex', icon: Archive },
   { name: 'Liquidación IVA', path: '/liquidacion-iva', icon: Calculator },
   { name: 'Estados Financieros', path: '/reportes', icon: LineChart },
-  { name: 'Bal. Comprobación', path: '/comprobacion', icon: BookMarked },
-  { name: 'Libros IVA', path: '/libros-iva', icon: FileText },
-  { name: 'Nómina / Planillas', path: '/planilla', icon: UserCog },
-  { name: 'Activos Fijos', path: '/activos', icon: Car },
 ];
 
 export function Sidebar() {
