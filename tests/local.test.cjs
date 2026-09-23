@@ -480,8 +480,12 @@ test("VAT settings can change both ways without changing historical entries or b
   const reversed = apply(s, "reverse", { id: s.asientos[5].id, fecha: "2026-01-02", motivo: "Prueba" });
   assert.equal(reversed.asientos.at(-1).modoIva, "incluido");
   assert.equal(reversed.configuracion.modoIva, "mas_iva");
+  // El tratamiento de inventarios ya se puede cambiar sobre un libro con
+  // asientos: no altera los importes ya registrados.
+  const explicitos = apply(s, "settings", { ...s.configuracion, modoInventario: "inventarios_explicitos" });
+  assert.equal(explicitos.configuracion.modoInventario, "inventarios_explicitos");
+  assert.deepEqual(explicitos.cuentas.map((c) => c.saldo), s.cuentas.map((c) => c.saldo));
   const before = JSON.stringify(s);
-  assert.throws(() => apply(s, "settings", { ...s.configuracion, modoInventario: "inventarios_explicitos" }), /inventarios/);
   assert.throws(() => apply(s, "settings", { ...s.configuracion, modoIva: "otro" }), /inválida/);
   assert.throws(() => apply(s, "entries", { version: 1, asientos: [{ ...next, modoIva: "otro" }] }), /IVA/);
   assert.throws(() => apply(s, "entries", { version: 1, modoIva: "mas_iva", asientos: [{ ...next, modoIva: "incluido" }] }), /IVA/);

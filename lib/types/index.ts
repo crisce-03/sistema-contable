@@ -34,6 +34,7 @@ export interface Asiento {
   ajusteInventario?: "inicial" | "final" | null;
   detalles: DetalleAsiento[];
   cuadra: boolean;
+  liquidacionIva?: string;
 }
 export interface Periodo {
   anio: number;
@@ -63,11 +64,21 @@ export interface AsientoInput {
 
 export type ModoIva = "mas_iva" | "incluido";
 export type ModoInventario = "traslados_compras" | "inventarios_explicitos";
+export type RolReporte =
+  | "inventarios"
+  | "compras"
+  | "gastosCompra"
+  | "devolCompras"
+  | "ventas"
+  | "devolVentas"
+  | "utilidad";
 export interface ConfiguracionLibro {
   modoIva: ModoIva;
   modoInventario: ModoInventario;
   cuentaIvaCredito?: string;
   cuentaIvaDebito?: string;
+  cuentasReporte?: Partial<Record<RolReporte, string>>;
+  inventarioFinalFisico?: string;
 }
 export interface LibroLocal {
   versionLocal: 2 | 3;
@@ -75,4 +86,19 @@ export interface LibroLocal {
   asientos: Asiento[];
   periodos: Periodo[];
   configuracion: ConfiguracionLibro;
+  kardex?: KardexProducto[];
+}
+
+export interface KardexProducto {
+  id: string;
+  nombre: string;
+  costo: string;
+  venta: string;
+  inicio: string;
+  fin: string;
+  inicial: number;
+  cuentas: Record<
+    "compras" | "ventas" | "devolCompras" | "devolVentas",
+    string
+  >;
 }

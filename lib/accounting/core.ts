@@ -299,7 +299,7 @@ export function parseEntries(
           fs.every((f) => f === "compras" || f === "inventarios");
         if (transfer && config.modoInventario !== "traslados_compras")
           throw new Error(
-            "El modo de inventarios explícitos no permite los traspasos entre Compras e Inventarios.",
+            "El modo analítico sin traslados no permite los traspasos entre Compras e Inventarios.",
           );
         if (transfer && (!a.ajusteInventario || a.tipo !== "ajuste"))
           throw new Error(

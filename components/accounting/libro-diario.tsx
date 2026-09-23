@@ -600,7 +600,15 @@ export default function LibroDiario() {
       {[...asientos].reverse().map((a) => (
         <details key={a.id} className="border border-zinc-200 bg-white p-4">
           <summary className="cursor-pointer text-sm">
-            #{a.numero} · {a.fecha} · {a.referencia} · {a.concepto} · {a.tipo}
+            #{a.numero} · {a.fecha} ·{" "}
+              {a.liquidacionIva && a.tipo === "ajuste"
+                ? `Liquidación IVA · ${new Intl.DateTimeFormat("es-SV", {
+                    month: "long",
+                    year: "numeric",
+                    timeZone: "UTC",
+                  }).format(new Date(`${a.liquidacionIva}-01T00:00:00Z`))}`
+                : `${a.referencia} · ${a.concepto}`}{" "}
+              · {a.tipo}
             {asientos.some((r) => r.reversaDe === a.id) ? " · Revertido" : ""}
           </summary>
           <div className="overflow-auto">
