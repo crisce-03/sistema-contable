@@ -12,7 +12,7 @@ async function cloudRequest(method: string, body?: unknown, query = "") {
     body: body === undefined ? undefined : JSON.stringify(body),
   });
   const payload = await response.json().catch(() => ({ error: "El servidor no devolvió una respuesta válida." }));
-  if (!response.ok) throw new Error(payload.error ?? "No se pudo guardar el cambio en Supabase.");
+  if (!response.ok) throw new Error(payload.error ?? "No se pudo guardar el cambio en tu ejercicio.");
   return payload;
 }
 

@@ -511,11 +511,11 @@ export default function Configuracion() {
         </section>
         <section className="border border-zinc-200 bg-white p-6 space-y-4">
           <h2 className="text-xs font-bold text-zinc-400 uppercase tracking-wider border-b border-zinc-100 pb-2">
-            Datos en Supabase y ejercicios archivados
+            Respaldos y ejercicios archivados
           </h2>
           <p className="text-xs text-zinc-500">
             El catálogo, los asientos, el Kardex y la configuración se guardan
-            en tu cuenta de Supabase y están disponibles al iniciar sesión en
+            en tu cuenta y están disponibles al iniciar sesión en
             otro equipo. <strong>Iniciar otro ejercicio</strong> archiva el
             actual y abre uno con el catálogo inicial; los archivados se pueden volver a abrir.
           </p>
@@ -559,7 +559,7 @@ export default function Configuracion() {
           {confirm && (
             <div className="bg-blue-50 p-4 space-y-3">
               <p>
-                El ejercicio actual quedará archivado en Supabase. El nuevo
+                El ejercicio actual quedará archivado en tu cuenta. El nuevo
                 empezará sin asientos, con el catálogo y la configuración iniciales.
               </p>
               <button

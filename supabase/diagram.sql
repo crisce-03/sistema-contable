@@ -1,9 +1,9 @@
 -- DER PostgreSQL para importar en dbdiagram.io.
--- Generado desde supabase/script.sql por node scripts/generate-diagram.cjs.
+-- Generado desde supabase/schema.sql por node scripts/generate-diagram.cjs.
 -- SOLO DIAGRAMA: no ejecutar este archivo en Supabase.
 -- users representa únicamente la PK de auth.users, administrada por Supabase.
 -- Omite CHECK, valores por defecto, índices secundarios, funciones, triggers y RLS.
--- Las reglas ejecutables completas están en script.sql.
+-- Las reglas ejecutables completas están en schema.sql.
 
 CREATE TABLE "users" (
   "id" uuid NOT NULL,

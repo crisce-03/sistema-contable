@@ -1,115 +1,112 @@
-# Sistema contable con Supabase
+# Sistema Contable
 
-La aplicación guarda ejercicios en PostgreSQL mediante Supabase y utiliza Supabase Auth para el acceso. Sigue la [guía paso a paso](supabase/README.md) para crear tu proyecto, ejecutar [script.sql](supabase/script.sql), cargar el [catálogo inicial](supabase/data.sql) y configurar `.env.local` a partir de [.env.example](.env.example).
+Aplicación web en español para administrar ejercicios contables, registrar operaciones por partida doble y consultar estados financieros. Reúne el catálogo de cuentas, el diario, el mayor, el control de inventarios y el cierre del ejercicio en un mismo lugar.
 
-También se incluyen [SQL para el DER](supabase/diagram.sql), [DBML para dbdiagram.io](supabase/diagram.dbml) y [diagrama para draw.io](supabase/diagram.drawio). En Configuración puedes trasladar ejercicios de la versión anterior desde IndexedDB o restaurar respaldos completos sin borrar los originales.
+Cada usuario dispone de sus propios ejercicios, con acceso desde distintos equipos y opciones para descargar respaldos, restaurarlos y consultar períodos anteriores.
 
-## Catálogo y cuentas de mayor
+## Vista previa
 
-Cada ejercicio comienza con los 7 grupos de 1 dígito y los 13 rubros de 2
-dígitos del manual comercial, más las 23 cuentas operativas de la plantilla
-para `asientosguia1.json`. Los dos primeros niveles son predefinidos, no reciben
-asientos y no se modifican mediante JSON. Puedes registrar más cuentas desde
-Catálogo. Consulta [las correspondencias y alternativas](supabase/CATALOGO.md)
-antes de importar un catálogo con otra numeración.
+> **Captura pendiente:** toma una captura de la pantalla **Resumen Contable**, con el menú lateral y datos de ejemplo. Guárdala en `docs/images/resumen-contable.png` (crea la carpeta si no existe). Usa una imagen horizontal de aproximadamente 1440 × 900 píxeles y oculta correos o datos personales. Después sustituye este aviso y el bloque de ejemplo por la siguiente línea Markdown, sin las comillas invertidas:
 
-La jerarquía es `1 → 11 → 1101 → 110101 → 11010101`. Solo se admiten cuentas
-de usuario de 4, 6, 8 y 10 dígitos, con su padre inmediato existente o incluido
-en el mismo archivo. El orden del archivo no importa.
-
-```json
-{
-  "version": 1,
-  "cuentas": [
-    { "codigo": "1101", "nombre": "Efectivo y equivalentes de efectivo", "padreCodigo": "11", "activa": true },
-    { "codigo": "110101", "nombre": "Caja", "padreCodigo": "1101", "activa": true },
-    { "codigo": "11010101", "nombre": "Caja general", "padreCodigo": "110101", "activa": true }
-  ]
-}
+```markdown
+![Resumen del Sistema Contable](docs/images/resumen-contable.png)
 ```
 
-`padreCodigo` se puede omitir: se obtiene quitando los últimos dos dígitos.
-El campo antiguo `familia` es opcional; se conserva la clasificación interna
-de cuentas conocidas para los asistentes del diario, sin limitar la creación
-de otras cuentas de 4 dígitos. Los ejemplos completos están en
-`examples/catalogo.json` y `examples/catalogo-parcial.json`.
+## Funcionalidades
 
-En ambos ejemplos, `1101` es **Efectivo y equivalentes de efectivo** y
-`110101` es **Caja**, hija de `1101`, tal como indica el PDF. Los movimientos
-de caja de `examples/asientos-ejemplo.json` usan `110101`; el Mayor los acumula
-en `1101`. `11010101` identifica Caja General cuando se necesita ese desglose.
+| Módulo | Funciones |
+|---|---|
+| Resumen | Consulta de cuentas, períodos abiertos y movimientos recientes. |
+| Catálogo | Cuentas jerárquicas, subcuentas, activación e importación y exportación JSON. |
+| Libro Diario | Registro de asientos balanceados, cálculo de IVA, ajustes y reversiones. |
+| Libro Mayor | Consolidación de movimientos por cuenta de mayor. |
+| Balanza de comprobación | Comparación de movimientos y saldos deudores y acreedores. |
+| Kardex | Control de existencias, costos y movimientos vinculados al diario. |
+| Liquidación de IVA | Consulta y registro de la liquidación de crédito y débito fiscal. |
+| Estados financieros | Estado de resultados, balance y cierre de resultados. |
+| Configuración | Períodos, reglas de IVA e inventario, respaldos y ejercicios archivados. |
+| Mi cuenta | Perfil, contraseña y recuperación de acceso. |
 
-Para registrar un asiento se selecciona obligatoriamente una cuenta activa de
-4 dígitos. El selector permite buscarla por código o nombre y, opcionalmente,
-elegir sus subcuentas de 6, 8 y 10 dígitos. El importe se registra una sola vez
-en el último nivel elegido, incluso si esa cuenta tiene subcuentas. Todos sus
-padres deben estar activos. Los movimientos anteriores se conservan. El Libro
-Mayor y la balanza muestran únicamente cuentas de 4 dígitos, acumulando sus
-movimientos directos y los de todas sus subcuentas una sola vez. Por ejemplo,
-`510101` y `51010402` se consolidan en `5101`, aunque tengan distinta
-clasificación o naturaleza.
+## Flujo de trabajo
 
-Al trasladar un ejercicio de la versión anterior desde Configuración, se agregan
-los niveles base y los padres que falten, conservando sus identificadores y
-asientos. Se guarda como un nuevo libro en Supabase y se archiva el que estaba
-activo en la misma transacción. El original del navegador no se modifica.
-La exportación del catálogo incluye solo cuentas de usuario para poder
-importarlas en otro ejercicio.
+1. Crea una cuenta e inicia sesión.
+2. Revisa el catálogo y abre el período del ejercicio.
+3. Define el tratamiento del IVA y las cuentas para inventarios e informes.
+4. Registra o importa los asientos en el Libro Diario.
+5. Comprueba los movimientos en el Mayor y la balanza.
+6. Completa el Kardex o el inventario físico, consulta los informes y registra los ajustes y cierres que correspondan.
+7. Descarga un respaldo o archiva el ejercicio para continuar con otro.
 
-En el formulario del Libro Diario, **Calcular IVA (13%)** se activa por línea y
-empieza desmarcado. Ingresa el importe directamente en Debe o Haber y elige
-únicamente **IVA crédito fiscal** o **IVA débito fiscal**. El modo activo en
-Configuración determina el cálculo: **IVA incluido** separa la base y el impuesto
-del total ingresado (113 → 100 + 13); **Más IVA** conserva la base ingresada y suma
-el 13% (100 → 100 + 13). El impuesto aparece en el mismo lado que el importe,
-independientemente de si es crédito o débito fiscal.
-Debajo del importe se muestra la base que se guardará; una fila adicional muestra
-el IVA. Los totales suman la base y el impuesto una sola vez. La cuenta de IVA se
-reconoce por su nombre en el catálogo; puedes asignarla en Configuración si tu
-catálogo usa otro nombre o tiene varias cuentas posibles.
-La contrapartida se completa manualmente y el asiento debe cuadrar antes de guardar.
+Los asientos deben cuadrar antes de guardarse. Las reversiones conservan las operaciones originales para consulta y los períodos bloqueados impiden registrar nuevos movimientos. Si dos sesiones intentan guardar sobre una misma versión del ejercicio, el sistema solicita actualizar los datos antes de continuar.
 
-Al editar el importe, cambia su IVA automáticamente. Al desmarcar la casilla se
-retira el IVA generado y se conserva el importe ingresado; eliminar la línea
-también retira su impuesto. Los aportes y transferencias sin la casilla marcada
-mantienen sus importes completos. Solo se guardan los importes finales, sin los
-controles del borrador; importar JSON no vuelve a calcular IVA.
+## Instalación
 
-Verificación: `npm test`, `npm run typecheck` y `npm run lint`.
+Necesitas Node.js compatible con las dependencias del proyecto, npm y un servicio de base de datos y autenticación configurado. La [guía de instalación](supabase/README.md) explica cómo crear el proyecto, ejecutar los scripts y configurar las credenciales.
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Desde la carpeta del repositorio:
 
-## Getting Started
+```bash
+npm ci
+```
 
-First, run the development server:
+Copia `.env.example` como `.env.local` y completa los valores según la guía. En PowerShell:
+
+```powershell
+Copy-Item .env.example .env.local
+```
+
+Si ya tienes las variables configuradas en `.env` o `.env.local`, conserva ese archivo y revisa los valores; no lo reemplaces por la plantilla.
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre `http://localhost:3000`. Los archivos con credenciales se mantienen fuera del repositorio.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Base de datos y catálogo
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+La instalación incluye una plantilla de **43 cuentas**: 20 grupos y rubros, y 23 cuentas operativas correspondientes a la guía de ejemplo. Los asientos de ejemplo se importan por separado.
 
-## Learn More
+| Archivo | Propósito |
+|---|---|
+| [schema.sql](supabase/schema.sql) | Tablas, relaciones, índices, validaciones y permisos. |
+| [data.sql](supabase/data.sql) | Catálogo inicial de cuentas. |
+| [diagram.sql](supabase/diagram.sql) | Estructura para importar en una herramienta de diagramación. |
+| [diagram.dbml](supabase/diagram.dbml) | DER para dbdiagram.io. |
+| [diagram.drawio](supabase/diagram.drawio) | DER editable en diagrams.net / draw.io. |
 
-To learn more about Next.js, take a look at the following resources:
+Consulta las [notas del catálogo](supabase/CATALOGO.md) antes de importar otra numeración. Los archivos del DER son para documentación; la instalación utiliza `schema.sql` y `data.sql`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Documentación
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- [Instalación, configuración y recuperación de datos](supabase/README.md).
+- [Uso del catálogo, registro de asientos y cálculo de IVA](docs/uso.md).
+- [Correspondencia de cuentas y archivos de ejemplo](supabase/CATALOGO.md).
+- [Asientos de la guía personalizada](examples/asientos-guia1-personalizado.json).
 
-## Deploy on Vercel
+## Desarrollo y verificación
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm test
+npm run typecheck
+npm run lint
+npm run build
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Las pruebas cubren las reglas contables, la persistencia, el aislamiento entre usuarios y la restauración de ejercicios. La suite de base de datos se ejecuta en PostgreSQL embebido y no modifica la base de datos configurada en tu entorno.
+
+Para ejecutar la compilación de producción localmente, utiliza `npm start` después de `npm run build`. El alojamiento debe ejecutar la aplicación y su API; una exportación de archivos estáticos no cubre el guardado de operaciones.
+
+## Preparar la entrega
+
+Desde PowerShell, en la carpeta del proyecto:
+
+```powershell
+.\scripts\package-delivery.ps1
+```
+
+El ZIP se guarda en `entrega/` e incluye el código actual, los SQL, la documentación y un resumen del historial Git. Excluye dependencias, compilaciones y archivos de credenciales. Después de extraerlo, instala las dependencias con `npm ci` y sigue la guía de instalación. El video y el manual en PDF se adjuntan por separado si los exige la actividad.
+
+## Alcance actual
+
+El sistema trabaja con ejercicios individuales por usuario y requiere conexión para guardar cambios. Incluye inventario analítico con o sin traslados a Compras. Los accesos compartidos con roles y el inventario perpetuo no están implementados.

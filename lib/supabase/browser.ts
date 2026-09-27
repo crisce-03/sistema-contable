@@ -9,7 +9,7 @@ export function isSupabaseConfigured() {
 }
 
 export function getSupabaseBrowser() {
-  if (!isSupabaseConfigured()) throw new Error("Configura Supabase en .env.local y reinicia el servidor.");
+  if (!isSupabaseConfigured()) throw new Error("El servicio de acceso aún no está configurado. Contacta al administrador.");
   client ??= createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     (process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)!,

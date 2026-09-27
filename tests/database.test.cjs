@@ -35,7 +35,7 @@ before(async () => {
     grant usage on schema public, auth to anon, authenticated, service_role;
     grant execute on function auth.uid() to anon, authenticated, service_role;
   `);
-  await db.exec(fs.readFileSync(path.join(root, "supabase/script.sql"), "utf8"));
+  await db.exec(fs.readFileSync(path.join(root, "supabase/schema.sql"), "utf8"));
 });
 after(async () => { if (db) await db.close(); });
 

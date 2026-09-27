@@ -7,7 +7,7 @@ export async function authorizedRepository(request: Request) {
   if (!token) throw new AccountingError("Inicia sesión para continuar.", 401);
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) throw new AccountingError("Falta configurar Supabase en el servidor (.env.local).", 503);
+  if (!url || !key) throw new AccountingError("El servicio aún no está configurado. Contacta al administrador.", 503);
   const admin = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
   const { data, error } = await admin.auth.getUser(token);
   if (error || !data.user) throw new AccountingError("La sesión expiró. Vuelve a iniciar sesión.", 401);
@@ -18,10 +18,10 @@ export async function authorizedRepository(request: Request) {
       if (error.code === "40001") throw new AccountingError("El ejercicio cambió en otra sesión. Actualiza los datos antes de continuar.", 409);
       if (error.code === "42501") throw new AccountingError("No tienes acceso a este ejercicio.", 403);
       if (["PGRST202", "42P01", "42883"].includes(error.code))
-        throw new AccountingError("Ejecuta supabase/script.sql y supabase/data.sql en el proyecto configurado.", 503);
+        throw new AccountingError("La configuración de los ejercicios está incompleta. Contacta al administrador.", 503);
       if (error.code === "P0001") throw new AccountingError(error.message);
       console.error("Supabase accounting:", error.code, error.message);
-      throw new AccountingError("No se guardó el cambio. Comprueba el esquema de Supabase y los datos enviados.", 500);
+      throw new AccountingError("No se pudo guardar el cambio. Inténtalo de nuevo; si el problema continúa, contacta al administrador.", 500);
     }
     return data;
   }
@@ -29,7 +29,7 @@ export async function authorizedRepository(request: Request) {
     load: () => rpc("accounting_load", {}) as Promise<StoredBook | null>,
     catalog: async () => {
       const { data, error } = await admin.from("catalogo_base").select("codigo,nombre,padre_codigo").order("codigo");
-      if (error) throw new AccountingError("No se pudo leer el catálogo inicial. Ejecuta script.sql y data.sql.", 503);
+      if (error) throw new AccountingError("No se pudo cargar el catálogo inicial. Contacta al administrador.", 503);
       return data;
     },
     commit: (version, state, action, target) => rpc("accounting_commit", {

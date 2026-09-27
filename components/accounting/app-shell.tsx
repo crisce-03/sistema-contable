@@ -19,7 +19,7 @@ function AuthenticatedShell({ children }: { children: React.ReactNode }) {
               {ocupado ? "Guardando / actualizando…" : "Actualizar datos"}
             </button>
             <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full font-medium border border-green-200">
-              Supabase · {configuracion.modoIva === "mas_iva" ? "Más IVA" : "IVA incluido"}
+              {configuracion.modoIva === "mas_iva" ? "Más IVA" : "IVA incluido"}
             </span>
             <button className="text-xs text-zinc-600 underline" disabled={cerrandoSesion} onClick={() => void cerrarSesion()}>
               {cerrandoSesion ? "Cerrando…" : "Cerrar sesión"}

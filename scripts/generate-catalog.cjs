@@ -21,7 +21,7 @@ const sql = (value) => value === null ? "NULL" : `'${value.replaceAll("'", "''")
 const content = `-- Catálogo inicial de la guía asientosguia1: 20 grupos/rubros y 23 cuentas.
 -- Generado por: node scripts/generate-catalog.cjs
 -- Fuentes: lib/accounting/families.json y examples/catalogo-para-asientosguia1.json.
--- Ejecutar después de script.sql, antes de crear el primer libro.
+-- Ejecutar después de schema.sql, antes de crear el primer libro.
 -- Solo actualiza la plantilla de libros futuros; no modifica cuentas ni asientos existentes.
 -- No combinar con el catálogo comercial: varios códigos tienen significados distintos.
 -- Repetir el script restablece los nombres y padres de estos 43 códigos de la plantilla.

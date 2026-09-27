@@ -3,7 +3,7 @@ const path = require("node:path");
 const { PGlite } = require("@electric-sql/pglite");
 
 const root = path.resolve(__dirname, "..");
-const source = fs.readFileSync(path.join(root, "supabase/script.sql"), "utf8");
+const source = fs.readFileSync(path.join(root, "supabase/schema.sql"), "utf8");
 
 // Read complete table definitions without interpreting function bodies or
 // splitting numeric(12, 2), CHECK expressions, and quoted strings at commas.
@@ -37,7 +37,7 @@ function tableDefinitions(sql) {
     if (depth) throw new Error(`Definición SQL incompleta: ${match[1]}.`);
     definitions.push({ name: match[1], sql: sql.slice(match.index, index) + ";" });
   }
-  if (!definitions.length) throw new Error("No se encontraron tablas public en script.sql.");
+  if (!definitions.length) throw new Error("No se encontraron tablas public en schema.sql.");
   return definitions;
 }
 
@@ -97,11 +97,11 @@ async function main() {
       };
     });
     const sqlHeader = `-- DER PostgreSQL para importar en dbdiagram.io.
--- Generado desde supabase/script.sql por node scripts/generate-diagram.cjs.
+-- Generado desde supabase/schema.sql por node scripts/generate-diagram.cjs.
 -- SOLO DIAGRAMA: no ejecutar este archivo en Supabase.
 -- users representa únicamente la PK de auth.users, administrada por Supabase.
 -- Omite CHECK, valores por defecto, índices secundarios, funciones, triggers y RLS.
--- Las reglas ejecutables completas están en script.sql.
+-- Las reglas ejecutables completas están en schema.sql.
 \n`;
     const diagramSql = tables.map((table) => {
       const lines = table.columns.map((column) =>
@@ -142,7 +142,7 @@ async function main() {
       ` > ${refColumns(displayName(constraint.referenced_schema, constraint.referenced_table), constraint.referenced_columns)}` +
       ` [delete: ${actions[constraint.delete_action]}]`);
     fs.writeFileSync(path.join(root, "supabase/diagram.dbml"),
-      "// Generado desde script.sql; solo documentación. users representa auth.users.\n\n" +
+      "// Generado desde schema.sql; solo documentación. users representa auth.users.\n\n" +
       diagramDbml + "\n\n" + references.join("\n") + "\n");
 
     // An uncompressed diagrams.net document can be opened without SQL plugins.

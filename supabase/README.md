@@ -13,10 +13,10 @@ El código ya utiliza Supabase para guardar los ejercicios. Para ponerlo en marc
 
 En el proyecto, abre **SQL Editor → New query**:
 
-1. Copia el contenido completo de [script.sql](script.sql) y ejecútalo con **Run**.
+1. Copia el contenido completo de [schema.sql](schema.sql) y ejecútalo con **Run**.
 2. Abre otra consulta, copia [data.sql](data.sql) completo y ejecútalo.
 
-`script.sql` es una instalación inicial para un proyecto vacío: crea 11 tablas, relaciones, índices, validaciones de partida doble, funciones transaccionales y políticas de acceso. Se ejecuta una vez. Si lo repites, PostgreSQL indicará que los objetos ya existen; no borres las tablas para actualizar una instalación con datos. Las futuras actualizaciones requieren migraciones específicas.
+`schema.sql` es una instalación inicial para un proyecto vacío: crea 11 tablas, relaciones, índices, validaciones de partida doble, funciones transaccionales y políticas de acceso. Se ejecuta una vez. Si lo repites, PostgreSQL indicará que los objetos ya existen; no borres las tablas para actualizar una instalación con datos. Las futuras actualizaciones requieren migraciones específicas.
 
 `data.sql` carga **43 cuentas**: 20 grupos y rubros, y 23 cuentas operativas compatibles con tu archivo `asientosguia1.json`. Puede repetirse: actualiza la plantilla sin modificar ejercicios existentes. No carga asientos, saldos ni usuarios. Lee [CATALOGO.md](CATALOGO.md) antes de cambiar a otro catálogo.
 
@@ -82,7 +82,7 @@ Si editas `.env.local`, reinicia `npm run dev`. Para producción, configura las 
 Abre la aplicación desde **el mismo navegador y la misma dirección** donde usabas la versión anterior (incluido el puerto). Inicia sesión y entra en **Configuración → Trasladar datos y restaurar respaldos**.
 
 - Pulsa **Buscar ejercicios en este navegador**.
-- Selecciona el actual o uno archivado y pulsa **Trasladar a Supabase**.
+- Selecciona el actual o uno archivado y pulsa **Trasladar a mi cuenta**.
 - Confirma la importación. Se valida el libro completo en el servidor y se crea un nuevo ejercicio en tu cuenta; el ejercicio de Supabase que estaba activo queda archivado.
 - Repite para otros ejercicios que quieras conservar en la nube.
 
@@ -108,7 +108,7 @@ Se incluyen tres formatos, porque dbdiagram.io y diagrams.net son herramientas d
 - **dbdiagram.io:** importa [diagram.sql](diagram.sql) como PostgreSQL, o pega [diagram.dbml](diagram.dbml) en su editor DBML.
 - **diagrams.net / draw.io:** abre [diagram.drawio](diagram.drawio) con **File → Open from → Device**. Ya contiene las entidades y sus relaciones.
 
-`diagram.sql` contiene únicamente tablas y relaciones para diagramación. **No lo ejecutes en Supabase**: usa `script.sql` para instalar la base real. El DER representa `auth.users` como `users`, con su identificador; omite las columnas internas de autenticación y contraseñas. Sus demás entidades y claves se generan desde el esquema real.
+`diagram.sql` contiene únicamente tablas y relaciones para diagramación. **No lo ejecutes en Supabase**: usa `schema.sql` para instalar la base real. El DER representa `auth.users` como `users`, con su identificador; omite las columnas internas de autenticación y contraseñas. Sus demás entidades y claves se generan desde el esquema real.
 
 Para regenerar estos archivos después de modificar el esquema:
 
@@ -149,14 +149,14 @@ npm run lint
 npm run build
 ```
 
-Las pruebas de base de datos ejecutan `script.sql` en PostgreSQL embebido (PGlite), con roles y `auth.uid()` simulados; verifican persistencia, RLS, permisos RPC, transacciones, conflictos y catálogo. Las pruebas HTTP verifican autenticación con un cliente simulado. Esto no sustituye la prueba final contra tu proyecto real.
+Las pruebas de base de datos ejecutan `schema.sql` en PostgreSQL embebido (PGlite), con roles y `auth.uid()` simulados; verifican persistencia, RLS, permisos RPC, transacciones, conflictos y catálogo. Las pruebas HTTP verifican autenticación con un cliente simulado. Esto no sustituye la prueba final contra tu proyecto real.
 
 Después de configurar Supabase, registra un asiento, recarga la página, entra desde otro navegador con la misma cuenta y comprueba que persiste. Crea otra cuenta y comprueba que su ejercicio sea independiente. Prueba también archivar/abrir un ejercicio y recuperar una contraseña.
 
 ## Problemas habituales
 
-- **Falta configurar Supabase:** revisa las tres variables y reinicia Next.js.
-- **Ejecuta script.sql/data.sql:** verifica que las claves sean del mismo proyecto donde ejecutaste los scripts.
+- **Configuración pendiente / El servicio aún no está configurado:** revisa las tres variables y reinicia Next.js.
+- **Configuración de los ejercicios incompleta / Catálogo inicial no disponible:** verifica que las claves sean del mismo proyecto donde ejecutaste `schema.sql` y `data.sql`.
 - **El correo no llega:** comprueba la confirmación, URL de redirección y configuración SMTP en Authentication.
 - **El período está bloqueado:** abre el año correspondiente antes de registrar movimientos nuevos.
 - **El archivo no coincide con el IVA:** guarda el modo adecuado en Configuración antes de importar; los importes JSON ya son finales.

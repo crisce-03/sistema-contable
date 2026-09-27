@@ -26,7 +26,7 @@ function AuthPanel({ children }: { children: ReactNode }) {
   return (
     <main className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
       <section className="w-full max-w-md bg-white border border-zinc-200 p-8 space-y-5">
-        <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Sistema Contable · Supabase</p>
+        <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Sistema Contable</p>
         {children}
       </section>
     </main>
@@ -248,13 +248,8 @@ export function Session({ children }: { children: ReactNode }) {
   if (!configurado) {
     return (
       <AuthPanel>
-        <h1 className="text-2xl font-semibold">Configurar la base de datos</h1>
-        <ol className="list-decimal pl-5 space-y-3 text-sm text-zinc-600">
-          <li>Crea el proyecto en Supabase y ejecuta <code>supabase/script.sql</code> y después <code>supabase/data.sql</code> en SQL Editor.</li>
-          <li>Copia <code>.env.example</code> a <code>.env.local</code> y completa la URL, la clave pública y <code>SUPABASE_SECRET_KEY</code> (solo para el servidor).</li>
-          <li>Reinicia la aplicación y crea tu cuenta.</li>
-        </ol>
-        <p className="text-sm text-zinc-600">Consulta la guía paso a paso en <code>supabase/README.md</code>.</p>
+        <h1 className="text-2xl font-semibold">Configuración pendiente</h1>
+        <p className="text-sm text-zinc-600">El sistema aún no está listo para iniciar sesión. Contacta al administrador para completar la configuración del servicio.</p>
       </AuthPanel>
     );
   }

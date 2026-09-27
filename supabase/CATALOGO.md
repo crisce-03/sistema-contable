@@ -4,7 +4,7 @@
 
 La fuente de las 23 cuentas es [`examples/catalogo-para-asientosguia1.json`](../examples/catalogo-para-asientosguia1.json). Incluye los 18 códigos utilizados por la guía y sus cinco padres adicionales. La plantilla no carga operaciones de ejemplo, períodos históricos, productos ni saldos iniciales.
 
-Ejecuta `script.sql` y luego `data.sql` en el SQL Editor antes de crear tu primer libro en la aplicación. Repetir `data.sql` actualiza los nombres y padres de estos 43 códigos **solo en la plantilla**. Los libros existentes conservan su catálogo y sus asientos. La plantilla se copia al crear libros nuevos; modificarla no sincroniza cambios con libros ya creados. No ejecutes este archivo sobre una plantilla comercial o personalizada diferente: dejaría códigos de ambas numeraciones.
+Ejecuta `schema.sql` y luego `data.sql` en el SQL Editor antes de crear tu primer libro en la aplicación. Repetir `data.sql` actualiza los nombres y padres de estos 43 códigos **solo en la plantilla**. Los libros existentes conservan su catálogo y sus asientos. La plantilla se copia al crear libros nuevos; modificarla no sincroniza cambios con libros ya creados. No ejecutes este archivo sobre una plantilla comercial o personalizada diferente: dejaría códigos de ambas numeraciones.
 
 El archivo se regenera con `node scripts/generate-catalog.cjs`. Esta generación verifica códigos únicos y padres existentes.
 

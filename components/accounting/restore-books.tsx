@@ -16,7 +16,7 @@ export function RestoreBooks() {
     }).catch(e => setMessage(e.message))}>Buscar ejercicios en este navegador</button>
     {books.map(row => <div key={row.key} className="flex justify-between gap-3 text-sm">
       <span>{row.key === "current" ? "Ejercicio local actual" : "Archivo local"} · {row.book.asientos.length} asientos</span>
-      <button disabled={ocupado} onClick={() => setPending({ label: "ejercicio local", data: row.book })}>Trasladar a Supabase</button>
+      <button disabled={ocupado} onClick={() => setPending({ label: "ejercicio local", data: row.book })}>Trasladar a mi cuenta</button>
     </div>)}
     <label className="block text-sm">Restaurar respaldo completo (.json)
       <input className="field" type="file" accept=".json,application/json" disabled={ocupado} onChange={async e => {
@@ -31,7 +31,7 @@ export function RestoreBooks() {
     {pending && <div className="border p-3 space-y-3">
       <p className="text-sm">Se validará {pending.label} y se guardará como un nuevo ejercicio de tu cuenta.</p>
       <button className="primary" disabled={ocupado} onClick={() => void ejecutar("restore", pending.data)
-        .then(() => { setPending(null); setMessage("Ejercicio guardado en Supabase. El anterior está archivado."); })
+        .then(() => { setPending(null); setMessage("Ejercicio guardado en tu cuenta. El anterior está archivado."); })
         .catch(e => setMessage(e.message))}>Confirmar importación</button>
       <button className="ml-4" disabled={ocupado} onClick={() => setPending(null)}>Cancelar</button>
     </div>}

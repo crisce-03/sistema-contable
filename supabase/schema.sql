@@ -1,8 +1,4 @@
--- Sistema contable: ejecutar primero este archivo en Supabase SQL Editor.
--- Requiere los roles anon/authenticated/service_role y auth.users de Supabase.
--- Los navegadores solo leen sus datos; Next.js valida cada comando y llama las
--- RPC con service_role. Nunca publique esa clave en NEXT_PUBLIC_*.
--- Instalacion inicial transaccional. No es una migracion destructiva ni un reset.
+
 begin;
 
 create schema if not exists accounting_private;

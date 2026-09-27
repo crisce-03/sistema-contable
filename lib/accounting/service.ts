@@ -16,7 +16,7 @@ export interface AccountingRepository {
 
 async function initialBook(repo: AccountingRepository) {
   const catalog = await repo.catalog();
-  if (!catalog.length) throw new AccountingError("Ejecuta supabase/data.sql antes de crear el primer ejercicio.", 503);
+  if (!catalog.length) throw new AccountingError("El catálogo inicial aún no está disponible. Contacta al administrador.", 503);
   const state = localCommand(emptyBook(), "catalog", {
     version: 1,
     cuentas: catalog.filter(c => c.codigo.length >= 4).map(c => ({

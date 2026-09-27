@@ -166,7 +166,7 @@ export default function ReportesPage() {
 
       {!listo && (
         <p role="status" className="text-sm text-zinc-500">
-          Cargando datos de Supabase…
+          Cargando información contable…
         </p>
       )}
 

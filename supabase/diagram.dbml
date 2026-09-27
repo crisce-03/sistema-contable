@@ -1,4 +1,4 @@
-// Generado desde script.sql; solo documentación. users representa auth.users.
+// Generado desde schema.sql; solo documentación. users representa auth.users.
 
 Table users {
   id uuid [pk, not null]
