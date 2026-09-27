@@ -7,7 +7,11 @@ import type {
   RolReporte,
 } from "../types";
 import {
+  asientoCierre,
+  cierreRegistrado,
   cuentasOperativas,
+  grupoSaldoResultados,
+  prepararSaldoResultados,
   resolverCuentaReporte,
   rolesReporte,
   saldoSubarbol,
@@ -235,7 +239,25 @@ export function localCommand(
   let insertados = 0,
     omitidos = 0,
     cambioDeInventarios: ConfiguracionLibro["modoInventario"] | null = null;
-  if (action === "liquidacion-iva") {
+  if (action === "saldar-resultados") {
+    const d = object(data);
+    if (typeof d.anio !== "number") throw new Error("Selecciona el ejercicio.");
+    requirePeriod(s, `${d.anio}-12-31`);
+    const plan = prepararSaldoResultados(
+      s.configuracion, s.cuentas, s.asientos, d.anio,
+      inventarioFinalKardex(s.kardex, s.asientos),
+    );
+    s.cuentas.push(...plan.cuentasNuevas.map((c) => ({ ...c, id: uuid() })));
+    s.configuracion = plan.configuracion;
+    const lote = uuid();
+    return localCommand(s, "entries", {
+      version: 1,
+      modoIva: s.configuracion.modoIva,
+      asientos: plan.partidas.map((a, i) => ({
+        ...a, referencia: `CIERRE-${d.anio}-RESULTADOS-${lote}-${i + 1}`,
+      })),
+    }, uuid);
+  } else if (action === "liquidacion-iva") {
     registrarLiquidacionIva(s, data, uuid);
     insertados = 1;
   } else if (action === "kardex") {
@@ -278,6 +300,10 @@ export function localCommand(
         );
       }
       requirePeriod(s, a.fecha);
+      const cierre = cierreRegistrado(Number(a.fecha.slice(0, 4)), s.asientos);
+      if (a.referencia.startsWith("CIERRE-") && cierre &&
+        (!grupoSaldoResultados(a) || grupoSaldoResultados(a) !== grupoSaldoResultados(cierre)))
+        throw new Error("El ejercicio ya tiene un cierre. Reviértelo antes de registrar otro.");
       if (
         a.ajusteInventario &&
         s.asientos.some(
@@ -328,8 +354,14 @@ export function localCommand(
       d.motivo.length > 400
     )
       throw new Error("Indique un motivo (máximo 400 caracteres).");
-    revertirAsiento(s, original, fecha, d.motivo.trim(), uuid);
-    insertados = 1;
+    const grupo = grupoSaldoResultados(original);
+    const partidas = grupo ? s.asientos.filter((a) =>
+      a.tipo === "ajuste" && grupoSaldoResultados(a) === grupo &&
+      !s.asientos.some((r) => r.reversaDe === a.id),
+    ) : [original];
+    for (const partida of partidas)
+      revertirAsiento(s, partida, fecha, d.motivo.trim(), uuid);
+    insertados = partidas.length;
   } else if (action === "period") {
     const d = object(data);
     if (
@@ -428,18 +460,40 @@ export function localCommand(
         } catch {}
     }
   }
-    for (const a of s.asientos) {
+  const grupos = new Set(s.asientos.filter((a) => a.tipo === "ajuste" &&
+    !s.asientos.some((r) => r.reversaDe === a.id)).map(grupoSaldoResultados).filter(Boolean));
+  for (const grupo of grupos) {
+    const partidas = s.asientos.filter((a) => a.tipo === "ajuste" && grupoSaldoResultados(a) === grupo);
+    const anio = Number(partidas[0].fecha.slice(0, 4));
+    const saldos = new Map<string, number>();
+    for (const a of partidas)
+      for (const d of a.detalles)
+        saldos.set(d.codigoCuenta, (saldos.get(d.codigoCuenta) ?? 0) + cents(d.debe) - cents(d.haber));
+    try {
+      const esperado = asientoCierre(s.configuracion, s.cuentas, s.asientos, anio,
+        inventarioFinalKardex(s.kardex, s.asientos));
+      for (const d of esperado.detalles)
+        saldos.set(d.codigoCuenta, (saldos.get(d.codigoCuenta) ?? 0) - cents(d.debe) + cents(d.haber));
+      if ([...saldos.values()].some((saldo) => saldo !== 0)) throw new Error("Los importes del cierre cambiaron.");
+    } catch (e) {
+      throw new Error(`Revierte primero el cierre de resultados ${anio} para modificar sus importes. ${(e as Error).message}`);
+    }
+  }
+  for (const a of s.asientos) {
     if (
       a.tipo === "ajuste" &&
       a.liquidacionIva &&
       !s.asientos.some(r => r.reversaDe === a.id)
     ) {
-      // Solo un desajuste real de importes bloquea la operación. Si el mes
+      // Solo un desajuste real de importes bloquea la operación. Si el IVA
       // ni siquiera puede recalcularse, la pantalla de Liquidación explica
       // el motivo; abortar aquí dejaría el libro sin forma de corregirse.
       let desactualizada = false;
       try {
-        desactualizada = calcularLiquidacionIva(s, a.liquidacionIva).desactualizada;
+        desactualizada = calcularLiquidacionIva(
+          s,
+          a.liquidacionIva === "acumulada" ? undefined : a.liquidacionIva,
+        ).desactualizada;
       } catch {}
       if (desactualizada) {
         throw new Error(
@@ -459,14 +513,25 @@ export const rolesKardex = [
   ["devolVentas", "Devolución sobre Venta"],
 ] as const;
 
+export function precioKardexSinIva(importe: string, incluyeIva = false) {
+  if (typeof incluyeIva !== "boolean") throw new Error("Indica si el precio incluye IVA.");
+  const valor = cents(importe);
+  return incluyeIva ? Math.round(valor * 100 / 113) : valor;
+}
+
 function parametrosKardex(p: KardexProducto) {
-  const costo = cents(p.costo);
-  const venta = cents(p.venta);
+  const costo = precioKardexSinIva(p.costo, p.costoIncluyeIva);
+  const venta = precioKardexSinIva(p.venta, p.ventaIncluyeIva);
 
   if (!costo || !venta) {
     throw new Error("Costo y venta deben ser mayores que cero.");
   }
 
+  for (const ajuste of Object.values(p.costosMovimientos ?? {})) {
+    if (!ajuste || typeof ajuste.costo !== "string" || typeof ajuste.incluyeIva !== "boolean" ||
+      !precioKardexSinIva(ajuste.costo, ajuste.incluyeIva))
+      throw new Error("El costo del movimiento debe ser positivo e indicar si incluye IVA.");
+  }
   date(p.inicio);
   date(p.fin);
 
@@ -512,6 +577,10 @@ function guardarProductoKardex(s: LibroLocal, data: unknown) {
     nombre: d.nombre.trim(),
     costo: d.costo,
     venta: d.venta,
+    costoIncluyeIva: d.costoIncluyeIva as boolean | undefined,
+    ventaIncluyeIva: d.ventaIncluyeIva as boolean | undefined,
+    costosMovimientos: d.costosMovimientos === undefined ? undefined :
+      object(d.costosMovimientos) as KardexProducto["costosMovimientos"],
     inicio: d.inicio,
     fin: d.fin,
     inicial: d.inicial,
@@ -586,20 +655,30 @@ export function calcularKardex(
   asientos: Asiento[],
 ) {
   const { costo, venta } = parametrosKardex(p);
+  const costoDe = (clave: string) => {
+    const ajuste = p.costosMovimientos?.[clave];
+    return ajuste ? precioKardexSinIva(ajuste.costo, ajuste.incluyeIva) : costo;
+  };
+  const costoInicial = costoDe("inicial");
   let existencias = p.inicial;
+  let saldo = p.inicial * costoInicial;
+  if (!Number.isSafeInteger(saldo)) throw new Error("El valor del inventario inicial es demasiado grande.");
   let valido = true;
   const avisos: string[] = [];
 
   const filas = [{
     id: "inicial",
+    claveCosto: "inicial",
+    costoUnitario: costoInicial,
+    costoExistencia: costoInicial,
     fecha: p.inicio,
     concepto: "Inventario inicial",
     entrada: p.inicial,
     salida: 0,
     existencias,
-    deudor: p.inicial * costo,
+    deudor: saldo,
     acreedor: 0,
-    saldo: p.inicial * costo,
+    saldo,
   }];
 
   const movimientos = [...asientos]
@@ -623,7 +702,7 @@ export function calcularKardex(
       continue;
     }
 
-    for (const d of a.detalles) {
+    for (const [indice, d] of a.detalles.entries()) {
       const asignacion = rolesKardex.find(
         ([rol]) =>
           p.cuentas[rol] !== "" &&
@@ -638,10 +717,13 @@ export function calcularKardex(
       const neto = cents(d.debe) - cents(d.haber);
       if (!neto) continue;
 
+      // La reversión conserva el costo del movimiento que está anulando.
+      const claveCosto = `${origen.id}-${origen.detalles[indice].id}`;
+      const costoUnitario = costoDe(claveCosto);
       const precio =
         rol === "ventas" || rol === "devolVentas"
           ? venta
-          : costo;
+          : costoUnitario;
 
       const unidades = Math.round(Math.abs(neto) / precio);
       const diferencia = unidades * precio - Math.abs(neto);
@@ -671,9 +753,9 @@ export function calcularKardex(
 
       existencias += entrada - salida;
 
-      const deudor = entrada * costo;
-      const acreedor = salida * costo;
-      const saldo = existencias * costo;
+      const deudor = entrada * costoUnitario;
+      const acreedor = salida * costoUnitario;
+      saldo += deudor - acreedor;
 
       if (
         ![existencias, deudor, acreedor, saldo]
@@ -689,8 +771,15 @@ export function calcularKardex(
         );
       }
 
+      if (saldo < 0 || (!existencias && saldo !== 0)) {
+        valido = false;
+        avisos.push(`#${a.numero}: el valor restante no corresponde a las existencias; revisa los costos unitarios.`);
+      }
       filas.push({
         id: `${a.id}-${d.id}`,
+        claveCosto,
+        costoUnitario,
+        costoExistencia: existencias ? saldo / existencias : 0,
         fecha: a.fecha,
         concepto:
           `#${a.numero} · ` +
@@ -708,10 +797,12 @@ export function calcularKardex(
 
   return {
     filas,
+    costo,
+    venta,
     avisos,
     valido,
     unidades: existencias,
-    inventarioFinal: existencias * costo,
+    inventarioFinal: saldo,
   };
 }
 
@@ -753,7 +844,10 @@ function trasladoInicialKardex(
   const productos = s.kardex ?? [];
   if (productos.length <= 1) return enLibros;
 
-  const valor = (otro: KardexProducto) => otro.inicial * cents(otro.costo);
+  const valor = (otro: KardexProducto) => {
+    const inicial = otro.costosMovimientos?.inicial;
+    return otro.inicial * (inicial ? precioKardexSinIva(inicial.costo, inicial.incluyeIva) : parametrosKardex(otro).costo);
+  };
   const total = productos.reduce((t, otro) => t + valor(otro), 0);
   if (!total) return 0;
 
@@ -968,15 +1062,50 @@ function sincronizarTrasladosKardex(
   }
 }
 
+function destinoLiquidacionIva(
+  s: LibroLocal,
+  diferencia: number,
+  raices: string[],
+) {
+  if (!diferencia) return undefined;
+  const tipo = diferencia > 0 ? "Pasivo" : "Activo";
+  const nombre = diferencia > 0 ? "IVA a pagar" : "Remanente IVA a favor";
+  const candidatos = s.cuentas.filter((c) => {
+    const texto = c.nombre.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    return canPost(c, s.cuentas) && c.tipo === tipo &&
+      !raices.some((r) => c.codigo.startsWith(r) || r.startsWith(c.codigo)) &&
+      /\biva\b/.test(texto) &&
+      (diferencia > 0 ? /iva\s+(por|a)\s+pagar/.test(texto) : /remanente|a favor/.test(texto));
+  });
+  if (candidatos.length > 1)
+    throw new Error(`Hay varias cuentas de ${nombre}. Conserva una cuenta activa con ese nombre para liquidar.`);
+  if (candidatos[0]) return { cuenta: candidatos[0], crear: false };
+
+  const padreCodigo = diferencia > 0 ? "21" : "11";
+  for (let n = 99; n >= 1; n--) {
+    const codigo = padreCodigo + String(n).padStart(2, "0");
+    if (s.cuentas.some((c) => c.codigo.startsWith(codigo))) continue;
+    const f = accountClassification(codigo)!;
+    const cuenta = {
+      id: "", codigo, nombre, padreCodigo, activa: true, movimiento: true,
+      familia: f.id, tipo: f.grupo, naturaleza: f.naturaleza as "Deudora" | "Acreedora",
+      rubro: f.rubro, debe: 0, haber: 0, saldo: 0,
+    };
+    if (canPost(cuenta, s.cuentas)) return { cuenta, crear: true };
+  }
+  throw new Error(`No hay un código disponible para crear ${nombre} en ${padreCodigo}.`);
+}
+
 export function calcularLiquidacionIva(
   s: LibroLocal,
-  mes: string,
+  // El mes solo se conserva para validar liquidaciones antiguas.
+  mes?: string,
 ) {
-  if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(mes)) {
+  if (mes !== undefined && !/^\d{4}-(0[1-9]|1[0-2])$/.test(mes)) {
     throw new Error("Selecciona un mes válido.");
   }
 
-  date(`${mes}-01`);
+  if (mes) date(`${mes}-01`);
 
   const credito = resolveIvaAccount(
     "credito",
@@ -1010,23 +1139,27 @@ export function calcularLiquidacionIva(
 
   let cf = 0;
   let df = 0;
+  const saldos = new Map<string, number>();
 
   for (const a of s.asientos) {
     const origen = a.reversaDe
       ? s.asientos.find(x => x.id === a.reversaDe)
       : undefined;
 
-    // Calcula el IVA del mes antes de su liquidación.
-    // Excluye liquidaciones anteriores y sus reversiones.
-    if (
-      !a.fecha.startsWith(mes + "-") ||
-      a.liquidacionIva ||
-      origen?.liquidacionIva
-    ) {
+    // El acumulado incluye las liquidaciones mensuales anteriores: solo
+    // queda pendiente lo que aún tiene saldo. Omite su propia liquidación
+    // y sus reversiones para poder mostrar y validar la partida registrada.
+    const excluir = mes
+      ? !a.fecha.startsWith(mes + "-") || a.liquidacionIva || origen?.liquidacionIva
+      : a.liquidacionIva === "acumulada" || origen?.liquidacionIva === "acumulada";
+    if (excluir) {
       continue;
     }
 
     for (const d of a.detalles) {
+      if ([credito.codigo, debito.codigo].some((raiz) => pertenece(d.codigoCuenta, raiz))) {
+        saldos.set(d.codigoCuenta, (saldos.get(d.codigoCuenta) ?? 0) + cents(d.debe) - cents(d.haber));
+      }
       if (pertenece(d.codigoCuenta, credito.codigo)) {
         cf += cents(d.debe) - cents(d.haber);
       }
@@ -1037,25 +1170,24 @@ export function calcularLiquidacionIva(
     }
   }
 
-  if (![cf, df].every(Number.isSafeInteger)) {
+  if (![cf, df, df - cf, ...saldos.values()].every(Number.isSafeInteger)) {
     throw new Error("Los saldos exceden la precisión admitida.");
   }
 
-  // Un mes puede cerrar con saldo contrario —por ejemplo al revertir una
-  // venta de otro mes—. Se liquida igual, cancelando cada cuenta por el lado
-  // que le corresponda, y la pantalla lo señala.
+  // Las reversiones pueden dejar saldos contrarios a su naturaleza.
+  // Se cancelan por el lado correspondiente y la pantalla lo señala.
   const invertidos = cf < 0 || df < 0;
 
   const registradas = s.asientos.filter(
     a =>
       a.tipo === "ajuste" &&
-      a.liquidacionIva === mes &&
+      a.liquidacionIva === (mes ?? "acumulada") &&
       !s.asientos.some(r => r.reversaDe === a.id),
   );
 
   if (registradas.length > 1) {
     throw new Error(
-      "Hay más de una liquidación activa para este mes.",
+      "Hay más de una liquidación de IVA activa para este cálculo.",
     );
   }
 
@@ -1081,17 +1213,32 @@ export function calcularLiquidacionIva(
       0,
     ) ?? 0;
 
-  const desactualizada =
-    !!registrada &&
-    (cf !== cerradoCredito || df !== cerradoDebito);
+  const saldosCancelados = new Map<string, number>();
+  for (const d of registrada?.detalles ?? []) {
+    if (![credito.codigo, debito.codigo].some((raiz) => pertenece(d.codigoCuenta, raiz))) continue;
+    saldosCancelados.set(
+      d.codigoCuenta,
+      (saldosCancelados.get(d.codigoCuenta) ?? 0) + cents(d.haber) - cents(d.debe),
+    );
+  }
+  const auxiliaresCambiaron = [...new Set([...saldos.keys(), ...saldosCancelados.keys()])]
+    .some((codigo) => (saldos.get(codigo) ?? 0) !== (saldosCancelados.get(codigo) ?? 0));
+  const desactualizada = !!registrada && (
+    cf !== cerradoCredito || df !== cerradoDebito || (!mes && auxiliaresCambiaron)
+  );
 
-  const fecha = new Date(
+  const fecha = mes ? new Date(
     Date.UTC(
       Number(mes.slice(0, 4)),
       Number(mes.slice(5)),
       0,
     ),
-  ).toISOString().slice(0, 10);
+  ).toISOString().slice(0, 10) :
+    s.asientos.map((a) => a.fecha).sort().at(-1) ?? new Date().toISOString().slice(0, 10);
+
+  const lineas = [...saldos].filter(([, saldo]) => saldo !== 0).map(([codigoCuenta, saldo]) => ({
+    codigoCuenta, debe: Math.max(-saldo, 0), haber: Math.max(saldo, 0),
+  }));
 
   return {
     credito,
@@ -1103,6 +1250,8 @@ export function calcularLiquidacionIva(
     registrada,
     desactualizada,
     fecha,
+    lineas,
+    destino: mes ? undefined : destinoLiquidacionIva(s, df - cf, [credito.codigo, debito.codigo]),
   };
 }
 
@@ -1113,70 +1262,38 @@ function registrarLiquidacionIva(
 ) {
   const d = object(data);
 
-  if (typeof d.mes !== "string") {
-    throw new Error("Selecciona el mes.");
-  }
+  if (d.mes !== undefined)
+    throw new Error("La liquidación ahora acumula todo el IVA pendiente. Actualiza la pantalla para registrarla.");
 
   // Recalcula aquí: no confía en importes enviados por la pantalla.
-  const r = calcularLiquidacionIva(s, d.mes);
+  const r = calcularLiquidacionIva(s);
 
   if (r.registrada) {
     throw new Error(
-      "Este mes ya tiene una liquidación. Reviértela antes de reemplazarla.",
+      "Ya existe una liquidación acumulada. Reviértela antes de reemplazarla.",
     );
   }
 
-  requirePeriod(s, r.fecha);
+  const fecha = d.fecha === undefined ? r.fecha : date(d.fecha);
+  if (fecha < r.fecha)
+    throw new Error("La fecha de liquidación no puede ser anterior al último asiento del diario.");
+  requirePeriod(s, fecha);
 
-  if (!r.cf && !r.df) {
-    throw new Error("No hay IVA para liquidar en este mes.");
+  if (!r.lineas.length) {
+    throw new Error("No hay saldos de IVA pendientes para liquidar.");
   }
 
-  const lineas: {
-    codigoCuenta: string;
-    debe: number;
-    haber: number;
-  }[] = [];
-
-  // Cada cuenta se cancela por el lado contrario a su saldo del mes, que
-  // puede ser el contrario al habitual si hubo reversiones de otro período.
-  if (r.df) {
-    lineas.push({
-      codigoCuenta: r.debito.codigo,
-      debe: Math.max(r.df, 0),
-      haber: Math.max(-r.df, 0),
-    });
+  // Cancela cada auxiliar por su propio saldo, sin dejar movimientos
+  // compensados únicamente en el mayor.
+  const lineas = [...r.lineas];
+  for (const l of lineas) {
+    const cuenta = s.cuentas.find((c) => c.codigo === l.codigoCuenta);
+    if (!cuenta || !canPost(cuenta, s.cuentas))
+      throw new Error(`Activa la cuenta ${l.codigoCuenta} para saldar su IVA.`);
   }
-
-  if (r.cf) {
-    lineas.push({
-      codigoCuenta: r.credito.codigo,
-      debe: Math.max(-r.cf, 0),
-      haber: Math.max(r.cf, 0),
-    });
-  }
-
-  if (r.diferencia) {
-    const destino = s.cuentas.find(
-      c => c.codigo === d.destino,
-    );
-
-    if (
-      !destino ||
-      !canPost(destino, s.cuentas) ||
-      destino.tipo !== (r.diferencia > 0 ? "Pasivo" : "Activo") ||
-      [r.credito.codigo, r.debito.codigo].some(
-        c =>
-          destino.codigo.startsWith(c) ||
-          c.startsWith(destino.codigo),
-      )
-    ) {
-      throw new Error(
-        "Selecciona una cuenta separada de IVA por pagar (Pasivo) " +
-        "o remanente (Activo), según el resultado.",
-      );
-    }
-
+  if (r.destino) {
+    const destino = r.destino.cuenta;
+    if (r.destino.crear) s.cuentas.push({ ...destino, id: uuid() });
     lineas.push({
       codigoCuenta: destino.codigo,
       debe: Math.max(-r.diferencia, 0),
@@ -1209,14 +1326,14 @@ function registrarLiquidacionIva(
 
   s.asientos.push({
     id,
-    referencia: `LIQ-IVA-${d.mes}-${id}`,
+    referencia: `LIQ-IVA-ACUMULADA-${id}`,
     numero: s.asientos.length + 1,
-    fecha: r.fecha,
-    concepto: `Liquidación de IVA ${d.mes}`,
+    fecha,
+    concepto: "Liquidación acumulada de IVA",
     tipo: "ajuste",
     modoIva: s.configuracion.modoIva,
     ajusteInventario: null,
-    liquidacionIva: d.mes,
+    liquidacionIva: "acumulada",
     cuadra: true,
     detalles: lineas.map(l => ({
       ...l,
@@ -1227,7 +1344,7 @@ function registrarLiquidacionIva(
       parcial: 0,
       debe: l.debe / 100,
       haber: l.haber / 100,
-      descripcion: `Liquidación de IVA ${d.mes}`,
+      descripcion: "Liquidación acumulada de IVA",
     })),
   });
 }

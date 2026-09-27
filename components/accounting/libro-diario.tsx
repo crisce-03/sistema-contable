@@ -3,7 +3,8 @@ import { Download, Wand2, Save, Trash2 } from "lucide-react";
 import { Fragment, useState } from "react";
 import { useAccountingStore } from "@/lib/store/accountingStore";
 import { canPost, cents, money, parseEntries } from "@/lib/accounting/core";
-import { draftLineDetails, taxBreakdown, type JournalDraftLine } from "@/lib/accounting/local";
+import { draftLineDetails, resolveIvaAccount, taxBreakdown, type JournalDraftLine } from "@/lib/accounting/local";
+import { grupoSaldoResultados, resolverCuentaReporte } from "@/lib/accounting/reports";
 import JsonImport, { download } from "./json-import";
 import JournalAccountSelector from "./journal-account-selector";
 import type { ModoIva } from "@/lib/types";
@@ -37,6 +38,8 @@ export default function LibroDiario() {
   >("");
   const posting = cuentas.filter((c) => canPost(c, cuentas))
     .sort((a, b) => a.codigo.localeCompare(b.codigo));
+  const assistantMain = resolverCuentaReporte(operation === "ventas" ? "ventas" : "compras", configuracion, cuentas);
+  const assistantTax = resolveIvaAccount(operation === "ventas" ? "debito" : "credito", configuracion, cuentas);
   const exportable = asientos.filter((a) => a.tipo !== "reversion");
   const exportGroups = (["incluido", "mas_iva"] as const).map((modoIva) => ({
     modoIva,
@@ -183,7 +186,7 @@ export default function LibroDiario() {
   const selector = (
     value: string,
     set: (s: string) => void,
-    families: string[],
+    options: typeof posting,
     label: string,
   ) => (
     <select
@@ -193,9 +196,7 @@ export default function LibroDiario() {
       onChange={(e) => set(e.target.value)}
     >
       <option value="">Seleccionar cuenta</option>
-      {posting
-        .filter((c) => families.includes(c.familia))
-        .map((c) => (
+      {options.map((c) => (
           <option key={c.id} value={c.codigo}>
             {c.codigo} · {c.nombre}
           </option>
@@ -301,23 +302,24 @@ export default function LibroDiario() {
             </label>
             <label className="text-sm">
               Cuenta de la operación
-              {selector(main, setMain, [operation], "Cuenta de la operación")}
+              {selector(main, setMain, assistantMain ? posting.filter(c => c.codigo.startsWith(assistantMain.codigo)) : posting, "Cuenta de la operación")}
             </label>
             <label className="text-sm">
               IVA
               {selector(
                 iva,
                 setIva,
-                [operation === "ventas" ? "iva_debito" : "iva_credito"],
+                assistantTax ? [assistantTax] : [],
                 "IVA",
               )}
+              {!assistantTax && <span className="text-xs">Asigna la cuenta de IVA en Configuración.</span>}
             </label>
             <label className="text-sm">
               Pago / crédito
               {selector(
                 payment,
                 setPayment,
-                ["efectivo", operation === "ventas" ? "cobrar" : "pagar"],
+                posting.filter(c => c.codigo !== assistantTax?.codigo),
                 "Pago / crédito",
               )}
             </label>
@@ -601,14 +603,16 @@ export default function LibroDiario() {
         <details key={a.id} className="border border-zinc-200 bg-white p-4">
           <summary className="cursor-pointer text-sm">
             #{a.numero} · {a.fecha} ·{" "}
-              {a.liquidacionIva && a.tipo === "ajuste"
+            {a.tipo === "ajuste" && a.liquidacionIva === "acumulada"
+              ? "Liquidación acumulada de IVA"
+              : a.tipo === "ajuste" && /^\d{4}-(0[1-9]|1[0-2])$/.test(a.liquidacionIva ?? "")
                 ? `Liquidación IVA · ${new Intl.DateTimeFormat("es-SV", {
                     month: "long",
                     year: "numeric",
                     timeZone: "UTC",
                   }).format(new Date(`${a.liquidacionIva}-01T00:00:00Z`))}`
                 : `${a.referencia} · ${a.concepto}`}{" "}
-              · {a.tipo}
+            · {a.tipo}
             {asientos.some((r) => r.reversaDe === a.id) ? " · Revertido" : ""}
           </summary>
           <div className="overflow-auto">
@@ -673,8 +677,9 @@ export default function LibroDiario() {
             {asientos.find((a) => a.id === reverseId)?.numero}
           </h3>
           <p className="text-sm">
-            Se creará otro asiento con Debe y Haber intercambiados, sin borrar
-            el original.
+            {grupoSaldoResultados(asientos.find((a) => a.id === reverseId)!)
+              ? "Se revertirán juntos todos los asientos de este cierre de resultados, conservando los originales."
+              : "Se creará otro asiento con Debe y Haber intercambiados, sin borrar el original."}
           </p>
           <label>
             Fecha

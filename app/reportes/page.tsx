@@ -7,6 +7,7 @@ import {
   balanceGeneral,
   cierreRegistrado,
   estadoResultados,
+  prepararSaldoResultados,
   type LineaReporte,
 } from "@/lib/accounting/reports";
 
@@ -95,13 +96,14 @@ function Bloque({
 }
 
 export default function ReportesPage() {
-  const { cuentas, asientos, configuracion, kardex, listo } =
+  const { cuentas, asientos, configuracion, kardex, listo, periodos, ejecutar, ocupado } =
     useAccountingStore();
   const [anio, setAnio] = useState(
     asientos.length
       ? Number(asientos[asientos.length - 1].fecha.slice(0, 4))
       : new Date().getFullYear(),
   );
+  const [mensajeSaldo, setMensajeSaldo] = useState("");
 
   const resultado = estadoResultados(
     configuracion,
@@ -111,6 +113,26 @@ export default function ReportesPage() {
   );
   const balance = balanceGeneral(resultado);
   const cerrado = cierreRegistrado(anio, asientos);
+  const abierto = periodos.some((p) => p.anio === anio && !p.cerrado);
+  let plan: ReturnType<typeof prepararSaldoResultados> | undefined;
+  let errorSaldo = "";
+  if (listo && !cerrado) {
+    try {
+      plan = prepararSaldoResultados(configuracion, cuentas, asientos, anio,
+        inventarioFinalKardex(kardex, asientos));
+    } catch (e) {
+      errorSaldo = (e as Error).message;
+    }
+  }
+  async function saldarResultados() {
+    setMensajeSaldo("");
+    try {
+      const r = await ejecutar("saldar-resultados", { anio });
+      setMensajeSaldo(`Se registraron ${r.insertados} asientos. Las cuentas de resultados quedaron saldadas y el neto se trasladó a la cuenta de utilidad antes de impuestos.`);
+    } catch (e) {
+      setMensajeSaldo((e as Error).message);
+    }
+  }
   const faltantes = (
     ["ventas", "compras", "inventarios"] as const
   ).filter((rol) => !resultado.enlaces[rol]);
@@ -134,14 +156,17 @@ export default function ReportesPage() {
             min={1900}
             max={2200}
             value={anio}
-            onChange={(e) => setAnio(Number(e.target.value))}
+            onChange={(e) => {
+              setAnio(Number(e.target.value));
+              setMensajeSaldo("");
+            }}
           />
         </label>
       </header>
 
       {!listo && (
         <p role="status" className="text-sm text-zinc-500">
-          Cargando datos locales…
+          Cargando datos de Supabase…
         </p>
       )}
 
@@ -233,27 +258,31 @@ export default function ReportesPage() {
             sangria={1}
             fuerte
           />
-          <Fila
-            concepto="Inventario inicial"
-            importe={resultado.inventarioInicial}
-            sangria={1}
-          />
-          <Fila
-            concepto="Mercadería disponible"
-            importe={resultado.mercaderiaDisponible}
-            sangria={1}
-            fuerte
-          />
-          <Fila
-            concepto={
-              resultado.inventarioFinalOrigen === "kardex"
-                ? "Inventario final (según Kardex)"
-                : "Inventario final (conteo físico)"
-            }
-            importe={resultado.inventarioFinal}
-            sangria={1}
-            resta
-          />
+          {!resultado.inventariosEnCompras && (
+            <>
+              <Fila
+                concepto="Inventario inicial"
+                importe={resultado.inventarioInicial}
+                sangria={1}
+              />
+              <Fila
+                concepto="Mercadería disponible"
+                importe={resultado.mercaderiaDisponible}
+                sangria={1}
+                fuerte
+              />
+              <Fila
+                concepto={
+                  resultado.inventarioFinalOrigen === "kardex"
+                    ? "Inventario final (según Kardex)"
+                    : "Inventario final (conteo físico)"
+                }
+                importe={resultado.inventarioFinal}
+                sangria={1}
+                resta
+              />
+            </>
+          )}
           <Fila
             concepto="COSTO DE VENTAS"
             importe={resultado.costoVentas}
@@ -305,6 +334,55 @@ export default function ReportesPage() {
               {monto(resultado.utilidadNeta)}
             </span>
           </div>
+        </div>
+        <div className="mt-4 border border-zinc-200 bg-zinc-50 p-4 space-y-3">
+          <button
+            type="button"
+            className="primary"
+            disabled={!listo || ocupado || !abierto || !!cerrado || !plan}
+            onClick={() => void saldarResultados()}
+          >
+            {cerrado ? "Cuentas de resultados saldadas" : "Saldar cuentas de resultados"}
+          </button>
+          {cerrado ? (
+            <p className="text-xs text-zinc-600">
+              El resultado antes de impuestos ya fue trasladado a la cuenta de utilidad.
+              El informe conserva el detalle del ejercicio para consulta.
+            </p>
+          ) : plan ? (
+            <>
+              <p className="text-xs text-zinc-600">
+                Se registrarán {plan.partidas.length} asientos con fecha {anio}-12-31:
+                uno por cuenta contra {plan.liquidadora.nombre} y el traslado del neto
+                a {plan.utilidad.codigo} · {plan.utilidad.nombre}.
+                Pérdidas y ganancias también quedará en cero.
+              </p>
+              {plan.cuentasNuevas.length > 0 && (
+                <p className="text-xs text-zinc-600">
+                  Se crearán las cuentas: {plan.cuentasNuevas.map((c) => `${c.codigo} · ${c.nombre}`).join("; ")}.
+                </p>
+              )}
+              <details className="text-sm">
+                <summary className="cursor-pointer">Ver asientos a generar</summary>
+                {plan.partidas.map((a) => (
+                  <div key={a.referencia} className="mt-3">
+                    <p className="font-medium">{a.concepto}</p>
+                    <table className="data-table text-xs">
+                      <thead><tr><th>Cuenta</th><th>Debe</th><th>Haber</th></tr></thead>
+                      <tbody>{a.detalles.map((d) => (
+                        <tr key={d.codigoCuenta}>
+                          <td>{d.codigoCuenta} · {[...cuentas, ...plan.cuentasNuevas].find((c) => c.codigo === d.codigoCuenta)?.nombre}</td>
+                          <td>{d.debe}</td><td>{d.haber}</td>
+                        </tr>
+                      ))}</tbody>
+                    </table>
+                  </div>
+                ))}
+              </details>
+            </>
+          ) : errorSaldo ? <p className="text-xs text-zinc-600">{errorSaldo}</p> : null}
+          {!abierto && listo && !cerrado && <p className="text-xs text-zinc-600">Abre el ejercicio en Configuración para registrar los asientos.</p>}
+          {mensajeSaldo && <p role="status" className="text-sm">{mensajeSaldo}</p>}
         </div>
       </section>
 

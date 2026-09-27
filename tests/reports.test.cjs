@@ -5,6 +5,7 @@ const {
   emptyBook,
   calcularLiquidacionIva,
   inventarioFinalKardex,
+  calcularKardex,
 } = require("../.test-build/local.cjs");
 const {
   estadoResultados,
@@ -56,6 +57,7 @@ test("the analytic income statement follows purchases, returns and the physical 
   assert.equal(r.comprasTotales, 3150000);
   assert.equal(r.devolCompras, 250000);
   assert.equal(r.comprasNetas, 2900000);
+  assert.equal(r.inventariosEnCompras, false);
   assert.equal(r.inventarioInicial, 1200000);
   assert.equal(r.mercaderiaDisponible, 4100000);
   assert.equal(r.inventarioFinal, 900000);
@@ -152,6 +154,71 @@ const conKardex = (s = base()) => apply(s, "kardex", producto);
 const saldoDe = (s, codigo) =>
   s.cuentas.find((c) => c.codigo === codigo).saldo;
 
+test("VAT-inclusive Kardex prices persist and produce the same net inventory and transfers", () => {
+  const original = conKardex();
+  const s = apply(base(), "kardex", { ...producto, costo: "22.60", venta: "45.20",
+    costoIncluyeIva: true, ventaIncluyeIva: true });
+  const r = calcularKardex(s.kardex[0], s.asientos);
+  assert.equal(s.kardex[0].ventaIncluyeIva, true);
+  assert.equal(s.kardex[0].costoIncluyeIva, true);
+  assert.equal(r.costo, 2000);
+  assert.equal(r.venta, 4000);
+  assert.equal(r.inventarioFinal, inventarioFinalKardex(original.kardex, original.asientos));
+  assert.equal(saldoDe(s, "1102"), saldoDe(original, "1102"));
+  assert.equal(r.unidades, 825);
+  assert.throws(() => apply(s, "kardex", { ...producto, costoIncluyeIva: "false" }), /incluye IVA/);
+});
+
+test("a sale unit cost changes its value without changing units or the original journal", () => {
+  const s = conKardex();
+  const venta = s.asientos.find(a => a.referencia === "AN-2026-006");
+  const detalle = venta.detalles.find(d => d.codigoCuenta === "5101");
+  const clave = `${venta.id}-${detalle.id}`;
+  const modificado = apply(s, "kardex", { ...s.kardex[0], costosMovimientos: {
+    [clave]: { costo: "20.34", incluyeIva: true },
+  } });
+  const antes = calcularKardex(s.kardex[0], s.asientos);
+  const despues = calcularKardex(modificado.kardex[0], modificado.asientos);
+  const fila = despues.filas.find(f => f.claveCosto === clave);
+  assert.equal(fila.costoUnitario, 1800);
+  assert.equal(despues.unidades, antes.unidades);
+  assert.equal(despues.inventarioFinal, antes.inventarioFinal + fila.salida * 200);
+  assert.equal(saldoDe(modificado, "1102") * 100, despues.inventarioFinal);
+  assert.deepEqual(modificado.asientos.find(a => a.id === venta.id), venta);
+  const revertido = apply(modificado, "reverse", { id: venta.id, fecha: "2026-12-31", motivo: "Anular venta" });
+  const r = calcularKardex(revertido.kardex[0], revertido.asientos);
+  const reversa = r.filas.filter(f => f.claveCosto === clave).at(-1);
+  assert.equal(reversa.costoUnitario, 1800);
+  assert.equal(reversa.entrada, fila.salida);
+  assert.equal(reversa.deudor, fila.acreedor);
+  const restaurado = apply(modificado, "kardex", { ...modificado.kardex[0], costosMovimientos: {} });
+  assert.equal(inventarioFinalKardex(restaurado.kardex, restaurado.asientos), antes.inventarioFinal);
+});
+
+test("purchase and opening unit costs are editable and invalid costs are rejected atomically", () => {
+  const s = conKardex();
+  const compra = s.asientos.find(a => a.detalles.some(d => d.codigoCuenta === "4101") && a.tipo === "normal");
+  const d = compra.detalles.find(d => d.codigoCuenta === "4101");
+  const clave = `${compra.id}-${d.id}`;
+  const p = { ...s.kardex[0], costosMovimientos: {
+    inicial: { costo: "24.86", incluyeIva: true },
+    [clave]: { costo: "10.00", incluyeIva: false },
+  } };
+  const guardado = apply(s, "kardex", p);
+  const r = calcularKardex(guardado.kardex[0], guardado.asientos);
+  assert.equal(r.filas[0].saldo, producto.inicial * 2200);
+  const fila = r.filas.find(f => f.claveCosto === clave);
+  assert.equal(fila.costoUnitario, 1000);
+  assert.equal(fila.entrada, Math.round(d.debe / 10));
+  assert.equal(fila.deudor, fila.entrada * 1000);
+  assert.equal(r.inventarioFinal, r.filas.reduce((s, f) => s + f.deudor - f.acreedor, 0));
+  const copia = structuredClone(s);
+  for (const costo of ["0.00", "-1.00", "abc"]) {
+    assert.throws(() => apply(s, "kardex", { ...p, costosMovimientos: { [clave]: { costo, incluyeIva: false } } }));
+  }
+  assert.deepEqual(s, copia);
+});
+
 test("saving the kardex posts both inventory transfers into the ledger", () => {
   const s = conKardex();
   const inicial = s.asientos.find((a) => a.ajusteInventario === "inicial");
@@ -240,7 +307,7 @@ test("a transfer reverted on purpose is not recreated behind the user's back", (
   assert.equal(saldoDe(s, "1102"), 0);
 });
 
-test("the income statement ignores the transfers, so the result never doubles", () => {
+test("posted transfers fold inventories into purchases without changing the result", () => {
   const sinKardex = conInventario(base(), "16500.00");
   const conTraslados = conInventario(conKardex(), "16500.00");
   const medir = (s) => estadoResultados(s.configuracion, s.cuentas, s.asientos);
@@ -248,14 +315,37 @@ test("the income statement ignores the transfers, so the result never doubles", 
     b = medir(conTraslados);
 
   assert.equal(b.inventarioInicial, 1200000);
-  assert.equal(b.compras, 3000000);
+  assert.equal(a.inventariosEnCompras, false);
+  assert.equal(b.inventariosEnCompras, true);
+  assert.equal(b.compras, 2550000);
+  assert.equal(b.compras, Math.round(saldoDe(conTraslados, "4101") * 100));
+  assert.equal(b.comprasTotales, 2700000);
+  assert.equal(b.comprasNetas, 2450000);
   assert.equal(b.costoVentas, 2450000);
   assert.equal(b.utilidadNeta, 1030000);
   assert.deepEqual(
-    [b.inventarioInicial, b.compras, b.costoVentas, b.utilidadNeta],
-    [a.inventarioInicial, a.compras, a.costoVentas, a.utilidadNeta],
+    [b.costoVentas, b.utilidadBruta, b.utilidadNeta],
+    [a.costoVentas, a.utilidadBruta, a.utilidadNeta],
   );
-  assert.ok(balanceGeneral(b).cuadra);
+  assert.deepEqual(balanceGeneral(b), balanceGeneral(a));
+});
+
+test("reversing either transfer restores separate inventories without changing profit", () => {
+  for (const clase of ["inicial", "final"]) {
+    const original = conInventario(conKardex(), "16500.00");
+    const traslado = original.asientos.find((a) => a.ajusteInventario === clase);
+    const s = apply(original, "reverse", {
+      id: traslado.id,
+      fecha: "2026-12-31",
+      motivo: "Revisar traslado",
+    });
+    const r = estadoResultados(s.configuracion, s.cuentas, s.asientos);
+    assert.equal(r.inventariosEnCompras, false);
+    assert.equal(r.compras, 3000000);
+    assert.equal(r.costoVentas, 2450000);
+    assert.equal(r.utilidadNeta, 1030000);
+    assert.ok(balanceGeneral(r).cuadra);
+  }
 });
 
 test("closing still zeroes the ledger when the kardex already moved inventory", () => {
@@ -273,6 +363,12 @@ test("closing still zeroes the ledger when the kardex already moved inventory", 
     assert.equal(saldoDe(cerrado, codigo), 0, `${codigo} no quedó saldado`);
   assert.equal(saldoDe(cerrado, "1102"), 16500);
   assert.equal(saldoDe(cerrado, "3201"), 10300);
+  const antes = estadoResultados(s.configuracion, s.cuentas, s.asientos);
+  const despues = estadoResultados(cerrado.configuracion, cerrado.cuentas, cerrado.asientos);
+  assert.equal(despues.inventariosEnCompras, true);
+  assert.equal(despues.compras, antes.compras);
+  assert.equal(despues.utilidadNeta, antes.utilidadNeta);
+  assert.ok(balanceGeneral(despues).cuadra);
 });
 
 test("configuring the kardex reports why the transfer cannot be posted", () => {
@@ -336,9 +432,12 @@ test("the income statement and the closing agree under both inventory methods", 
     [1200000, 3000000, 2450000, 1030000],
   );
   assert.deepEqual(
-    [a.inventarioInicial, a.compras, a.costoVentas, a.utilidadNeta],
-    [b.inventarioInicial, b.compras, b.costoVentas, b.utilidadNeta],
+    [a.costoVentas, a.utilidadNeta],
+    [b.costoVentas, b.utilidadNeta],
   );
+  assert.equal(a.inventariosEnCompras, true);
+  assert.equal(b.inventariosEnCompras, false);
+  assert.equal(a.compras, 2550000);
   assert.ok(balanceGeneral(b).cuadra);
 
   // Con inventarios explícitos el cierre sí traslada la existencia.
@@ -443,13 +542,16 @@ test("a typed physical count overrides the kardex and absorbs the difference", (
   assert.equal(r.inventarioFinalOrigen, "conteo");
   assert.equal(r.inventarioFinal, 1500000);
   assert.equal(r.inventarioFinalKardex, 1650000);
+  assert.equal(r.inventariosEnCompras, true);
+  assert.equal(r.compras, 2700000);
+  assert.equal(r.comprasNetas, r.costoVentas);
   // El faltante de 1500 engorda el costo de ventas y reduce la utilidad.
   assert.equal(r.costoVentas, 2600000);
   assert.equal(r.utilidadNeta, 880000);
   assert.ok(balanceGeneral(r).cuadra);
 });
 
-test("VAT settles a month whose balance turned the other way after a reversal", () => {
+test("VAT settles all months even when a reversal makes the debit balance negative", () => {
   let s = base();
   const venta = s.asientos.find((a) => a.referencia === "AN-2026-006");
   s = apply(s, "reverse", {
@@ -458,33 +560,28 @@ test("VAT settles a month whose balance turned the other way after a reversal", 
     motivo: "Anulación del cliente",
   });
 
-  const r = calcularLiquidacionIva(s, "2026-04");
-  assert.equal(r.df, -650000);
-  assert.equal(r.cf, 78000);
+  const r = calcularLiquidacionIva(s);
+  assert.equal(r.df, -52000);
+  assert.equal(r.cf, 507000);
   assert.ok(r.invertidos);
 
-  // Antes esto era imposible: el mes quedaba sin poder liquidarse nunca.
-  s = apply(s, "liquidacion-iva", { mes: "2026-04", destino: "1106" });
+  s = apply(s, "liquidacion-iva", {});
   const partida = s.asientos.at(-1);
   const total = (lado) =>
     partida.detalles.reduce((t, d) => t + Math.round(d[lado] * 100), 0);
   assert.equal(total("debe"), total("haber"));
   // El débito fiscal se cancela por el haber, al revés de lo habitual.
   const debito = partida.detalles.find((d) => d.codigoCuenta === "2102");
-  assert.equal(debito.haber, 6500);
+  assert.equal(debito.haber, 520);
   assert.equal(debito.debe, 0);
-  assert.equal(saldoDe(s, "1106"), 7280);
-  // Solo se cancela el mes liquidado: marzo sigue pendiente.
-  assert.equal(saldoDe(s, "2102"), 5980);
+  assert.equal(saldoDe(s, "1106"), 5590);
+  assert.equal(saldoDe(s, "2102"), 0);
+  assert.equal(saldoDe(s, "1103"), 0);
 });
 
 test("an unusable VAT account no longer blocks every later command", () => {
-  let s = apply(base(), "liquidacion-iva", {
-    mes: "2026-02",
-    destino: "1106",
-  });
-  // Febrero queda saldado; abril y mayo siguen pendientes.
-  assert.equal(saldoDe(s, "1103"), 1300);
+  let s = apply(base(), "liquidacion-iva", {});
+  assert.equal(saldoDe(s, "1103"), 0);
 
   // Desactivar la cuenta impide recalcular el mes ya liquidado.
   s = apply(s, "catalog", {
@@ -498,7 +595,7 @@ test("an unusable VAT account no longer blocks every later command", () => {
       },
     ],
   });
-  assert.throws(() => calcularLiquidacionIva(s, "2026-02"), /Asigna IVA/);
+  assert.throws(() => calcularLiquidacionIva(s), /Asigna IVA/);
 
   // El libro sigue operable: se puede reactivar la cuenta y seguir.
   const periodo = apply(s, "period", { anio: 2027, cerrado: false });

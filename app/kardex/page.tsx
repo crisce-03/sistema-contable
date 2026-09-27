@@ -19,6 +19,9 @@ export default function KardexInteractivo() {
   const [borrador, setBorrador] = useState<KardexProducto | null>(null);
   const [mensaje, setMensaje] = useState("");
   const [mostrarConfiguracion, setMostrarConfiguracion] = useState(false);
+  const [edicionCosto, setEdicionCosto] = useState<{
+    clave: string; concepto: string; costo: string; incluyeIva: boolean;
+  } | null>(null);
 
   const productos = kardex ?? [];
   const id = seleccionado ?? productos[0]?.id ?? "";
@@ -82,6 +85,34 @@ export default function KardexInteractivo() {
     }
   }
 
+  function editarCosto(f: NonNullable<typeof resultado>["filas"][number]) {
+    const ajuste = producto.costosMovimientos?.[f.claveCosto];
+    setEdicionCosto({ clave: f.claveCosto, concepto: f.concepto,
+      costo: ajuste?.costo ?? producto.costo,
+      incluyeIva: ajuste?.incluyeIva ?? producto.costoIncluyeIva ?? false });
+    setMensaje("");
+  }
+
+  async function guardarCosto(e: React.FormEvent, restablecer = false) {
+    e.preventDefault();
+    if (!edicionCosto) return;
+    const costosMovimientos = { ...producto.costosMovimientos };
+    if (restablecer) delete costosMovimientos[edicionCosto.clave];
+    else costosMovimientos[edicionCosto.clave] = {
+      costo: edicionCosto.costo, incluyeIva: edicionCosto.incluyeIva,
+    };
+    const datos = { ...producto, id: producto.id || crypto.randomUUID(), costosMovimientos };
+    try {
+      await ejecutar("kardex", datos);
+      setSeleccionado(datos.id);
+      setBorrador(null);
+      setEdicionCosto(null);
+      setMensaje("Costo guardado. Totales y existencias recalculados.");
+    } catch (e) {
+      setMensaje((e as Error).message);
+    }
+  }
+
   return (
     <div className="max-w-6xl mx-auto space-y-6 font-sans text-zinc-900 pb-12">
 
@@ -104,6 +135,7 @@ export default function KardexInteractivo() {
             className="max-w-48 bg-transparent outline-none focus:ring-2 focus:ring-zinc-500"
             onChange={e => {
               setSeleccionado(e.target.value);
+              setEdicionCosto(null);
               setBorrador(null);
               setMensaje("");
             }}
@@ -118,11 +150,11 @@ export default function KardexInteractivo() {
         </label>
 
         <span className="px-3 py-1.5 border border-zinc-200 bg-white rounded-sm shadow-sm">
-          Costo: {resultado ? `$${Number(producto.costo).toFixed(2)}` : "—"}
+          Costo sin IVA: {resultado ? `$${money(resultado.costo)}` : "—"}
         </span>
 
         <span className="px-3 py-1.5 border border-zinc-200 bg-white rounded-sm shadow-sm">
-          Venta: {resultado ? `$${Number(producto.venta).toFixed(2)}` : "—"}
+          Venta sin IVA: {resultado ? `$${money(resultado.venta)}` : "—"}
         </span>
 
         <button
@@ -144,6 +176,7 @@ export default function KardexInteractivo() {
           className="px-3 py-2 border border-zinc-200 rounded-sm hover:bg-zinc-50"
           onClick={() => {
             setSeleccionado("");
+            setEdicionCosto(null);
             setBorrador(null);
             setMensaje("");
             setMostrarConfiguracion(true);
@@ -187,7 +220,7 @@ export default function KardexInteractivo() {
           </label>
 
           <label className="text-sm">
-            Costo unitario sin IVA
+            Costo unitario {producto.costoIncluyeIva ? "con IVA" : "sin IVA"}
             <input
               className="field"
               required
@@ -198,7 +231,7 @@ export default function KardexInteractivo() {
           </label>
 
           <label className="text-sm">
-            Venta unitaria sin IVA
+            Venta unitaria {producto.ventaIncluyeIva ? "con IVA" : "sin IVA"}
             <input
               className="field"
               required
@@ -207,6 +240,21 @@ export default function KardexInteractivo() {
               onChange={e => cambiar({ venta: e.target.value })}
             />
           </label>
+
+          <label className="text-sm flex items-center gap-2">
+            <input type="checkbox" checked={producto.costoIncluyeIva ?? false}
+              onChange={e => cambiar({ costoIncluyeIva: e.target.checked })} />
+            El costo ingresado incluye IVA (13%)
+          </label>
+          <label className="text-sm flex items-center gap-2">
+            <input type="checkbox" checked={producto.ventaIncluyeIva ?? false}
+              onChange={e => cambiar({ ventaIncluyeIva: e.target.checked })} />
+            El precio de venta ingresado incluye IVA (13%)
+          </label>
+          <p className="text-xs text-zinc-500">
+            Sin marcar: importe sin IVA. Al marcar, se descuenta el IVA para
+            calcular unidades y valorar el inventario.
+          </p>
 
           <label className="text-sm">
             Fecha inicial
@@ -287,9 +335,11 @@ export default function KardexInteractivo() {
         </p>
 
         <p className="text-xs text-zinc-500">
-          Un precio único por producto recalcula todo el intervalo.
-          Los cambios se previsualizan al escribir y se conservan al
-          guardar. No se modifican asientos.
+          Estos precios se aplican a los movimientos sin costo personalizado.
+          Puedes editar el C.U. de cada entrada o salida pulsando su importe.
+          Las existencias muestran el costo medio del saldo restante, sin IVA.
+          Al guardar se recalculan los traslados de inventario configurados;
+          los asientos originales de compra y venta se conservan.
         </p>
 
         <button className="primary" disabled={ocupado}>
@@ -305,12 +355,45 @@ export default function KardexInteractivo() {
       </form>
       </div>
 
+      {edicionCosto && (
+        <form onSubmit={guardarCosto} className="border border-zinc-200 bg-zinc-50 p-4 space-y-3">
+          <p className="text-sm font-medium">Editar C.U. · {edicionCosto.concepto}</p>
+          <label className="block text-sm">
+            Costo unitario {edicionCosto.incluyeIva ? "con IVA" : "sin IVA"}
+            <input className="field" inputMode="decimal" required disabled={ocupado}
+              value={edicionCosto.costo}
+              onChange={e => setEdicionCosto({ ...edicionCosto, costo: e.target.value })} />
+          </label>
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" disabled={ocupado} checked={edicionCosto.incluyeIva}
+              onChange={e => setEdicionCosto({ ...edicionCosto, incluyeIva: e.target.checked })} />
+            El importe incluye IVA (13%)
+          </label>
+          <p className="text-xs text-zinc-500">
+            En compras y devoluciones de compras, el C.U. también determina la cantidad.
+            En ventas, la cantidad se calcula con el precio de venta configurado.
+            Una reversión utiliza el mismo costo que su movimiento original.
+          </p>
+          <div className="flex gap-3">
+            <button className="primary" disabled={ocupado}>Guardar costo</button>
+            <button type="button" disabled={ocupado} onClick={e => guardarCosto(e, true)}>
+              Usar costo del producto
+            </button>
+            <button type="button" disabled={ocupado} onClick={() => setEdicionCosto(null)}>Cancelar</button>
+          </div>
+        </form>
+      )}
+
             {errorCalculo && mostrarConfiguracion && (
         <p role="alert" className="text-sm text-amber-800">
           {errorCalculo}
         </p>
       )}
 
+      <p className="text-xs text-zinc-500">
+        Pulsa el C.U. de una entrada o salida para editarlo. Los importes de la
+        tarjeta se muestran sin IVA; el C.U. de existencias se recalcula con el saldo.
+      </p>
       <div className="overflow-x-auto border border-zinc-200 bg-white">
         <table className="w-full text-xs text-left border-collapse">
           <thead>
@@ -379,7 +462,12 @@ export default function KardexInteractivo() {
                     {f.entrada || "—"}
                   </td>
                   <td className="p-2 text-right">
-                    {f.entrada ? Number(producto.costo).toFixed(2) : "—"}
+                    {f.entrada || f.id === "inicial" ? (
+                      <button type="button" disabled={ocupado} className="underline decoration-dotted underline-offset-4"
+                        aria-label={`Editar costo unitario: ${f.concepto}`} onClick={() => editarCosto(f)}>
+                        {money(f.costoUnitario)}
+                      </button>
+                    ) : "—"}
                   </td>
                   <td className="p-2 text-right border-r">
                     {f.entrada ? money(f.deudor) : "—"}
@@ -389,7 +477,12 @@ export default function KardexInteractivo() {
                     {f.salida || "—"}
                   </td>
                   <td className="p-2 text-right">
-                    {f.salida ? Number(producto.costo).toFixed(2) : "—"}
+                    {f.salida ? (
+                      <button type="button" disabled={ocupado} className="underline decoration-dotted underline-offset-4"
+                        aria-label={`Editar costo unitario: ${f.concepto}`} onClick={() => editarCosto(f)}>
+                        {money(f.costoUnitario)}
+                      </button>
+                    ) : "—"}
                   </td>
                   <td className="p-2 text-right border-r">
                     {f.salida ? money(f.acreedor) : "—"}
@@ -399,7 +492,7 @@ export default function KardexInteractivo() {
                     {f.existencias}
                   </td>
                   <td className="p-2 text-right bg-zinc-50">
-                    {Number(producto.costo).toFixed(2)}
+                    {money(f.costoExistencia)}
                   </td>
                   <td className="p-2 text-right bg-zinc-50 font-semibold">
                     {money(f.saldo)}
@@ -467,7 +560,7 @@ export default function KardexInteractivo() {
                         const t = traslados[clase];
                         const importe =
                           clase === "inicial"
-                            ? producto.inicial * Number(producto.costo) * 100
+                            ? resultado.filas[0].saldo
                             : resultado.inventarioFinal;
                         return (
                           <tr key={clase}>

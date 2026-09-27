@@ -290,13 +290,22 @@ export function parseEntries(
           `No cuadra: Debe ${money(debit)} / Haber ${money(credit)}.`,
         );
       if (config) {
-        const fs = detalles.map(
-          (d) => accounts.find((c) => c.codigo === d.codigoCuenta)!.familia,
-        );
+        // A custom catalog can reuse commercial prefixes for different roles.
+        // Explicit report assignments include their descendants and take
+        // precedence over the legacy classification inferred from the code.
+        const belongsTo = (codigo: string, rol: "compras" | "inventarios") => {
+          const configured = config.cuentasReporte?.[rol];
+          return configured
+            ? codigo.startsWith(configured)
+            : accounts.find((c) => c.codigo === codigo)!.familia === rol;
+        };
         const transfer =
-          fs.includes("compras") &&
-          fs.includes("inventarios") &&
-          fs.every((f) => f === "compras" || f === "inventarios");
+          detalles.some((d) => belongsTo(d.codigoCuenta, "compras")) &&
+          detalles.some((d) => belongsTo(d.codigoCuenta, "inventarios")) &&
+          detalles.every((d) =>
+            belongsTo(d.codigoCuenta, "compras") !==
+            belongsTo(d.codigoCuenta, "inventarios"),
+          );
         if (transfer && config.modoInventario !== "traslados_compras")
           throw new Error(
             "El modo analítico sin traslados no permite los traspasos entre Compras e Inventarios.",
@@ -311,9 +320,7 @@ export function parseEntries(
               "El ajuste de inventario requiere dos líneas: Compras e Inventarios.",
             );
           const purchase = detalles.find(
-            (d) =>
-              accounts.find((c) => c.codigo === d.codigoCuenta)!.familia ===
-              "compras",
+            (d) => belongsTo(d.codigoCuenta, "compras"),
           )!;
           if (
             (a.ajusteInventario === "inicial" && cents(purchase.debe) === 0) ||

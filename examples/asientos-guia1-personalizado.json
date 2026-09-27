@@ -1,0 +1,364 @@
+{
+  "version": 1,
+  "modoIva": "incluido",
+  "asientos": [
+    {
+      "referencia": "Asiento #1",
+      "fecha": "2026-01-01",
+      "concepto": "Inicio de Operaciones",
+      "tipo": "normal",
+      "modoIva": "incluido",
+      "ajusteInventario": null,
+      "detalles": [
+        {
+          "codigoCuenta": "110101",
+          "debe": "30000.00",
+          "haber": "0.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "1102",
+          "debe": "6000.00",
+          "haber": "0.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "3101",
+          "debe": "0.00",
+          "haber": "36000.00",
+          "descripcion": ""
+        }
+      ]
+    },
+    {
+      "referencia": "Asiento #2",
+      "fecha": "2026-01-03",
+      "concepto": "Traferencia Bancaria",
+      "tipo": "normal",
+      "modoIva": "incluido",
+      "ajusteInventario": null,
+      "detalles": [
+        {
+          "codigoCuenta": "110101",
+          "debe": "20000.00",
+          "haber": "0.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "110102",
+          "debe": "0.00",
+          "haber": "20000.00",
+          "descripcion": ""
+        }
+      ]
+    },
+    {
+      "referencia": "Asiento #3",
+      "fecha": "2026-01-05",
+      "concepto": "Compra de queso",
+      "tipo": "normal",
+      "modoIva": "incluido",
+      "ajusteInventario": null,
+      "detalles": [
+        {
+          "codigoCuenta": "4101",
+          "debe": "8849.56",
+          "haber": "0.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "1103",
+          "debe": "1150.44",
+          "haber": "0.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "210101",
+          "debe": "0.00",
+          "haber": "10000.00",
+          "descripcion": ""
+        }
+      ]
+    },
+    {
+      "referencia": "Asiento #4",
+      "fecha": "2026-01-08",
+      "concepto": "Devolucion de Compra",
+      "tipo": "normal",
+      "modoIva": "incluido",
+      "ajusteInventario": null,
+      "detalles": [
+        {
+          "codigoCuenta": "210101",
+          "debe": "1000.00",
+          "haber": "0.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "5102",
+          "debe": "0.00",
+          "haber": "884.96",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "1103",
+          "debe": "0.00",
+          "haber": "115.04",
+          "descripcion": ""
+        }
+      ]
+    },
+    {
+      "referencia": "Asiento #5",
+      "fecha": "2026-01-10",
+      "concepto": "Venta",
+      "tipo": "normal",
+      "modoIva": "incluido",
+      "ajusteInventario": null,
+      "detalles": [
+        {
+          "codigoCuenta": "110401",
+          "debe": "12000.00",
+          "haber": "0.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "5101",
+          "debe": "0.00",
+          "haber": "10619.47",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "2102",
+          "debe": "0.00",
+          "haber": "1380.53",
+          "descripcion": ""
+        }
+      ]
+    },
+    {
+      "referencia": "Asientio #6",
+      "fecha": "2026-01-12",
+      "concepto": "Devolucion de venta",
+      "tipo": "normal",
+      "modoIva": "incluido",
+      "ajusteInventario": null,
+      "detalles": [
+        {
+          "codigoCuenta": "4102",
+          "debe": "88.50",
+          "haber": "0.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "2102",
+          "debe": "11.50",
+          "haber": "0.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "110401",
+          "debe": "0.00",
+          "haber": "100.00",
+          "descripcion": ""
+        }
+      ]
+    },
+    {
+      "referencia": "Asiento #7",
+      "fecha": "2026-01-15",
+      "concepto": "pago de compra de mercadería",
+      "tipo": "normal",
+      "modoIva": "incluido",
+      "ajusteInventario": null,
+      "detalles": [
+        {
+          "codigoCuenta": "210101",
+          "debe": "9000.00",
+          "haber": "0.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "110102",
+          "debe": "0.00",
+          "haber": "9000.00",
+          "descripcion": ""
+        }
+      ]
+    },
+    {
+      "referencia": "Asiento #8",
+      "fecha": "2026-01-31",
+      "concepto": "e compra dos escritorios a Office Depot",
+      "tipo": "normal",
+      "modoIva": "incluido",
+      "ajusteInventario": null,
+      "detalles": [
+        {
+          "codigoCuenta": "120101",
+          "debe": "265.49",
+          "haber": "0.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "1103",
+          "debe": "34.51",
+          "haber": "0.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "110101",
+          "debe": "0.00",
+          "haber": "300.00",
+          "descripcion": ""
+        }
+      ]
+    },
+    {
+      "referencia": "Asiento #9",
+      "fecha": "2026-02-10",
+      "concepto": "ealiza una trasferencia a nuestra cuenta corriente Banco Cuscatlá",
+      "tipo": "normal",
+      "modoIva": "incluido",
+      "ajusteInventario": null,
+      "detalles": [
+        {
+          "codigoCuenta": "110102",
+          "debe": "6000.00",
+          "haber": "0.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "110401",
+          "debe": "0.00",
+          "haber": "6000.00",
+          "descripcion": ""
+        }
+      ]
+    },
+    {
+      "referencia": "Asiento #10",
+      "fecha": "2026-02-15",
+      "concepto": "Se compra una laptop a SIMAN",
+      "tipo": "normal",
+      "modoIva": "incluido",
+      "ajusteInventario": null,
+      "detalles": [
+        {
+          "codigoCuenta": "12010101",
+          "debe": "513.27",
+          "haber": "0.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "1103",
+          "debe": "66.73",
+          "haber": "0.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "110102",
+          "debe": "0.00",
+          "haber": "580.00",
+          "descripcion": ""
+        }
+      ]
+    },
+    {
+      "referencia": "Asiento #11",
+      "fecha": "2026-02-20",
+      "concepto": "Se adquiere un vehículo en Grupo Q,",
+      "tipo": "normal",
+      "modoIva": "incluido",
+      "ajusteInventario": null,
+      "detalles": [
+        {
+          "codigoCuenta": "12010102",
+          "debe": "13274.34",
+          "haber": "0.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "1103",
+          "debe": "1725.66",
+          "haber": "0.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "110102",
+          "debe": "0.00",
+          "haber": "1500.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "2101",
+          "debe": "0.00",
+          "haber": "13500.00",
+          "descripcion": ""
+        }
+      ]
+    },
+    {
+      "referencia": "Asiento #12",
+      "fecha": "2026-02-16",
+      "concepto": "Se realiza una venta",
+      "tipo": "normal",
+      "modoIva": "incluido",
+      "ajusteInventario": null,
+      "detalles": [
+        {
+          "codigoCuenta": "110101",
+          "debe": "5000.00",
+          "haber": "0.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "5101",
+          "debe": "0.00",
+          "haber": "4424.78",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "2102",
+          "debe": "0.00",
+          "haber": "575.22",
+          "descripcion": ""
+        }
+      ]
+    },
+    {
+      "referencia": "Asiento #13",
+      "fecha": "2026-02-20",
+      "concepto": "Se solicita un préstamo al banco Davivienda",
+      "tipo": "normal",
+      "modoIva": "incluido",
+      "ajusteInventario": null,
+      "detalles": [
+        {
+          "codigoCuenta": "220101",
+          "debe": "0.00",
+          "haber": "20000.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "110102",
+          "debe": "18870.00",
+          "haber": "0.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "410301",
+          "debe": "1000.00",
+          "haber": "0.00",
+          "descripcion": ""
+        },
+        {
+          "codigoCuenta": "1103",
+          "debe": "130.00",
+          "haber": "0.00",
+          "descripcion": ""
+        }
+      ]
+    }
+  ]
+}

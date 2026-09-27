@@ -1,0 +1,187 @@
+// Generado desde script.sql; solo documentación. users representa auth.users.
+
+Table users {
+  id uuid [pk, not null]
+
+  Note: 'Referencia a auth.users; administrada por Supabase Auth.'
+}
+
+Table catalogo_base {
+  codigo text [pk, not null]
+  nombre text [not null]
+  padre_codigo text
+}
+
+Table libros {
+  id uuid [pk, not null]
+  usuario_id uuid [not null]
+  revision bigint [not null]
+  activo boolean [not null]
+  version_local integer [not null]
+  kardex_presente boolean [not null]
+  creado_en "timestamp with time zone" [not null]
+  actualizado_en "timestamp with time zone" [not null]
+}
+
+Table cuentas {
+  libro_id uuid [not null]
+  id text [not null]
+  codigo text [not null]
+  nombre text [not null]
+  familia text [not null]
+  tipo text [not null]
+  naturaleza text [not null]
+  rubro text [not null]
+  padre_codigo text
+  activa boolean [not null]
+  movimiento boolean [not null]
+  posicion integer [not null]
+
+  indexes {
+    (libro_id, id) [pk]
+    (libro_id, codigo) [unique]
+    (libro_id, id, codigo) [unique]
+    (libro_id, posicion) [unique]
+  }
+}
+
+Table periodos {
+  libro_id uuid [not null]
+  anio integer [not null]
+  cerrado boolean [not null]
+  posicion integer [not null]
+
+  indexes {
+    (libro_id, anio) [pk]
+    (libro_id, posicion) [unique]
+  }
+}
+
+Table configuracion_libro {
+  libro_id uuid [pk, not null]
+  modo_iva text [not null]
+  modo_inventario text [not null]
+  cuenta_iva_credito text
+  cuenta_iva_debito text
+  inventario_final_fisico text
+  campos_opcionales text[] [not null]
+}
+
+Table cuentas_reporte {
+  libro_id uuid [not null]
+  rol text [not null]
+  codigo_cuenta text
+
+  indexes {
+    (libro_id, rol) [pk]
+  }
+}
+
+Table asientos {
+  libro_id uuid [not null]
+  id text [not null]
+  referencia text [not null]
+  numero integer [not null]
+  fecha date [not null]
+  anio integer
+  concepto text [not null]
+  tipo text [not null]
+  reversa_de text
+  modo_iva text
+  ajuste_inventario text
+  liquidacion_iva text
+  cuadra boolean [not null]
+  campos_opcionales text[] [not null]
+  posicion integer [not null]
+
+  indexes {
+    (libro_id, id) [pk]
+    (libro_id, numero) [unique]
+    (libro_id, posicion) [unique]
+    (libro_id, referencia) [unique]
+    (libro_id, reversa_de) [unique]
+  }
+}
+
+Table detalles_asiento {
+  libro_id uuid [not null]
+  asiento_id text [not null]
+  id text [not null]
+  cuenta_id text [not null]
+  codigo_cuenta text [not null]
+  parcial numeric(16,2) [not null]
+  debe numeric(16,2) [not null]
+  haber numeric(16,2) [not null]
+  descripcion text
+  descripcion_presente boolean [not null]
+  posicion integer [not null]
+
+  indexes {
+    (libro_id, id) [pk]
+    (libro_id, asiento_id, posicion) [unique]
+  }
+}
+
+Table kardex_productos {
+  libro_id uuid [not null]
+  id text [not null]
+  nombre text [not null]
+  costo text [not null]
+  venta text [not null]
+  costo_incluye_iva boolean
+  venta_incluye_iva boolean
+  inicio date [not null]
+  fin date [not null]
+  inicial bigint [not null]
+  campos_opcionales text[] [not null]
+  posicion integer [not null]
+
+  indexes {
+    (libro_id, id) [pk]
+    (libro_id, posicion) [unique]
+  }
+}
+
+Table kardex_cuentas {
+  libro_id uuid [not null]
+  producto_id text [not null]
+  rol text [not null]
+  codigo_cuenta text
+
+  indexes {
+    (libro_id, producto_id, rol) [pk]
+    (libro_id, codigo_cuenta) [unique]
+  }
+}
+
+Table kardex_costos_movimiento {
+  libro_id uuid [not null]
+  producto_id text [not null]
+  clave text [not null]
+  costo text [not null]
+  incluye_iva boolean [not null]
+
+  indexes {
+    (libro_id, producto_id, clave) [pk]
+  }
+}
+
+Ref asientos_libro_id_anio_fkey: asientos.(libro_id, anio) > periodos.(libro_id, anio) [delete: no action]
+Ref asientos_libro_id_fkey: asientos.libro_id > libros.id [delete: cascade]
+Ref asientos_libro_id_reversa_de_fkey: asientos.(libro_id, reversa_de) > asientos.(libro_id, id) [delete: no action]
+Ref catalogo_base_padre_codigo_fkey: catalogo_base.padre_codigo > catalogo_base.codigo [delete: no action]
+Ref configuracion_libro_libro_id_cuenta_iva_credito_fkey: configuracion_libro.(libro_id, cuenta_iva_credito) > cuentas.(libro_id, codigo) [delete: no action]
+Ref configuracion_libro_libro_id_cuenta_iva_debito_fkey: configuracion_libro.(libro_id, cuenta_iva_debito) > cuentas.(libro_id, codigo) [delete: no action]
+Ref configuracion_libro_libro_id_fkey: configuracion_libro.libro_id > libros.id [delete: cascade]
+Ref cuentas_libro_id_fkey: cuentas.libro_id > libros.id [delete: cascade]
+Ref cuentas_libro_id_padre_codigo_fkey: cuentas.(libro_id, padre_codigo) > cuentas.(libro_id, codigo) [delete: no action]
+Ref cuentas_reporte_libro_id_codigo_cuenta_fkey: cuentas_reporte.(libro_id, codigo_cuenta) > cuentas.(libro_id, codigo) [delete: no action]
+Ref cuentas_reporte_libro_id_fkey: cuentas_reporte.libro_id > configuracion_libro.libro_id [delete: cascade]
+Ref detalles_asiento_libro_id_asiento_id_fkey: detalles_asiento.(libro_id, asiento_id) > asientos.(libro_id, id) [delete: cascade]
+Ref detalles_asiento_libro_id_cuenta_id_codigo_cuenta_fkey: detalles_asiento.(libro_id, cuenta_id, codigo_cuenta) > cuentas.(libro_id, id, codigo) [delete: no action]
+Ref kardex_costos_movimiento_libro_id_producto_id_fkey: kardex_costos_movimiento.(libro_id, producto_id) > kardex_productos.(libro_id, id) [delete: cascade]
+Ref kardex_cuentas_libro_id_codigo_cuenta_fkey: kardex_cuentas.(libro_id, codigo_cuenta) > cuentas.(libro_id, codigo) [delete: no action]
+Ref kardex_cuentas_libro_id_producto_id_fkey: kardex_cuentas.(libro_id, producto_id) > kardex_productos.(libro_id, id) [delete: cascade]
+Ref kardex_productos_libro_id_fkey: kardex_productos.libro_id > libros.id [delete: cascade]
+Ref libros_usuario_id_fkey: libros.usuario_id > users.id [delete: cascade]
+Ref periodos_libro_id_fkey: periodos.libro_id > libros.id [delete: cascade]

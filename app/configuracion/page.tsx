@@ -2,7 +2,8 @@
 import { useState } from "react";
 import { useAccountingStore } from "@/lib/store/accountingStore";
 import { download } from "@/components/accounting/json-import";
-import { archives } from "@/lib/accounting/browser-storage";
+import { archives } from "@/lib/accounting/cloud-storage";
+import { RestoreBooks } from "@/components/accounting/restore-books";
 import type { ConfiguracionLibro, LibroLocal, RolReporte } from "@/lib/types";
 import { canPost, money } from "@/lib/accounting/core";
 import {
@@ -117,10 +118,11 @@ function Options({ onSaved }: { onSaved: (message: string) => void }) {
         </select>
       </label>
       <p className="text-xs text-zinc-500">
-        El ejercicio siempre lleva el método analítico o pormenorizado, y el
-        estado de resultados calcula inventario inicial + compras netas −
-        inventario final en los dos casos. Lo único que cambia es si esos dos
-        traslados quedan asentados en el Libro Diario.
+        El ejercicio siempre lleva el método analítico o pormenorizado. Con
+        ambos traslados vigentes, el Estado de Resultados incorpora el
+        inventario inicial menos el final en Compras y omite sus filas
+        separadas. Sin ellos, presenta los inventarios por separado. El costo
+        de ventas y la utilidad son iguales en ambos casos.
       </p>
       <p className="text-xs text-zinc-500">
         {draft.modoInventario === "traslados_compras" ? (
@@ -144,7 +146,8 @@ function Options({ onSaved }: { onSaved: (message: string) => void }) {
       </p>
       <p className="text-xs text-zinc-500">
         Puedes cambiar de opción cuando quieras: los traslados se crean o se
-        revierten solos y los importes del informe no varían. El método de
+        revierten solos; cambia la presentación de Compras e inventarios,
+        pero se conservan el costo de ventas y la utilidad. El método de
         inventario perpetuo, con su cuenta de Costo de Ventas por cada venta,
         no está implementado.
       </p>
@@ -154,7 +157,7 @@ function Options({ onSaved }: { onSaved: (message: string) => void }) {
           <p className="text-sm text-amber-800">
             Al guardar se revertirán los {trasladosVigentes} traslados ya
             registrados. Quedan en el diario como reversiones, no se borran, y
-            el estado de resultados no cambia de importes.
+            se conservan el costo de ventas y la utilidad del estado de resultados.
           </p>
         )}
       <button
@@ -508,20 +511,19 @@ export default function Configuracion() {
         </section>
         <section className="border border-zinc-200 bg-white p-6 space-y-4">
           <h2 className="text-xs font-bold text-zinc-400 uppercase tracking-wider border-b border-zinc-100 pb-2">
-            Datos locales y ejercicios archivados
+            Datos en Supabase y ejercicios archivados
           </h2>
           <p className="text-xs text-zinc-500">
-            Todo el ejercicio —catálogo, asientos, Kardex y configuración— vive
-            en este navegador. Sobrevive a recargas y reinicios, pero no viaja
-            a otro equipo ni a otro navegador, y se pierde si borras los datos
-            del sitio. Descarga el respaldo antes de cualquier cosa que no
-            quieras rehacer. <strong>Iniciar otro ejercicio</strong> archiva el
-            actual y abre uno vacío; los archivados se pueden volver a abrir.
+            El catálogo, los asientos, el Kardex y la configuración se guardan
+            en tu cuenta de Supabase y están disponibles al iniciar sesión en
+            otro equipo. <strong>Iniciar otro ejercicio</strong> archiva el
+            actual y abre uno con el catálogo inicial; los archivados se pueden volver a abrir.
           </p>
           <button
             className="primary"
             onClick={() =>
-              download("respaldo-contabilidad-local.json", {
+              download("respaldo-contabilidad.json", {
+                versionLocal: 3,
                 versionAuditoria: 2,
                 kardex: s.kardex ?? [],
                 exportadoEn: new Date().toISOString(),
@@ -537,8 +539,7 @@ export default function Configuracion() {
           <p className="text-xs text-zinc-500">
             Incluye originales y reversiones para consulta. El catálogo y los
             asientos normales/ajustes también se exportan en sus pantallas con
-            formato de importación. La restauración completa desde archivo sigue
-            pendiente.
+            formato de importación. Puedes restaurar el respaldo completo abajo.
           </p>
           <div className="flex flex-wrap gap-5">
             <button disabled={s.ocupado} onClick={() => setConfirm(true)}>
@@ -558,8 +559,8 @@ export default function Configuracion() {
           {confirm && (
             <div className="bg-blue-50 p-4 space-y-3">
               <p>
-                El ejercicio actual quedará archivado en este navegador. El
-                nuevo empezará vacío, con Más IVA y traspasos a Compras.
+                El ejercicio actual quedará archivado en Supabase. El nuevo
+                empezará sin asientos, con el catálogo y la configuración iniciales.
               </p>
               <button
                 className="primary"
@@ -584,6 +585,7 @@ export default function Configuracion() {
               </button>
             </div>
           )}
+          <RestoreBooks />
           {saved.map((a, i) => (
             <div
               className="border-t pt-3 flex justify-between gap-3"

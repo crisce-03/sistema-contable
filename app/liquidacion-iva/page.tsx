@@ -3,51 +3,32 @@
 import { useState } from "react";
 import { useAccountingStore } from "@/lib/store/accountingStore";
 import { calcularLiquidacionIva } from "@/lib/accounting/local";
-import { canPost, cents, money } from "@/lib/accounting/core";
+import { cents, money } from "@/lib/accounting/core";
 import { Calculator } from "lucide-react";
 
 export default function LiquidacionIvaPage() {
-    const s = useAccountingStore();
+  const s = useAccountingStore();
 
-  const [mesElegido, setMes] = useState("");
-  const [destino, setDestino] = useState("");
+  const [fechaElegida, setFecha] = useState("");
   const [mensaje, setMensaje] = useState("");
-
-  const mes =
-    mesElegido ||
-    s.asientos.map(a => a.fecha.slice(0, 7)).sort().at(-1) ||
-    new Date().toISOString().slice(0, 7);
 
   let r: ReturnType<typeof calcularLiquidacionIva> | null = null;
   let error = "";
 
   try {
-    r = calcularLiquidacionIva(s, mes);
+    r = calcularLiquidacionIva(s);
   } catch (e) {
     error = (e as Error).message;
   }
 
-  const destinos = r
-    ? s.cuentas.filter(
-        c =>
-          canPost(c, s.cuentas) &&
-          c.tipo === (r.diferencia > 0 ? "Pasivo" : "Activo") &&
-          ![r.credito.codigo, r.debito.codigo].some(
-            raiz =>
-              c.codigo.startsWith(raiz) ||
-              raiz.startsWith(c.codigo),
-          ),
-      )
-    : [];
-
-  const destinoValido = destinos.some(c => c.codigo === destino);
+  const fecha = r?.registrada?.fecha || fechaElegida || r?.fecha || new Date().toISOString().slice(0, 10);
 
   const nombreResultado = !r
     ? "Resultado pendiente"
     : r.diferencia > 0
-      ? "IVA por pagar"
+      ? "IVA a pagar"
       : r.diferencia < 0
-        ? "Remanente a favor"
+        ? "Remanente IVA a favor"
         : "Sin diferencia";
 
   const filas = r?.registrada
@@ -60,19 +41,14 @@ export default function LiquidacionIvaPage() {
       }))
     : r
       ? [
-          {
-            nombre: r.debito.nombre,
-            debe: Math.max(r.df, 0),
-            haber: Math.max(-r.df, 0),
-          },
-          {
-            nombre: r.credito.nombre,
-            debe: Math.max(-r.cf, 0),
-            haber: Math.max(r.cf, 0),
-          },
+          ...r.lineas.map((l) => ({
+            nombre: s.cuentas.find((c) => c.codigo === l.codigoCuenta)?.nombre ?? l.codigoCuenta,
+            debe: l.debe,
+            haber: l.haber,
+          })),
           {
             nombre:
-              destinos.find(c => c.codigo === destino)?.nombre ??
+              r.destino?.cuenta.nombre ??
               nombreResultado,
             debe: Math.max(-r.diferencia, 0),
             haber: Math.max(r.diferencia, 0),
@@ -81,13 +57,13 @@ export default function LiquidacionIvaPage() {
       : [];
 
   const abierto = s.periodos.some(
-    p => p.anio === Number(mes.slice(0, 4)) && !p.cerrado,
+    p => p.anio === Number(fecha.slice(0, 4)) && !p.cerrado,
   );
 
   async function registrar() {
     try {
-      await s.ejecutar("liquidacion-iva", { mes, destino });
-      setMensaje("Liquidación registrada. Diario y mayor actualizados.");
+      await s.ejecutar("liquidacion-iva", { fecha });
+      setMensaje("Liquidación registrada. IVA crédito y débito fiscal quedaron saldados.");
     } catch (e) {
       setMensaje((e as Error).message);
     }
@@ -95,25 +71,27 @@ export default function LiquidacionIvaPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 font-sans text-zinc-900">
-            <div className="border border-zinc-200 bg-zinc-50 p-3 text-xs text-zinc-600 space-y-2">
+      <div className="border border-zinc-200 bg-zinc-50 p-3 text-xs text-zinc-600 space-y-2">
         <label className="flex items-center gap-3">
-          Mes a liquidar
+          Fecha de liquidación
           <input
-            type="month"
+            type="date"
             className="border border-zinc-300 bg-white p-2"
-            value={mes}
-            disabled={s.ocupado}
+            value={fecha}
+            min={r?.fecha}
+            disabled={s.ocupado || !!r?.registrada}
             onChange={e => {
-              setMes(e.target.value);
-              setDestino("");
+              setFecha(e.target.value);
               setMensaje("");
             }}
           />
         </label>
 
         <p>
-          Saldos netos del mes, antes de esta liquidación.
-          Incluyen devoluciones y subcuentas.
+          Se suma todo el IVA débito y crédito fiscal pendiente del diario,
+          incluyendo devoluciones y subcuentas. Una sola partida salda ambas
+          cuentas y lleva la diferencia a IVA a pagar o Remanente IVA a favor.
+          La fecha indica cuándo se registra la partida; no filtra los movimientos.
         </p>
 
         {error && <p role="alert">{error}</p>}
@@ -126,8 +104,7 @@ export default function LiquidacionIvaPage() {
 
         {r?.invertidos && (
           <p role="alert" className="text-amber-800">
-            Este mes cierra con algún IVA contrario a su naturaleza, lo normal
-            tras revertir una operación de otro mes. Se liquida cancelando
+            Hay un saldo de IVA contrario a su naturaleza. Se liquida cancelando
             cada cuenta por el lado que le corresponde; revisa los asientos
             si no lo esperabas.
           </p>
@@ -146,7 +123,7 @@ export default function LiquidacionIvaPage() {
           Liquidación de IVA
         </h1>
         <p className="text-sm text-zinc-500 mt-1">
-          Cálculo mensual de confrontación fiscal.
+          Liquidación acumulada de todos los saldos pendientes de IVA.
         </p>
       </div>
 
@@ -201,7 +178,7 @@ export default function LiquidacionIvaPage() {
                 <th className="py-2 text-right font-medium">Haber</th>
               </tr>
             </thead>
-                        <tbody className="divide-y divide-zinc-200">
+            <tbody className="divide-y divide-zinc-200">
               {filas.map((f, i) => (
                 <tr key={i}>
                   <td className={`py-2 ${f.haber ? "pl-4" : ""}`}>
@@ -228,31 +205,12 @@ export default function LiquidacionIvaPage() {
             </tbody>
           </table>
 
-                    {r && r.diferencia !== 0 && !r.registrada && (
-            <label className="block text-xs text-zinc-500 mt-4">
-              Cuenta de{" "}
-              {r.diferencia > 0 ? "IVA por pagar" : "remanente a favor"}
-
-              <select
-                className="field"
-                value={destino}
-                disabled={s.ocupado}
-                onChange={e => setDestino(e.target.value)}
-              >
-                <option value="">Seleccionar cuenta del catálogo</option>
-
-                {destinos.map(c => (
-                  <option key={c.id} value={c.codigo}>
-                    {c.codigo} · {c.nombre}
-                  </option>
-                ))}
-              </select>
-
-              <span>
-                Si falta, créala en el catálogo como{" "}
-                {r.diferencia > 0 ? "Pasivo" : "Activo"}.
-              </span>
-            </label>
+          {r?.destino && !r.registrada && (
+            <p className="text-xs text-zinc-500 mt-4">
+              {r.destino.crear ? "Se creará" : "Se utilizará"} la cuenta{" "}
+              {r.destino.cuenta.codigo} · {r.destino.cuenta.nombre}{" "}
+              ({r.destino.cuenta.tipo}).
+            </p>
           )}
             
           <button
@@ -265,8 +223,8 @@ export default function LiquidacionIvaPage() {
               !abierto ||
               !r ||
               !!r.registrada ||
-              (!r.cf && !r.df) ||
-              (!!r.diferencia && !destinoValido)
+              !r.lineas.length ||
+              fecha < r.fecha
             }
           >
             <Calculator size={14} />

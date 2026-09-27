@@ -1,9 +1,17 @@
+# Sistema contable con Supabase
+
+La aplicación guarda ejercicios en PostgreSQL mediante Supabase y utiliza Supabase Auth para el acceso. Sigue la [guía paso a paso](supabase/README.md) para crear tu proyecto, ejecutar [script.sql](supabase/script.sql), cargar el [catálogo inicial](supabase/data.sql) y configurar `.env.local` a partir de [.env.example](.env.example).
+
+También se incluyen [SQL para el DER](supabase/diagram.sql), [DBML para dbdiagram.io](supabase/diagram.dbml) y [diagrama para draw.io](supabase/diagram.drawio). En Configuración puedes trasladar ejercicios de la versión anterior desde IndexedDB o restaurar respaldos completos sin borrar los originales.
+
 ## Catálogo y cuentas de mayor
 
 Cada ejercicio comienza con los 7 grupos de 1 dígito y los 13 rubros de 2
-dígitos del manual comercial. Estos niveles son predefinidos, no reciben
-asientos y no se modifican mediante JSON. Las cuentas de 4 dígitos las
-registra el usuario; no se cargan automáticamente.
+dígitos del manual comercial, más las 23 cuentas operativas de la plantilla
+para `asientosguia1.json`. Los dos primeros niveles son predefinidos, no reciben
+asientos y no se modifican mediante JSON. Puedes registrar más cuentas desde
+Catálogo. Consulta [las correspondencias y alternativas](supabase/CATALOGO.md)
+antes de importar un catálogo con otra numeración.
 
 La jerarquía es `1 → 11 → 1101 → 110101 → 11010101`. Solo se admiten cuentas
 de usuario de 4, 6, 8 y 10 dígitos, con su padre inmediato existente o incluido
@@ -41,9 +49,10 @@ movimientos directos y los de todas sus subcuentas una sola vez. Por ejemplo,
 `510101` y `51010402` se consolidan en `5101`, aunque tengan distinta
 clasificación o naturaleza.
 
-Al abrir un ejercicio de la versión anterior, se agregan los niveles base y
-los padres que falten, conservando los identificadores y asientos existentes.
-Se archiva una copia del ejercicio anterior dentro de la misma transacción.
+Al trasladar un ejercicio de la versión anterior desde Configuración, se agregan
+los niveles base y los padres que falten, conservando sus identificadores y
+asientos. Se guarda como un nuevo libro en Supabase y se archiva el que estaba
+activo en la misma transacción. El original del navegador no se modifica.
 La exportación del catálogo incluye solo cuentas de usuario para poder
 importarlas en otro ejercicio.
 

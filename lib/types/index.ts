@@ -34,6 +34,7 @@ export interface Asiento {
   ajusteInventario?: "inicial" | "final" | null;
   detalles: DetalleAsiento[];
   cuadra: boolean;
+  /** "acumulada" para el saldo total; AAAA-MM en liquidaciones antiguas. */
   liquidacionIva?: string;
 }
 export interface Periodo {
@@ -94,6 +95,9 @@ export interface KardexProducto {
   nombre: string;
   costo: string;
   venta: string;
+  costoIncluyeIva?: boolean;
+  ventaIncluyeIva?: boolean;
+  costosMovimientos?: Record<string, { costo: string; incluyeIva: boolean }>;
   inicio: string;
   fin: string;
   inicial: number;

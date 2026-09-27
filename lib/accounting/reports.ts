@@ -5,7 +5,7 @@ import type {
   Cuenta,
   RolReporte,
 } from "../types";
-import { canPost, cents, ledger, money } from "./core";
+import { accountClassification, canPost, cents, ledger, money } from "./core";
 
 export const PREFIJO_CIERRE = "CIERRE-";
 
@@ -205,13 +205,19 @@ export const esAsientoCierre = (a: Asiento, asientos: Asiento[]) => {
 export const referenciaCierre = (anio: number) => `${PREFIJO_CIERRE}${anio}`;
 
 export function cierreRegistrado(anio: number, asientos: Asiento[]) {
-  const original = asientos.find(
-    (a) => a.referencia === referenciaCierre(anio),
+  return asientos.find(
+    (a) => a.tipo === "ajuste" &&
+      (a.referencia === referenciaCierre(anio) ||
+        a.referencia.startsWith(`${referenciaCierre(anio)}-RESULTADOS-`)) &&
+      !asientos.some((r) => r.reversaDe === a.id),
   );
-  if (!original) return undefined;
-  return asientos.some((r) => r.reversaDe === original.id)
-    ? undefined
-    : original;
+}
+
+/** Las partidas automáticas se revierten como un solo grupo. */
+export function grupoSaldoResultados(a: Pick<Asiento, "referencia">) {
+  return /^CIERRE-\d{4}-RESULTADOS-.+-\d+$/.test(a.referencia)
+    ? a.referencia.slice(0, a.referencia.lastIndexOf("-"))
+    : undefined;
 }
 
 export interface LineaReporte {
@@ -249,7 +255,7 @@ export function estadoResultados(
 
   const ventas = saldo("ventas"),
     devolVentas = saldo("devolVentas"),
-    compras = saldo("compras"),
+    comprasOperativas = saldo("compras"),
     gastosCompra = saldo("gastosCompra"),
     devolCompras = saldo("devolCompras");
 
@@ -284,17 +290,35 @@ export function estadoResultados(
   const totalGastos = gastosOperacion.reduce((t, l) => t + l.importe, 0),
     totalOtros = otrosIngresos.reduce((t, l) => t + l.importe, 0);
 
-  const ventasNetas = ventas - devolVentas,
-    comprasTotales = compras + gastosCompra,
-    comprasNetas = comprasTotales - devolCompras,
-    inventarioInicial = saldo("inventarios"),
-    mercaderiaDisponible = inventarioInicial + comprasNetas,
+  const inventarioInicial = saldo("inventarios"),
     // El conteo físico manda; mientras no se registre, vale la existencia
     // que el Kardex ya calculó a partir del diario.
     inventarioFinal = config.inventarioFinalFisico
       ? cents(config.inventarioFinalFisico)
-      : inventarioKardex,
-    costoVentas = mercaderiaDisponible - inventarioFinal,
+      : inventarioKardex;
+
+  const revertidos = new Set(asientos.map((a) => a.reversaDe).filter(Boolean));
+  const trasladosVigentes = asientos.filter(
+    (a) => a.tipo === "ajuste" && !revertidos.has(a.id),
+  );
+  const inventariosEnCompras =
+    config.modoInventario === "traslados_compras" &&
+    trasladosVigentes.some((a) => a.ajusteInventario === "inicial") &&
+    trasladosVigentes.some((a) => a.ajusteInventario === "final");
+
+  // Agrupar los inventarios en Compras conserva el costo y la prioridad del
+  // conteo físico. Sus valores originales siguen disponibles para el balance
+  // y el cierre; no se vuelven a sumar ni restar en esta presentación.
+  const compras = comprasOperativas +
+    (inventariosEnCompras ? inventarioInicial - inventarioFinal : 0);
+  const ventasNetas = ventas - devolVentas,
+    comprasTotales = compras + gastosCompra,
+    comprasNetas = comprasTotales - devolCompras,
+    mercaderiaDisponible =
+      inventarioInicial + comprasOperativas + gastosCompra - devolCompras,
+    costoVentas = inventariosEnCompras
+      ? comprasNetas
+      : mercaderiaDisponible - inventarioFinal,
     utilidadBruta = ventasNetas - costoVentas,
     utilidadNeta = utilidadBruta - totalGastos + totalOtros;
 
@@ -304,6 +328,7 @@ export function estadoResultados(
     ventas,
     devolVentas,
     ventasNetas,
+    inventariosEnCompras,
     compras,
     gastosCompra,
     comprasTotales,
@@ -501,4 +526,89 @@ export function asientoCierre(
     ajusteInventario: null,
     detalles,
   };
+}
+
+/** Desglosa el cierre en partidas balanceadas por cuenta y un traslado final. */
+export function prepararSaldoResultados(
+  config: ConfiguracionLibro,
+  cuentas: Cuenta[],
+  asientos: Asiento[],
+  anio: number,
+  inventarioKardex = 0,
+) {
+  if (!Number.isInteger(anio) || anio < 1900 || anio > 2200)
+    throw new Error("Selecciona un ejercicio válido.");
+  if (cierreRegistrado(anio, asientos))
+    throw new Error("Las cuentas de este ejercicio ya fueron saldadas. Revierte el cierre para recalcularlas.");
+  if (asientos.some((a) => Number(a.fecha.slice(0, 4)) !== anio))
+    throw new Error("Selecciona el ejercicio del diario. Para saldar resultados, el libro debe contener un solo ejercicio.");
+
+  const catalogo = ledger(cuentas, asientos);
+  const cuentasNuevas: Cuenta[] = [];
+  const crear = (prefijo: string, nombre: string) => {
+    for (let n = 1; n <= 99; n++) {
+      const codigo = prefijo + String(n).padStart(2, "0");
+      if (catalogo.some((c) => c.codigo.startsWith(codigo))) continue;
+      const f = accountClassification(codigo)!;
+      const cuenta: Cuenta = {
+        id: `nueva-${codigo}`, codigo, nombre, padreCodigo: prefijo,
+        familia: f.id, tipo: f.grupo, naturaleza: f.naturaleza as Cuenta["naturaleza"],
+        rubro: f.rubro, activa: true, movimiento: true, debe: 0, haber: 0, saldo: 0,
+      };
+      if (!canPost(cuenta, catalogo)) break;
+      catalogo.push(cuenta);
+      cuentasNuevas.push(cuenta);
+      return cuenta;
+    }
+    throw new Error(`No se puede crear la cuenta ${nombre} en ${prefijo}.`);
+  };
+  let utilidad = resolverCuentaReporte("utilidad", config, catalogo);
+  if (!utilidad) {
+    if (config.cuentasReporte?.utilidad || catalogo.some((c) => palabras(c.nombre).includes("utilidad")))
+      throw new Error("Enlaza una cuenta activa de utilidad en Configuración.");
+    utilidad = crear("32", "Utilidad neta antes de impuestos");
+  }
+  if (utilidad.tipo !== "Patrimonio")
+    throw new Error("La cuenta de utilidad debe pertenecer al Patrimonio.");
+
+  const candidatas = catalogo.filter((c) => c.codigo.startsWith("61") &&
+    canPost(c, catalogo) && nombra(palabras(c.nombre), "perdida") && nombra(palabras(c.nombre), "ganancia"));
+  if (candidatas.length > 1)
+    throw new Error("Hay varias cuentas de Pérdidas y ganancias. Conserva una cuenta activa para el cierre.");
+  const liquidadora = candidatas[0] ?? crear("61", "Pérdidas y ganancias");
+  if (saldoSubarbol(liquidadora, catalogo, "deudora") !== 0)
+    throw new Error("La cuenta de Pérdidas y ganancias debe estar saldada antes de comenzar.");
+  const configuracion = {
+    ...config,
+    cuentasReporte: { ...config.cuentasReporte, utilidad: utilidad.codigo },
+  };
+  const cierre = asientoCierre(configuracion, catalogo, asientos, anio, inventarioKardex);
+  // No se omiten cuentas inactivas con saldo: hacerlo dejaría un cierre parcial.
+  if (catalogo.some((c) => /^[45]/.test(c.codigo) && c.debe !== c.haber && !canPost(c, catalogo)))
+    throw new Error("Activa las cuentas de resultados con saldo antes de saldarlas.");
+  const netos = new Map<string, number>();
+  for (const d of cierre.detalles)
+    netos.set(d.codigoCuenta, (netos.get(d.codigoCuenta) ?? 0) + cents(d.debe) - cents(d.haber));
+  const netoUtilidad = netos.get(utilidad.codigo) ?? 0;
+  netos.delete(utilidad.codigo);
+  const linea = (codigoCuenta: string, neto: number) => ({
+    codigoCuenta, debe: money(Math.max(neto, 0)), haber: money(Math.max(-neto, 0)),
+  });
+  const partidas: AsientoInput[] = [];
+  const agregar = (codigo: string, neto: number, concepto: string) => {
+    if (!neto) return;
+    partidas.push({
+      ...cierre,
+      referencia: `${referenciaCierre(anio)}-RESULTADOS-VISTA-${partidas.length + 1}`,
+      concepto,
+      detalles: [linea(codigo, neto), linea(liquidadora.codigo, -neto)],
+    });
+  };
+  for (const [codigo, neto] of netos) {
+    const cuenta = catalogo.find((c) => c.codigo === codigo)!;
+    agregar(codigo, neto, `${/^[45]/.test(codigo) ? "Saldar" : "Ajustar"} ${cuenta.nombre} contra Pérdidas y ganancias`);
+  }
+  agregar(utilidad.codigo, netoUtilidad, "Traslado del resultado neto antes de impuestos");
+  if (!partidas.length) throw new Error("No hay cuentas de resultados con saldo para liquidar.");
+  return { partidas, cuentasNuevas, configuracion, utilidad, liquidadora };
 }

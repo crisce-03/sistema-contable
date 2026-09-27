@@ -25,6 +25,13 @@ const r = cp.spawnSync(
     "tests/core.test.cjs",
     "tests/local.test.cjs",
     "tests/reports.test.cjs",
+    "tests/kardex.test.cjs",
+    "tests/iva.test.cjs",
+    "tests/libro-diario.test.cjs",
+    "tests/saldar-resultados.test.cjs",
+    "tests/database.test.cjs",
+    "tests/accounting-service.test.cjs",
+    "tests/auth-route.test.cjs",
   ],
   { stdio: "inherit" },
 );

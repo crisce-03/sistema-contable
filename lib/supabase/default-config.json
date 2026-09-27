@@ -1,0 +1,13 @@
+{
+  "modoIva": "incluido",
+  "modoInventario": "inventarios_explicitos",
+  "cuentaIvaCredito": "1103",
+  "cuentaIvaDebito": "2102",
+  "cuentasReporte": {
+    "inventarios": "1102",
+    "compras": "4101",
+    "devolCompras": "5102",
+    "ventas": "5101",
+    "devolVentas": "4102"
+  }
+}

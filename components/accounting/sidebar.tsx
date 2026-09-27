@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAuthSession } from './session';
 import {
   Settings,
   LayoutGrid,
@@ -12,6 +13,7 @@ import {
   Calculator,
   Archive,
   Scale,
+  UserRound,
 } from 'lucide-react';
 
 // El recorrido sigue el ciclo contable: se registra, se mayoriza, se
@@ -26,10 +28,17 @@ const navItems = [
   { name: 'Kardex', path: '/kardex', icon: Archive },
   { name: 'Liquidación IVA', path: '/liquidacion-iva', icon: Calculator },
   { name: 'Estados Financieros', path: '/reportes', icon: LineChart },
+  { name: 'Mi cuenta', path: '/usuarios', icon: UserRound },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { user } = useAuthSession();
+  const nombre = typeof user.user_metadata.nombre === 'string'
+    ? user.user_metadata.nombre.trim()
+    : '';
+  const identidad = nombre || user.email || 'Mi cuenta';
+  const iniciales = identidad.slice(0, 2).toUpperCase();
   
   return (
     <aside className="w-56 bg-zinc-50 border-r border-zinc-200 min-h-screen flex flex-col font-sans shrink-0">
@@ -58,15 +67,15 @@ export function Sidebar() {
       </nav>
 
       <div className="p-4 border-t border-zinc-200">
-        <div className="flex items-center gap-2 px-2 py-1.5 rounded-sm hover:bg-zinc-200 cursor-pointer transition-colors">
-          <div className="w-6 h-6 rounded-sm bg-zinc-300 flex items-center justify-center text-[10px] font-bold text-zinc-700">
-            AD
+        <Link href="/usuarios" className="flex items-center gap-2 px-2 py-1.5 rounded-sm hover:bg-zinc-200 transition-colors">
+          <div aria-hidden="true" className="w-6 h-6 shrink-0 rounded-sm bg-zinc-300 flex items-center justify-center text-[10px] font-bold text-zinc-700">
+            {iniciales}
           </div>
-          <div className="flex flex-col">
-            <span className="text-xs font-medium text-zinc-900">Admin</span>
-            <span className="text-[10px] text-zinc-500">Finanzas</span>
+          <div className="flex min-w-0 flex-col">
+            <span className="text-xs font-medium text-zinc-900 truncate" title={identidad}>{identidad}</span>
+            <span className="text-[10px] text-zinc-500 truncate" title={user.email}>{user.email}</span>
           </div>
-        </div>
+        </Link>
       </div>
     </aside>
   );

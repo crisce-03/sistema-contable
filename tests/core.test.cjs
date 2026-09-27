@@ -243,3 +243,34 @@ test("ledger and trial balance preserve abnormal debit/credit balances", () => {
   assert.equal(rows.find((c) => c.codigo === "110101").acreedor, 0.3);
   assert.equal(rows.find((c) => c.codigo === "3101").deudor, 0.3);
 });
+
+test("inventory transfers honor the guide's configured accounts and descendants", () => {
+  const guia = require("../examples/catalogo-para-asientosguia1.json");
+  const defaultConfig = require("../lib/supabase/default-config.json");
+  const catalogo = [...baseAccounts(), ...parseCatalog({
+    version: 1,
+    cuentas: [...guia.cuentas,
+      { codigo: "410101", nombre: "Compras de producto", activa: true },
+      { codigo: "110201", nombre: "Inventario de producto", activa: true },
+    ],
+  }).map((cuenta) => ({ ...cuenta, id: cuenta.codigo }))];
+  for (const [compra, inventario] of [["4101", "1102"], ["410101", "110201"]]) {
+    const inicial = entry({
+      tipo: "ajuste",
+      ajusteInventario: "inicial",
+      detalles: [
+        { codigoCuenta: compra, debe: "100.00", haber: "0.00" },
+        { codigoCuenta: inventario, debe: "0.00", haber: "100.00" },
+      ],
+    });
+    const config = { ...defaultConfig, modoInventario: "traslados_compras" };
+    assert.equal(parseEntries(wrap(inicial), catalogo, config)[0].ajusteInventario, "inicial");
+    assert.throws(() => parseEntries(wrap(inicial), catalogo, defaultConfig), /sin traslados/);
+    assert.throws(() => parseEntries(wrap({ ...inicial, ajusteInventario: null }), catalogo, config), /Identifique/);
+    assert.throws(() => parseEntries(wrap({ ...inicial, ajusteInventario: "final" }), catalogo, config), /sentido/);
+    const final = { ...inicial, ajusteInventario: "final", detalles: inicial.detalles.map((d) => ({
+      ...d, debe: d.haber, haber: d.debe,
+    })) };
+    assert.equal(parseEntries(wrap(final), catalogo, config)[0].ajusteInventario, "final");
+  }
+});

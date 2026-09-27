@@ -152,10 +152,16 @@ test("VAT account settings persist, validate postable accounts and allow returni
 test("Guia 1 imports only with included VAT active, including validation again after preview", () => {
   const guide = require("../examples/asientos-guia-1.json");
   const pdf = require("../examples/catalogo-pdf-importable.json");
-  const pdfCodes = new Set(pdf.cuentas.map((c) => c.codigo));
-  assert.ok(guide.asientos.every((a) => a.detalles.every((d) => pdfCodes.has(d.codigoCuenta))));
+  const complement = require("../examples/catalogo-guia-1-complemento.json");
+  // The commercial PDF does not contain 4104 Compras. Its existing guide
+  // supplement also names the bank; combine by code without duplicate rows.
+  const guideCatalog = { version: 1, cuentas: [...new Map(
+    [...pdf.cuentas, ...complement.cuentas].map((cuenta) => [cuenta.codigo, cuenta]),
+  ).values()] };
+  const guideCodes = new Set(guideCatalog.cuentas.map((c) => c.codigo));
+  assert.ok(guide.asientos.every((a) => a.detalles.every((d) => guideCodes.has(d.codigoCuenta))));
   for (const modoIva of ["mas_iva", "incluido"]) {
-    let s = apply(emptyBook(2026), "catalog", pdf);
+    let s = apply(emptyBook(2026), "catalog", guideCatalog);
     s = apply(s, "settings", { ...s.configuracion, modoIva });
     if (modoIva === "mas_iva") {
       const before = JSON.stringify(s);

@@ -50,7 +50,7 @@ export default function JsonImport({
       const result = validate(JSON.parse(text));
       setPreview(result);
       setMessage(
-        "Validación local correcta. Revisa el contenido antes de importar; se volverá a validar antes de guardarlo en este navegador.",
+        "Validación correcta. Revisa el contenido antes de importar; el servidor lo validará de nuevo antes de guardarlo en Supabase.",
       );
     } catch (e) {
       setMessage((e as Error).message);
