@@ -6,11 +6,7 @@ Cada usuario dispone de sus propios ejercicios, con acceso desde distintos equip
 
 ## Vista previa
 
-> **Captura pendiente:** toma una captura de la pantalla **Resumen Contable**, con el menú lateral y datos de ejemplo. Guárdala en `docs/images/resumen-contable.png` (crea la carpeta si no existe). Usa una imagen horizontal de aproximadamente 1440 × 900 píxeles y oculta correos o datos personales. Después sustituye este aviso y el bloque de ejemplo por la siguiente línea Markdown, sin las comillas invertidas:
-
-```markdown
 ![Resumen del Sistema Contable](docs/images/resumen-contable.png)
-```
 
 ## Funcionalidades
 
